@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import StationCard from '@/components/ui/StationCard';
 import Map from '@/components/ui/Map';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Mock data for nearby stations
 const nearbyStations = [
@@ -15,7 +16,7 @@ const nearbyStations = [
     distance: '1.2 km',
     rating: 4.8,
     isOpen: true,
-    imageUrl: 'https://images.unsplash.com/photo-1560005262-823d9d53e891?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1527018601619-a508a2be00cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
   },
   {
     id: '2',
@@ -39,17 +40,16 @@ const nearbyStations = [
 
 const Index: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const isMobile = useIsMobile();
   
   return (
     <>
-      <div className="p-4">
-        <div className="flex justify-center">
-          <img 
-            src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
-            alt="FuelFriendly Logo" 
-            className="h-10 object-contain"
-          />
-        </div>
+      <div className="py-3 px-4 flex justify-center items-center">
+        <img 
+          src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
+          alt="FuelFriendly Logo" 
+          className={`object-contain ${isMobile ? 'h-8' : 'h-10'}`}
+        />
       </div>
       
       <main className="page-container pt-0">

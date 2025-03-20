@@ -11,27 +11,35 @@ import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
 import TrackOrder from "./pages/TrackOrder";
 import NotFound from "./pages/NotFound";
+import Map from "./components/ui/Map";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/station/:id" element={<StationDetails />} />
-          <Route path="/station/:id/fuel" element={<FuelSelection />} />
-          <Route path="/station/:id/payment" element={<Payment />} />
-          <Route path="/confirmation" element={<Confirmation />} />
-          <Route path="/track" element={<TrackOrder />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/station/:id" element={<StationDetails />} />
+            <Route path="/station/:id/fuel" element={<FuelSelection />} />
+            <Route path="/station/:id/payment" element={<Payment />} />
+            <Route path="/confirmation" element={<Confirmation />} />
+            <Route path="/track" element={<TrackOrder />} />
+            <Route path="/map" element={
+              <div className="h-screen w-full">
+                <Map className="h-full w-full" />
+              </div>
+            } />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { CreditCard, Calendar, User } from 'lucide-react';
+import OtpVerification from './OtpVerification';
 
 import {
   Form,
@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   cardNumber: z.string().min(16, "Card number must be 16 digits").max(19, "Card number is too long"),
@@ -30,6 +31,7 @@ interface CreditCardFormProps {
 
 const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
   const [flipped, setFlipped] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -83,7 +85,21 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
   };
 
   const handleFormSubmit = (values: FormValues) => {
+    setShowOtp(true);
+  };
+  
+  const handleOtpVerify = () => {
+    const values = form.getValues();
+    setShowOtp(false);
     onSubmit(values);
+    toast({
+      title: "Payment Verified",
+      description: "Your card payment has been verified successfully.",
+    });
+  };
+  
+  const handleOtpCancel = () => {
+    setShowOtp(false);
   };
 
   return (
@@ -229,8 +245,19 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
               )}
             />
           </div>
+          
+          <button 
+            type="submit"
+            className="w-full py-3 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.99] transition-all duration-200"
+          >
+            Verify Card
+          </button>
         </form>
       </Form>
+      
+      {showOtp && (
+        <OtpVerification onVerify={handleOtpVerify} onCancel={handleOtpCancel} />
+      )}
     </div>
   );
 };

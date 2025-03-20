@@ -1,13 +1,15 @@
 
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Wallet, CreditCard, Landmark, Smartphone, Calendar, Clock } from 'lucide-react';
+import { Wallet, CreditCard, Landmark, Smartphone, Calendar, Clock, CheckCircle } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import PaymentMethod from '@/components/ui/PaymentMethod';
 import CreditCardForm from '@/components/ui/CreditCardForm';
 import DateTimePicker from '@/components/ui/DateTimePicker';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from '@/hooks/use-toast';
+import OtpVerification from '@/components/ui/OtpVerification';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Mock data for payment methods
 const paymentMethods = [
@@ -37,10 +39,21 @@ const paymentMethods = [
   }
 ];
 
+// E-wallet providers
+const eWallets = [
+  { id: 'gopay', name: 'GoPay' },
+  { id: 'ovo', name: 'OVO' },
+  { id: 'dana', name: 'DANA' },
+  { id: 'linkaja', name: 'LinkAja' }
+];
+
 const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [selectedMethod, setSelectedMethod] = useState(paymentMethods[0].id);
+  const [selectedEWallet, setSelectedEWallet] = useState('');
+  const [showEWalletOtp, setShowEWalletOtp] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(
     new Date(Date.now() + 30 * 60 * 1000) // 30 minutes from now as default
   );
@@ -54,6 +67,22 @@ const Payment: React.FC = () => {
   
   const handleCardFormSubmit = (values: any) => {
     console.log('Card form values:', values);
+    handlePay();
+  };
+  
+  const handleSelectEWallet = (walletId: string) => {
+    setSelectedEWallet(walletId);
+    setShowEWalletOtp(true);
+  };
+  
+  const handleEWalletOtpVerify = () => {
+    setShowEWalletOtp(false);
+    handlePay();
+  };
+  
+  const handleEWalletOtpCancel = () => {
+    setShowEWalletOtp(false);
+    setSelectedEWallet('');
   };
   
   const handlePay = () => {
@@ -66,12 +95,14 @@ const Payment: React.FC = () => {
       return;
     }
     
-    navigate('/track', {
+    navigate('/confirmation', {
       state: {
         fuelType,
         quantity,
         totalPrice,
-        paymentMethod: paymentMethods.find(method => method.id === selectedMethod),
+        paymentMethod: selectedEWallet ? 
+          { id: selectedEWallet, name: eWallets.find(w => w.id === selectedEWallet)?.name || 'E-Wallet' } : 
+          paymentMethods.find(method => method.id === selectedMethod),
         scheduledDate
       }
     });
@@ -167,18 +198,18 @@ const Payment: React.FC = () => {
         
         <div className="mb-6">
           <h3 className="text-lg font-medium mb-3">Payment Method</h3>
-          <Tabs defaultValue="credit-card" className="w-full">
+          <Tabs defaultValue="credit-card" className="w-full" onValueChange={setSelectedMethod}>
             <TabsList className="grid grid-cols-4 mb-4">
-              <TabsTrigger value="credit-card" onClick={() => setSelectedMethod('credit-card')}>
+              <TabsTrigger value="credit-card">
                 <CreditCard className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger value="e-wallet" onClick={() => setSelectedMethod('e-wallet')}>
+              <TabsTrigger value="e-wallet">
                 <Wallet className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger value="bank-transfer" onClick={() => setSelectedMethod('bank-transfer')}>
+              <TabsTrigger value="bank-transfer">
                 <Landmark className="h-5 w-5" />
               </TabsTrigger>
-              <TabsTrigger value="qris" onClick={() => setSelectedMethod('qris')}>
+              <TabsTrigger value="qris">
                 <Smartphone className="h-5 w-5" />
               </TabsTrigger>
             </TabsList>
@@ -193,9 +224,18 @@ const Payment: React.FC = () => {
                 <h3 className="text-lg font-medium mb-1">E-Wallet Payment</h3>
                 <p className="text-muted-foreground">Select your preferred e-wallet provider</p>
                 <div className="grid grid-cols-2 gap-3 mt-6">
-                  {['GoPay', 'OVO', 'DANA', 'LinkAja'].map(wallet => (
-                    <button key={wallet} className="glass p-3 rounded-lg hover:bg-white/5">
-                      {wallet}
+                  {eWallets.map(wallet => (
+                    <button 
+                      key={wallet.id} 
+                      className={`glass p-3 rounded-lg hover:bg-white/5 transition-all duration-200 flex items-center justify-center ${
+                        selectedEWallet === wallet.id ? 'border-green-500 shadow-[0_0_0_1.5px_rgb(0,230,118)]' : 'border-white/10'
+                      }`}
+                      onClick={() => handleSelectEWallet(wallet.id)}
+                    >
+                      {selectedEWallet === wallet.id && (
+                        <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+                      )}
+                      {wallet.name}
                     </button>
                   ))}
                 </div>
@@ -241,6 +281,13 @@ const Payment: React.FC = () => {
           </button>
         </div>
       </main>
+      
+      {showEWalletOtp && (
+        <OtpVerification 
+          onVerify={handleEWalletOtpVerify} 
+          onCancel={handleEWalletOtpCancel} 
+        />
+      )}
     </>
   );
 };
