@@ -1,13 +1,98 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+import React, { useState } from 'react';
+import { Search, Filter, MapPin } from 'lucide-react';
+import Header from '@/components/layout/Header';
+import BottomNav from '@/components/layout/BottomNav';
+import StationCard from '@/components/ui/StationCard';
+import Map from '@/components/ui/Map';
+
+// Mock data for nearby stations
+const nearbyStations = [
+  {
+    id: '1',
+    name: 'Pertamina Gas Station',
+    address: 'Jl. Sudirman No. 123, Jakarta',
+    distance: '1.2 km',
+    rating: 4.8,
+    isOpen: true,
+    imageUrl: 'https://images.unsplash.com/photo-1560005262-823d9d53e891?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+  },
+  {
+    id: '2',
+    name: 'Shell Gas Station',
+    address: 'Jl. Gatot Subroto No. 45, Jakarta',
+    distance: '2.5 km',
+    rating: 4.6,
+    isOpen: true,
+    imageUrl: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+  },
+  {
+    id: '3',
+    name: 'BP Gas Station',
+    address: 'Jl. Thamrin No. 78, Jakarta',
+    distance: '3.8 km',
+    rating: 4.3,
+    isOpen: false,
+    imageUrl: 'https://images.unsplash.com/photo-1527018601619-a508a2be00cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+  }
+];
+
+const Index: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Header title="GreenFuel" />
+      
+      <main className="page-container">
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search gas stations..."
+              className="h-11 w-full rounded-full bg-muted pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/40"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <button className="h-11 w-11 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80">
+            <Filter className="h-4 w-4" />
+          </button>
+        </div>
+        
+        <div className="glass card-shadow rounded-xl p-4 mb-6">
+          <div className="flex items-center">
+            <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center mr-3">
+              <MapPin className="h-5 w-5 text-green-500" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Current Location</p>
+              <p className="font-medium">Jakarta, Indonesia</p>
+            </div>
+          </div>
+        </div>
+        
+        <Map className="h-48 mb-6" />
+        
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium">Nearby Stations</h2>
+            <button className="text-sm text-green-500 hover:underline">See All</button>
+          </div>
+          
+          <div className="grid gap-4">
+            {nearbyStations.map(station => (
+              <StationCard key={station.id} {...station} />
+            ))}
+          </div>
+        </div>
+      </main>
+      
+      <BottomNav />
+    </>
   );
 };
 
