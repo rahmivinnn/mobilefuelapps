@@ -23,8 +23,8 @@ const Map: React.FC<MapProps> = ({ className, showRoute = false, showDeliveryInf
     <div className={`relative w-full bg-muted/50 overflow-hidden rounded-xl ${className}`}>
       <div className="absolute inset-0 flex items-center justify-center">
         <img 
-          src="/lovable-uploads/e409d5d1-afc9-45c9-8b93-c4cb171e833f.png" 
-          alt="Map" 
+          src="https://api.mapbox.com/styles/v1/mapbox/dark-v10/static/106.816666,-6.200000,11,0/1200x600?access_token=pk.eyJ1IjoibG92YWJsZWxsYyIsImEiOiJjbHEwd3RrcGkwaWpnMmtwNDR2Zzc1ZTY3In0.MlBl0yQcCQBTqN3mpV1LpA" 
+          alt="Jakarta Map" 
           className="w-full h-full object-cover"
           style={{ 
             objectFit: 'cover',

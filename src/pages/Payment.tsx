@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Wallet, CreditCard, Landmark, Smartphone, Calendar, Clock, CheckCircle } from 'lucide-react';
@@ -10,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from '@/hooks/use-toast';
 import OtpVerification from '@/components/ui/OtpVerification';
 import { useIsMobile } from '@/hooks/use-mobile';
+import VirtualAccount from '@/components/ui/VirtualAccount';
 
 // Mock data for payment methods
 const paymentMethods = [
@@ -47,13 +47,23 @@ const eWallets = [
   { id: 'linkaja', name: 'LinkAja' }
 ];
 
+// Bank list
+const banks = [
+  { id: 'bca', name: 'BCA' },
+  { id: 'bni', name: 'BNI' },
+  { id: 'mandiri', name: 'Mandiri' },
+  { id: 'bri', name: 'BRI' }
+];
+
 const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [selectedMethod, setSelectedMethod] = useState(paymentMethods[0].id);
   const [selectedEWallet, setSelectedEWallet] = useState('');
+  const [selectedBank, setSelectedBank] = useState('');
   const [showEWalletOtp, setShowEWalletOtp] = useState(false);
+  const [showVirtualAccount, setShowVirtualAccount] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(
     new Date(Date.now() + 30 * 60 * 1000) // 30 minutes from now as default
   );
@@ -75,6 +85,11 @@ const Payment: React.FC = () => {
     setShowEWalletOtp(true);
   };
   
+  const handleSelectBank = (bankId: string) => {
+    setSelectedBank(bankId);
+    setShowVirtualAccount(true);
+  };
+  
   const handleEWalletOtpVerify = () => {
     setShowEWalletOtp(false);
     handlePay();
@@ -83,6 +98,11 @@ const Payment: React.FC = () => {
   const handleEWalletOtpCancel = () => {
     setShowEWalletOtp(false);
     setSelectedEWallet('');
+  };
+  
+  const handleCloseVirtualAccount = () => {
+    setShowVirtualAccount(false);
+    handlePay();
   };
   
   const handlePay = () => {
@@ -100,11 +120,33 @@ const Payment: React.FC = () => {
         fuelType,
         quantity,
         totalPrice,
-        paymentMethod: selectedEWallet ? 
-          { id: selectedEWallet, name: eWallets.find(w => w.id === selectedEWallet)?.name || 'E-Wallet' } : 
-          paymentMethods.find(method => method.id === selectedMethod),
+        paymentMethod: selectedBank ? 
+          { id: selectedBank, name: banks.find(b => b.id === selectedBank)?.name || 'Bank Transfer' } : 
+          selectedEWallet ? 
+            { id: selectedEWallet, name: eWallets.find(w => w.id === selectedEWallet)?.name || 'E-Wallet' } : 
+            paymentMethods.find(method => method.id === selectedMethod),
         scheduledDate
       }
+    });
+  };
+  
+  // Generate a random virtual account number
+  const generateVirtualAccount = () => {
+    return `${Math.floor(10000000000000 + Math.random() * 90000000000000)}`;
+  };
+  
+  // Calculate expiry time (24 hours from now)
+  const calculateExpiryTime = () => {
+    const expiryDate = new Date();
+    expiryDate.setHours(expiryDate.getHours() + 24);
+    return expiryDate.toLocaleString('en-US', { 
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
     });
   };
   
@@ -248,9 +290,18 @@ const Payment: React.FC = () => {
                 <h3 className="text-lg font-medium mb-1">Bank Transfer</h3>
                 <p className="text-muted-foreground">Select your bank for payment instructions</p>
                 <div className="grid grid-cols-2 gap-3 mt-6">
-                  {['BCA', 'BNI', 'Mandiri', 'BRI'].map(bank => (
-                    <button key={bank} className="glass p-3 rounded-lg hover:bg-white/5">
-                      {bank}
+                  {banks.map(bank => (
+                    <button 
+                      key={bank.id} 
+                      className={`glass p-3 rounded-lg hover:bg-white/5 transition-all duration-200 ${
+                        selectedBank === bank.id ? 'border-green-500 shadow-[0_0_0_1.5px_rgb(0,230,118)]' : 'border-white/10'
+                      }`}
+                      onClick={() => handleSelectBank(bank.id)}
+                    >
+                      {selectedBank === bank.id && (
+                        <CheckCircle className="h-4 w-4 mr-1 inline-block text-green-500" />
+                      )}
+                      {bank.name}
                     </button>
                   ))}
                 </div>
@@ -287,6 +338,25 @@ const Payment: React.FC = () => {
           onVerify={handleEWalletOtpVerify} 
           onCancel={handleEWalletOtpCancel} 
         />
+      )}
+      
+      {showVirtualAccount && selectedBank && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md animate-scale-in">
+            <VirtualAccount 
+              bankName={banks.find(b => b.id === selectedBank)?.name || 'Bank'}
+              accountNumber={generateVirtualAccount()}
+              amount={totalPrice}
+              expiryTime={calculateExpiryTime()}
+            />
+            <button 
+              onClick={handleCloseVirtualAccount}
+              className="w-full mt-4 py-3 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.99] transition-all duration-200"
+            >
+              Confirm Payment
+            </button>
+          </div>
+        </div>
       )}
     </>
   );

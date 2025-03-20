@@ -44,11 +44,11 @@ const Index: React.FC = () => {
   
   return (
     <>
-      <div className="py-3 px-4 flex justify-center items-center">
+      <div className="py-2 px-4 flex items-center">
         <img 
           src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
           alt="FuelFriendly Logo" 
-          className={`object-contain ${isMobile ? 'h-8' : 'h-10'}`}
+          className={`object-contain ${isMobile ? 'h-6' : 'h-8'} mr-auto`}
         />
       </div>
       
