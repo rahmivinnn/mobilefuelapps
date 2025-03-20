@@ -1,23 +1,27 @@
 
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Wallet, CreditCard, Landmark, Smartphone } from 'lucide-react';
+import { Wallet, CreditCard, Landmark, Smartphone, Calendar, Clock } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import PaymentMethod from '@/components/ui/PaymentMethod';
+import CreditCardForm from '@/components/ui/CreditCardForm';
+import DateTimePicker from '@/components/ui/DateTimePicker';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from '@/hooks/use-toast';
 
 // Mock data for payment methods
 const paymentMethods = [
-  {
-    id: 'e-wallet',
-    name: 'E-Wallet',
-    description: 'GoPay, OVO, DANA, LinkAja',
-    icon: <Wallet className="h-5 w-5 text-green-500" />
-  },
   {
     id: 'credit-card',
     name: 'Credit/Debit Card',
     description: 'Visa, Mastercard, JCB',
     icon: <CreditCard className="h-5 w-5 text-green-500" />
+  },
+  {
+    id: 'e-wallet',
+    name: 'E-Wallet',
+    description: 'GoPay, OVO, DANA, LinkAja',
+    icon: <Wallet className="h-5 w-5 text-green-500" />
   },
   {
     id: 'bank-transfer',
@@ -37,6 +41,9 @@ const Payment: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState(paymentMethods[0].id);
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>(
+    new Date(Date.now() + 30 * 60 * 1000) // 30 minutes from now as default
+  );
   
   // Get data passed from fuel selection
   const { fuelType, quantity, totalPrice } = location.state || {
@@ -45,13 +52,27 @@ const Payment: React.FC = () => {
     totalPrice: 130000
   };
   
+  const handleCardFormSubmit = (values: any) => {
+    console.log('Card form values:', values);
+  };
+  
   const handlePay = () => {
-    navigate('/confirmation', {
+    if (!scheduledDate) {
+      toast({
+        title: "Select delivery time",
+        description: "Please select when you want to receive your fuel",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    navigate('/track', {
       state: {
         fuelType,
         quantity,
         totalPrice,
-        paymentMethod: paymentMethods.find(method => method.id === selectedMethod)
+        paymentMethod: paymentMethods.find(method => method.id === selectedMethod),
+        scheduledDate
       }
     });
   };
@@ -62,7 +83,7 @@ const Payment: React.FC = () => {
       
       <main className="page-container">
         <div className="mb-6">
-          <div className="mb-1 text-sm text-muted-foreground">Step 3 of 3</div>
+          <div className="mb-1 text-sm text-muted-foreground">Step 3 of 4</div>
           <h2 className="text-2xl font-bold">Select Payment Method</h2>
         </div>
         
@@ -102,13 +123,116 @@ const Payment: React.FC = () => {
           </div>
         </div>
         
-        <PaymentMethod
-          methods={paymentMethods}
-          selectedMethod={selectedMethod}
-          onSelectMethod={setSelectedMethod}
-        />
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-3">Schedule Delivery</h3>
+          <DateTimePicker 
+            date={scheduledDate} 
+            setDate={setScheduledDate} 
+          />
+          {scheduledDate && (
+            <div className="mt-2 glass card-shadow rounded-xl p-3 flex items-center text-sm">
+              <div className="mr-2 flex space-x-2">
+                <Calendar className="h-4 w-4 text-green-500" />
+                <Clock className="h-4 w-4 text-green-500" />
+              </div>
+              <span>
+                Your fuel will be delivered on&nbsp;
+                <span className="font-medium">
+                  {scheduledDate.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric'
+                  })}
+                </span> 
+                &nbsp;between&nbsp;
+                <span className="font-medium">
+                  {scheduledDate.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: 'numeric',
+                    hour12: true 
+                  })}
+                </span> 
+                &nbsp;and&nbsp;
+                <span className="font-medium">
+                  {new Date(scheduledDate.getTime() + 45 * 60000).toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: 'numeric',
+                    hour12: true 
+                  })}
+                </span>
+              </span>
+            </div>
+          )}
+        </div>
         
-        <div className="mt-8">
+        <div className="mb-6">
+          <h3 className="text-lg font-medium mb-3">Payment Method</h3>
+          <Tabs defaultValue="credit-card" className="w-full">
+            <TabsList className="grid grid-cols-4 mb-4">
+              <TabsTrigger value="credit-card" onClick={() => setSelectedMethod('credit-card')}>
+                <CreditCard className="h-5 w-5" />
+              </TabsTrigger>
+              <TabsTrigger value="e-wallet" onClick={() => setSelectedMethod('e-wallet')}>
+                <Wallet className="h-5 w-5" />
+              </TabsTrigger>
+              <TabsTrigger value="bank-transfer" onClick={() => setSelectedMethod('bank-transfer')}>
+                <Landmark className="h-5 w-5" />
+              </TabsTrigger>
+              <TabsTrigger value="qris" onClick={() => setSelectedMethod('qris')}>
+                <Smartphone className="h-5 w-5" />
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="credit-card">
+              <CreditCardForm onSubmit={handleCardFormSubmit} />
+            </TabsContent>
+            
+            <TabsContent value="e-wallet">
+              <div className="glass card-shadow rounded-xl p-4 text-center py-8">
+                <Wallet className="h-12 w-12 mx-auto mb-4 text-green-500" />
+                <h3 className="text-lg font-medium mb-1">E-Wallet Payment</h3>
+                <p className="text-muted-foreground">Select your preferred e-wallet provider</p>
+                <div className="grid grid-cols-2 gap-3 mt-6">
+                  {['GoPay', 'OVO', 'DANA', 'LinkAja'].map(wallet => (
+                    <button key={wallet} className="glass p-3 rounded-lg hover:bg-white/5">
+                      {wallet}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="bank-transfer">
+              <div className="glass card-shadow rounded-xl p-4 text-center py-8">
+                <Landmark className="h-12 w-12 mx-auto mb-4 text-green-500" />
+                <h3 className="text-lg font-medium mb-1">Bank Transfer</h3>
+                <p className="text-muted-foreground">Select your bank for payment instructions</p>
+                <div className="grid grid-cols-2 gap-3 mt-6">
+                  {['BCA', 'BNI', 'Mandiri', 'BRI'].map(bank => (
+                    <button key={bank} className="glass p-3 rounded-lg hover:bg-white/5">
+                      {bank}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="qris">
+              <div className="glass card-shadow rounded-xl p-4 text-center py-8">
+                <Smartphone className="h-12 w-12 mx-auto mb-4 text-green-500" />
+                <h3 className="text-lg font-medium mb-1">QRIS Payment</h3>
+                <p className="text-muted-foreground">Scan the QR code with your banking app</p>
+                <div className="mt-6 bg-white p-4 rounded-lg mx-auto w-48 h-48 flex items-center justify-center">
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    QR Code
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+        
+        <div className="mt-8 mb-4">
           <button 
             onClick={handlePay}
             className="w-full py-4 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.99] transition-all duration-200"

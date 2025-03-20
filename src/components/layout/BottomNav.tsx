@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Map, CreditCard, User } from 'lucide-react';
+import { Home, ShoppingBag, MapPin, Settings } from 'lucide-react';
 
 const BottomNav: React.FC = () => {
   return (
@@ -20,33 +20,33 @@ const BottomNav: React.FC = () => {
           </NavLink>
           
           <NavLink 
-            to="/map" 
+            to="/orders" 
             className={({ isActive }) => 
               `flex flex-col items-center space-y-1 ${isActive ? 'text-green-500' : 'text-muted-foreground'} transition-colors hover:text-green-500`
             }
           >
-            <Map className="h-5 w-5" />
-            <span className="text-xs">Stations</span>
+            <ShoppingBag className="h-5 w-5" />
+            <span className="text-xs">My Orders</span>
           </NavLink>
           
           <NavLink 
-            to="/payments" 
+            to="/track" 
             className={({ isActive }) => 
               `flex flex-col items-center space-y-1 ${isActive ? 'text-green-500' : 'text-muted-foreground'} transition-colors hover:text-green-500`
             }
           >
-            <CreditCard className="h-5 w-5" />
-            <span className="text-xs">Payments</span>
+            <MapPin className="h-5 w-5" />
+            <span className="text-xs">Track</span>
           </NavLink>
           
           <NavLink 
-            to="/profile" 
+            to="/settings" 
             className={({ isActive }) => 
               `flex flex-col items-center space-y-1 ${isActive ? 'text-green-500' : 'text-muted-foreground'} transition-colors hover:text-green-500`
             }
           >
-            <User className="h-5 w-5" />
-            <span className="text-xs">Profile</span>
+            <Settings className="h-5 w-5" />
+            <span className="text-xs">Settings</span>
           </NavLink>
         </div>
       </div>

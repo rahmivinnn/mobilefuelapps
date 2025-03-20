@@ -42,9 +42,17 @@ const Index: React.FC = () => {
   
   return (
     <>
-      <Header title="GreenFuel" />
+      <div className="p-4">
+        <div className="flex justify-center">
+          <img 
+            src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
+            alt="FuelFriendly Logo" 
+            className="h-10 object-contain"
+          />
+        </div>
+      </div>
       
-      <main className="page-container">
+      <main className="page-container pt-0">
         <div className="flex items-center space-x-3 mb-6">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">

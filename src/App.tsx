@@ -9,6 +9,7 @@ import StationDetails from "./pages/StationDetails";
 import FuelSelection from "./pages/FuelSelection";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
+import TrackOrder from "./pages/TrackOrder";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,7 +26,7 @@ const App = () => (
           <Route path="/station/:id/fuel" element={<FuelSelection />} />
           <Route path="/station/:id/payment" element={<Payment />} />
           <Route path="/confirmation" element={<Confirmation />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/track" element={<TrackOrder />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
