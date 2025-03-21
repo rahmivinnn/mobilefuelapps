@@ -77,7 +77,6 @@ const FuelSelection: React.FC = () => {
             step={1}
             onChange={setQuantity}
             pricePerUnit={selectedFuelType?.price || 0}
-            unit="gallon"
           />
         </div>
         
