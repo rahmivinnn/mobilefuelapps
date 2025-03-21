@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Bell, User } from 'lucide-react';
+import { Search, Filter, Bell } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
 import StationCard from '@/components/ui/StationCard';
 import Map from '@/components/ui/Map';
@@ -47,7 +47,6 @@ const trafficConditions = {
 const Index: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const isMobile = useIsMobile();
-  const [mapHeight, setMapHeight] = useState(300);
   const [showTraffic, setShowTraffic] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   
@@ -86,7 +85,7 @@ const Index: React.FC = () => {
           <img 
             src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
             alt="FuelFriendly Logo" 
-            className="h-8 w-[30%] object-contain"
+            className="h-8 object-contain"
           />
         </div>
         
@@ -114,9 +113,9 @@ const Index: React.FC = () => {
         </button>
       </div>
       
-      {/* Map with real-time indicators */}
+      {/* Map with real-time indicators - now smaller for portrait view */}
       <div className="px-4 py-2 relative">
-        <Map className="h-72 w-full rounded-lg" interactive showRoute={showTraffic} />
+        <Map className="h-56 w-full rounded-lg" interactive showRoute={showTraffic} />
         
         {/* Real-time indicators */}
         <div className="absolute bottom-4 left-8 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs flex items-center space-x-2">
@@ -124,7 +123,7 @@ const Index: React.FC = () => {
           <span>Live traffic</span>
         </div>
         
-        <div className="absolute top-6 right-16 flex space-x-1">
+        <div className="absolute top-6 right-6 flex flex-col space-y-1">
           <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-full text-xs">
             <div className="h-2 w-2 rounded-full bg-green-400"></div>
             <span>Light</span>
@@ -140,54 +139,14 @@ const Index: React.FC = () => {
         </div>
       </div>
       
-      {/* Traffic conditions - shows the real streets in Memphis */}
-      <div className="px-4 py-2">
-        <h3 className="text-sm font-medium text-green-500 mb-2">Traffic Conditions in Memphis</h3>
-        <div className="grid grid-cols-3 gap-2 text-xs">
-          <div>
-            <h4 className="mb-1 flex items-center">
-              <span className="h-2 w-2 rounded-full bg-green-400 mr-1"></span>
-              Light
-            </h4>
-            <ul className="text-white/70">
-              {trafficConditions.light.map((street, i) => (
-                <li key={`light-${i}`}>{street}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h4 className="mb-1 flex items-center">
-              <span className="h-2 w-2 rounded-full bg-yellow-400 mr-1"></span>
-              Moderate
-            </h4>
-            <ul className="text-white/70">
-              {trafficConditions.moderate.map((street, i) => (
-                <li key={`moderate-${i}`}>{street}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h4 className="mb-1 flex items-center">
-              <span className="h-2 w-2 rounded-full bg-red-500 mr-1"></span>
-              Heavy
-            </h4>
-            <ul className="text-white/70">
-              {trafficConditions.heavy.map((street, i) => (
-                <li key={`heavy-${i}`}>{street}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-      
-      {/* Nearby Stations */}
-      <div className="px-4 pt-4 pb-20">
-        <div className="flex justify-between items-center mb-4">
+      {/* Nearby Stations - more prominent in portrait view */}
+      <div className="px-4 pt-3 pb-20 flex-1">
+        <div className="flex justify-between items-center mb-3">
           <h2 className="text-xl font-bold">Fuel Stations nearby</h2>
           <button className="text-sm text-green-500">See all</button>
         </div>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
           {nearbyStations.map(station => (
             <StationCard key={station.id} {...station} />
           ))}
