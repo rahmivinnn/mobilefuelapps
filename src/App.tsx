@@ -10,6 +10,7 @@ import FuelSelection from "./pages/FuelSelection";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
 import TrackOrder from "./pages/TrackOrder";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Map from "./components/ui/Map";
 
@@ -29,6 +30,7 @@ const App = () => {
             <Route path="/station/:id/payment" element={<Payment />} />
             <Route path="/confirmation" element={<Confirmation />} />
             <Route path="/track" element={<TrackOrder />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/map" element={
               <div className="h-screen w-full">
                 <Map className="h-full w-full" />

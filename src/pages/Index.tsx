@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, Filter, MapPin } from 'lucide-react';
 import Header from '@/components/layout/Header';
@@ -7,7 +6,7 @@ import StationCard from '@/components/ui/StationCard';
 import Map from '@/components/ui/Map';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-// Mock data for nearby stations in Memphis, Tennessee
+// Updated mock data for nearby stations in Memphis, Tennessee
 const nearbyStations = [
   {
     id: '1',
@@ -35,6 +34,15 @@ const nearbyStations = [
     rating: 4.3,
     isOpen: false,
     imageUrl: 'https://images.unsplash.com/photo-1527018601619-a508a2be00cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+  },
+  {
+    id: '4',
+    name: 'BP Gas Station',
+    address: '890 Poplar Ave, Memphis, TN',
+    distance: '2.7 mi',
+    rating: 4.2,
+    isOpen: true,
+    imageUrl: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
   }
 ];
 
@@ -48,7 +56,7 @@ const Index: React.FC = () => {
         <img 
           src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
           alt="FuelFriendly Logo" 
-          className={`object-contain w-[30%] ${isMobile ? 'max-h-5' : 'max-h-6'}`}
+          className={`object-contain w-[30%] max-w-[120px] ${isMobile ? 'max-h-4' : 'max-h-5'}`}
         />
       </div>
       

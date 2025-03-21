@@ -5,28 +5,28 @@ import Header from '@/components/layout/Header';
 import FuelSelector from '@/components/ui/FuelSelector';
 import QuantityCounter from '@/components/ui/QuantityCounter';
 
-// Mock data for the fuel types
+// Updated mock data for US fuel types
 const fuelTypes = [
   {
-    id: 'pertamax',
-    name: 'Pertamax',
-    price: 13000,
+    id: 'regular',
+    name: 'Regular Unleaded',
+    price: 3.79,
     recommended: true,
   },
   {
-    id: 'pertamax-turbo',
-    name: 'Pertamax Turbo',
-    price: 15000,
+    id: 'plus',
+    name: 'Plus Unleaded',
+    price: 3.99,
   },
   {
-    id: 'pertalite',
-    name: 'Pertalite',
-    price: 10000,
+    id: 'premium',
+    name: 'Premium Unleaded',
+    price: 4.29,
   },
   {
-    id: 'dexlite',
-    name: 'Dexlite',
-    price: 14500,
+    id: 'diesel',
+    name: 'Diesel',
+    price: 4.09,
   }
 ];
 
@@ -35,7 +35,7 @@ const FuelSelection: React.FC = () => {
   const navigate = useNavigate();
   
   const [selectedFuel, setSelectedFuel] = useState(fuelTypes[0].id);
-  const [quantity, setQuantity] = useState(10);
+  const [quantity, setQuantity] = useState(5); // Default to 5 gallons
   
   const selectedFuelType = fuelTypes.find(fuel => fuel.id === selectedFuel);
   const totalPrice = selectedFuelType ? selectedFuelType.price * quantity : 0;
@@ -71,12 +71,13 @@ const FuelSelection: React.FC = () => {
           <h2 className="text-2xl font-bold mb-4">Set Amount</h2>
           
           <QuantityCounter
-            initialValue={10}
+            initialValue={5}
             min={1}
-            max={100}
+            max={50}
             step={1}
             onChange={setQuantity}
             pricePerUnit={selectedFuelType?.price || 0}
+            unit="gallon"
           />
         </div>
         

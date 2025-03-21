@@ -53,11 +53,17 @@ const Map: React.FC<MapProps> = ({ className, showRoute = false, showDeliveryInf
     setShowShareOptions(false);
   };
   
+  // Memphis, TN coordinates
+  const memphisCoordinates = {
+    lat: 35.1495,
+    lng: -90.0490
+  };
+  
   return (
     <div className={`relative w-full bg-muted/50 overflow-hidden rounded-xl ${className}`}>
       <div className="absolute inset-0 flex items-center justify-center">
         <img 
-          src="https://api.mapbox.com/styles/v1/mapbox/dark-v10/static/-90.050100,35.149500,11,0/1200x600?access_token=pk.eyJ1IjoibG92YWJsZWxsYyIsImEiOiJjbHEwd3RrcGkwaWpnMmtwNDR2Zzc1ZTY3In0.MlBl0yQcCQBTqN3mpV1LpA" 
+          src={`https://api.mapbox.com/styles/v1/mapbox/dark-v10/static/${memphisCoordinates.lng},${memphisCoordinates.lat},${zoom},0/1200x600?access_token=pk.eyJ1IjoibG92YWJsZWxsYyIsImEiOiJjbHEwd3RrcGkwaWpnMmtwNDR2Zzc1ZTY3In0.MlBl0yQcCQBTqN3mpV1LpA`} 
           alt="Memphis Map" 
           className="w-full h-full object-cover"
           style={{ 
@@ -78,7 +84,7 @@ const Map: React.FC<MapProps> = ({ className, showRoute = false, showDeliveryInf
           </div>
         </div>
         
-        {/* Destination marker (red pin) */}
+        {/* Destination marker (red pin) - Shell Gas Station */}
         <div className="absolute top-1/3 left-2/3 transform -translate-x-1/2 -translate-y-1/2">
           <div className="text-red-500 animate-bounce">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
@@ -90,25 +96,31 @@ const Map: React.FC<MapProps> = ({ className, showRoute = false, showDeliveryInf
           </div>
         </div>
         
-        {/* Additional gas station marker */}
+        {/* ExxonMobil Gas Station marker */}
         <div className="absolute top-2/3 right-1/4 transform -translate-x-1/2 -translate-y-1/2">
           <div className="text-yellow-500">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0c-4.198 0-8 3.403-8 7.602 0 4.198 3.469 9.21 8 16.398 4.531-7.188 8-12.2 8-16.398 0-4.199-3.801-7.602-8-7.602zm0 11c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3z" />
             </svg>
           </div>
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 whitespace-nowrap mt-1 bg-black/70 text-white text-xs py-1 px-2 rounded">
+            ExxonMobil
+          </div>
         </div>
         
-        {/* Another gas station marker */}
+        {/* Chevron Gas Station marker */}
         <div className="absolute bottom-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2">
           <div className="text-green-500">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0c-4.198 0-8 3.403-8 7.602 0 4.198 3.469 9.21 8 16.398 4.531-7.188 8-12.2 8-16.398 0-4.199-3.801-7.602-8-7.602zm0 11c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3z" />
             </svg>
           </div>
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 whitespace-nowrap mt-1 bg-black/70 text-white text-xs py-1 px-2 rounded">
+            Chevron
+          </div>
         </div>
         
-        {/* Route line */}
+        {/* Route line with direction markers */}
         {showRoute && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <svg width="100%" height="100%" className="absolute">
@@ -123,9 +135,19 @@ const Map: React.FC<MapProps> = ({ className, showRoute = false, showDeliveryInf
                 className="animate-dash"
               />
               {/* Direction arrows along the path */}
-              <circle cx="370" cy="210" r="4" fill="#4ade80" />
+              <circle cx="300" cy="200" r="4" fill="#4ade80" />
+              <polygon points="370,210 360,200 360,220" fill="#4ade80" />
+              <circle cx="480" cy="260" r="4" fill="#4ade80" />
               <polygon points="550,250 540,240 540,260" fill="#4ade80" />
             </svg>
+          </div>
+        )}
+        
+        {/* Distance and time estimates */}
+        {showRoute && (
+          <div className="absolute bottom-20 right-4 bg-black/80 text-white text-xs p-2 rounded">
+            <div className="font-bold">Estimated arrival: 12 min</div>
+            <div>Distance: 2.3 miles</div>
           </div>
         )}
       </div>
@@ -192,7 +214,7 @@ const Map: React.FC<MapProps> = ({ className, showRoute = false, showDeliveryInf
         </button>
       </div>
       
-      {/* Delivery info if needed */}
+      {/* Delivery info with updated American naming */}
       {showDeliveryInfo && (
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-background/90 backdrop-blur-sm rounded-t-xl">
           <div className="flex items-center mb-2">
@@ -255,11 +277,11 @@ const Map: React.FC<MapProps> = ({ className, showRoute = false, showDeliveryInf
           <div className="mt-4">
             <h4 className="text-sm font-medium mb-1">Order</h4>
             <div className="flex justify-between">
-              <span>2 Gallons Regular Unleaded</span>
-              <span className="font-semibold">$7.98</span>
+              <span>5 Gallons Regular Unleaded</span>
+              <span className="font-semibold">$18.95</span>
             </div>
             <div className="flex justify-between">
-              <span>2x Candy bars</span>
+              <span>2x Snickers bars</span>
               <span className="font-semibold">$3.50</span>
             </div>
           </div>

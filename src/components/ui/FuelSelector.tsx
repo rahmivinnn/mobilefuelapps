@@ -42,12 +42,8 @@ const FuelSelector: React.FC<FuelSelectorProps> = ({
               )}
             </div>
             <p className="text-2xl font-bold mt-1">
-              {fuel.price.toLocaleString('id-ID', { 
-                style: 'currency', 
-                currency: 'IDR',
-                minimumFractionDigits: 0 
-              })}
-              <span className="text-sm font-normal text-muted-foreground">/liter</span>
+              ${fuel.price.toFixed(2)}
+              <span className="text-sm font-normal text-muted-foreground">/gallon</span>
             </p>
           </div>
           
