@@ -49,6 +49,7 @@ const Index: React.FC = () => {
   const isMobile = useIsMobile();
   const [showTraffic, setShowTraffic] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [mapVisible, setMapVisible] = useState(false);
   
   // Simulate real-time updates
   useEffect(() => {
@@ -57,6 +58,15 @@ const Index: React.FC = () => {
     }, 60000); // Update every minute
     
     return () => clearInterval(timer);
+  }, []);
+  
+  // Animation effect for map loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMapVisible(true);
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, []);
   
   return (
@@ -75,7 +85,7 @@ const Index: React.FC = () => {
       <div className="flex justify-between items-center px-4 py-2">
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 overflow-hidden">
           <img 
-            src="/lovable-uploads/463bf610-05e1-4137-856e-46609ab49bbc.png" 
+            src="/lovable-uploads/bd7d3e2c-d8cc-4ae3-b3f6-e23f3527fa24.png" 
             alt="Profile" 
             className="w-full h-full object-cover"
           />
@@ -85,7 +95,7 @@ const Index: React.FC = () => {
           <img 
             src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
             alt="FuelFriendly Logo" 
-            className="h-8 object-contain"
+            className="h-6 object-contain"
           />
         </div>
         
@@ -115,24 +125,26 @@ const Index: React.FC = () => {
       
       {/* Map with real-time indicators - now smaller for portrait view */}
       <div className="px-4 py-2 relative">
-        <Map className="h-56 w-full rounded-lg" interactive showRoute={showTraffic} />
+        <div className={`transition-opacity duration-1000 ${mapVisible ? 'opacity-100' : 'opacity-0'}`}>
+          <Map className="h-56 w-full rounded-lg" interactive showRoute={showTraffic} />
+        </div>
         
         {/* Real-time indicators */}
-        <div className="absolute bottom-4 left-8 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs flex items-center space-x-2">
+        <div className="absolute bottom-4 left-8 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs flex items-center space-x-2 animate-fade-in">
           <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
           <span>Live traffic</span>
         </div>
         
         <div className="absolute top-6 right-6 flex flex-col space-y-1">
-          <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-full text-xs">
+          <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-full text-xs animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <div className="h-2 w-2 rounded-full bg-green-400"></div>
             <span>Light</span>
           </div>
-          <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-full text-xs">
+          <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-full text-xs animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="h-2 w-2 rounded-full bg-yellow-400"></div>
             <span>Moderate</span>
           </div>
-          <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-full text-xs">
+          <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-full text-xs animate-fade-in" style={{ animationDelay: '0.6s' }}>
             <div className="h-2 w-2 rounded-full bg-red-500"></div>
             <span>Heavy</span>
           </div>
@@ -141,14 +153,20 @@ const Index: React.FC = () => {
       
       {/* Nearby Stations - more prominent in portrait view */}
       <div className="px-4 pt-3 pb-20 flex-1">
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex justify-between items-center mb-3 animate-fade-in" style={{ animationDelay: '0.8s' }}>
           <h2 className="text-xl font-bold">Fuel Stations nearby</h2>
           <button className="text-sm text-green-500">See all</button>
         </div>
         
         <div className="space-y-3">
-          {nearbyStations.map(station => (
-            <StationCard key={station.id} {...station} />
+          {nearbyStations.map((station, index) => (
+            <div 
+              key={station.id} 
+              className="animate-fade-in" 
+              style={{ animationDelay: `${1 + (index * 0.2)}s` }}
+            >
+              <StationCard {...station} />
+            </div>
           ))}
         </div>
       </div>

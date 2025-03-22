@@ -30,14 +30,23 @@ const StationCard: React.FC<StationProps> = ({
       to={`/station/${id}`}
       className="block w-full transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
     >
-      <div className="bg-black/90 rounded-xl overflow-hidden animate-fade-in border border-gray-800">
+      <div className="bg-black/90 rounded-xl overflow-hidden border border-gray-800 hover:border-green-500/30 transition-colors">
         <div className="flex p-4">
-          <div className="w-24 h-24 rounded-lg overflow-hidden mr-4">
+          <div className="w-24 h-24 rounded-lg overflow-hidden mr-4 relative">
             <img 
               src={imageUrl} 
               alt={name} 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform hover:scale-110 duration-700"
             />
+            {isOpen ? (
+              <div className="absolute top-2 left-2 px-2 py-0.5 bg-green-500 text-black text-xs font-medium rounded-full">
+                Open
+              </div>
+            ) : (
+              <div className="absolute top-2 left-2 px-2 py-0.5 bg-red-500 text-white text-xs font-medium rounded-full">
+                Closed
+              </div>
+            )}
           </div>
           
           <div className="flex-1">
