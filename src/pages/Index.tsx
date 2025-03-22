@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -120,7 +121,7 @@ const Index: React.FC = () => {
           <input
             type="text"
             placeholder="Search for fuel and gr..."
-            className="h-12 w-full rounded-full bg-gray-800/80 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-900/80 light:bg-white/80 transition-all duration-300 hover:ring-1 hover:ring-green-500/30 focus:scale-[1.02] transform"
+            className="h-12 w-full rounded-full dark:bg-gray-900/80 light:bg-white/80 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 hover:ring-1 hover:ring-green-500/30 focus:scale-[1.02] transform"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -135,21 +136,21 @@ const Index: React.FC = () => {
           <Map className="h-56 w-full rounded-lg overflow-hidden" interactive showRoute={showTraffic} />
         </div>
         
-        <div className="absolute bottom-4 left-8 bg-black/70 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs flex items-center space-x-2 animate-fade-in hover:bg-green-500/20 transition-all duration-300 hover:pl-5 hover:pr-7">
+        <div className="absolute bottom-4 left-8 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs flex items-center space-x-2 animate-fade-in hover:bg-green-500/20 transition-all duration-300 hover:pl-5 hover:pr-7">
           <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
           <span className="dark:text-white light:text-green-800 whitespace-nowrap">Live traffic</span>
         </div>
         
         <div className="absolute top-6 right-6 flex flex-col space-y-1 z-10">
-          <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-green-400/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.2s' }}>
+          <div className="flex items-center space-x-1 px-2 py-1 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-green-400/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.2s' }}>
             <div className="h-2 w-2 rounded-full bg-green-400"></div>
             <span className="dark:text-white light:text-green-800">Light</span>
           </div>
-          <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-yellow-400/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.4s' }}>
+          <div className="flex items-center space-x-1 px-2 py-1 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-yellow-400/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.4s' }}>
             <div className="h-2 w-2 rounded-full bg-yellow-400"></div>
             <span className="dark:text-white light:text-green-800">Moderate</span>
           </div>
-          <div className="flex items-center space-x-1 px-2 py-1 bg-black/70 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-red-500/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.6s' }}>
+          <div className="flex items-center space-x-1 px-2 py-1 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-red-500/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.6s' }}>
             <div className="h-2 w-2 rounded-full bg-red-500"></div>
             <span className="dark:text-white light:text-green-800">Heavy</span>
           </div>

@@ -29,7 +29,7 @@ const FuelSelector: React.FC<FuelSelectorProps> = ({
           className={`relative p-4 rounded-xl glass flex items-center justify-between transition-all duration-300 cursor-pointer transform hover:scale-[1.01] active:scale-[0.99] ${
             selectedFuel === fuel.id 
               ? 'border-green-500 shadow-[0_0_0_1.5px_rgb(0,230,118)]' 
-              : 'border-white/10 hover:border-white/20 dark:border-white/5 dark:hover:border-white/10 light:border-green-200 light:hover:border-green-300'
+              : 'dark:border-white/10 dark:hover:border-white/20 light:border-green-200 light:hover:border-green-300'
           }`}
           style={{ animationDelay: `${index * 0.1}s` }}
         >
@@ -37,7 +37,7 @@ const FuelSelector: React.FC<FuelSelectorProps> = ({
             <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
               selectedFuel === fuel.id 
                 ? 'bg-green-500 text-black' 
-                : 'bg-gray-800/50 dark:bg-gray-800/50 light:bg-green-100'
+                : 'dark:bg-gray-800/50 light:bg-green-100'
             } transition-colors duration-300`}>
               <Droplets className={`h-5 w-5 ${
                 selectedFuel === fuel.id 
