@@ -28,15 +28,15 @@ const StationCard: React.FC<StationProps> = ({
   return (
     <Link 
       to={`/station/${id}`}
-      className="block w-full transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99]"
+      className="block w-full transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
     >
-      <div className="bg-black/90 rounded-xl overflow-hidden border border-gray-800 hover:border-green-500/30 transition-colors">
+      <div className="bg-black/90 dark:bg-black/70 rounded-xl overflow-hidden border border-gray-800 hover:border-green-500/50 transition-all duration-300 shadow-lg hover:shadow-green-500/5">
         <div className="flex p-4">
-          <div className="w-24 h-24 rounded-lg overflow-hidden mr-4 relative">
+          <div className="w-24 h-24 rounded-lg overflow-hidden mr-4 relative group">
             <img 
               src={imageUrl} 
               alt={name} 
-              className="w-full h-full object-cover transition-transform hover:scale-110 duration-700"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             {isOpen ? (
               <div className="absolute top-2 left-2 px-2 py-0.5 bg-green-500 text-black text-xs font-medium rounded-full">
@@ -52,24 +52,24 @@ const StationCard: React.FC<StationProps> = ({
           <div className="flex-1">
             <h3 className="font-medium text-lg text-white mb-1">{name}</h3>
             
-            <div className="flex items-center text-white/60 mb-2">
-              <Fuel className="h-4 w-4 mr-2 text-green-500" />
+            <div className="flex items-center text-white/60 mb-2 group">
+              <Fuel className="h-4 w-4 mr-2 text-green-500 group-hover:animate-pulse" />
               <span className="text-sm font-semibold text-white">${fuelPrice}</span>
             </div>
             
-            <div className="flex items-center text-white/60 mb-2">
+            <div className="flex items-center text-white/60 mb-2 hover:text-white/80 transition-colors">
               <MapPin className="h-4 w-4 mr-2 text-red-500" />
               <span className="text-sm">{distance} miles</span>
             </div>
             
-            <div className="flex items-center text-white/60">
+            <div className="flex items-center text-white/60 hover:text-white/80 transition-colors">
               <Star className="h-4 w-4 mr-2 text-yellow-400" />
               <span className="text-sm">{rating} (24 Reviews)</span>
             </div>
           </div>
         </div>
         
-        <button className="w-full py-3 bg-green-500 text-black font-medium hover:bg-green-600 transition-colors">
+        <button className="w-full py-3 bg-green-500 text-black font-medium hover:bg-green-600 transition-colors active:bg-green-700">
           Select Station
         </button>
       </div>

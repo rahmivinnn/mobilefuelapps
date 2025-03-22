@@ -47,15 +47,11 @@ const QuantityCounter: React.FC<QuantityCounterProps> = ({
   const totalPrice = quantity * pricePerUnit;
 
   return (
-    <div className="glass p-5 rounded-xl">
+    <div className="glass p-5 rounded-xl hover:border-green-500/50 transition-all duration-300">
       <div className="flex justify-between items-center mb-8">
-        <span className="text-sm text-muted-foreground">Amount (liters)</span>
+        <span className="text-sm text-muted-foreground">Amount (gallons)</span>
         <div className="text-sm text-muted-foreground font-mono">
-          {quantity} × {pricePerUnit.toLocaleString('id-ID', { 
-            style: 'currency', 
-            currency: 'IDR',
-            minimumFractionDigits: 0 
-          })}
+          {quantity} × ${pricePerUnit.toFixed(2)}
         </div>
       </div>
       
@@ -63,10 +59,10 @@ const QuantityCounter: React.FC<QuantityCounterProps> = ({
         <button
           onClick={handleDecrease}
           disabled={isDecreaseDisabled}
-          className={`h-12 w-12 rounded-full flex items-center justify-center transition-colors ${
+          className={`h-12 w-12 rounded-full flex items-center justify-center transition-all duration-200 ${
             isDecreaseDisabled 
               ? 'bg-muted text-muted-foreground' 
-              : 'bg-muted hover:bg-muted/80 text-foreground'
+              : 'bg-muted hover:bg-muted/80 text-foreground active:scale-95'
           }`}
         >
           <Minus className="h-5 w-5" />
@@ -84,10 +80,10 @@ const QuantityCounter: React.FC<QuantityCounterProps> = ({
         <button
           onClick={handleIncrease}
           disabled={isIncreaseDisabled}
-          className={`h-12 w-12 rounded-full flex items-center justify-center transition-colors ${
+          className={`h-12 w-12 rounded-full flex items-center justify-center transition-all duration-200 ${
             isIncreaseDisabled 
               ? 'bg-muted text-muted-foreground' 
-              : 'bg-muted hover:bg-muted/80 text-foreground'
+              : 'bg-muted hover:bg-muted/80 text-foreground active:scale-95'
           }`}
         >
           <Plus className="h-5 w-5" />
@@ -96,12 +92,8 @@ const QuantityCounter: React.FC<QuantityCounterProps> = ({
       
       <div className="mt-8 text-center">
         <div className="text-sm text-muted-foreground">Total</div>
-        <div className="text-2xl font-bold mt-1">
-          {totalPrice.toLocaleString('id-ID', { 
-            style: 'currency', 
-            currency: 'IDR',
-            minimumFractionDigits: 0
-          })}
+        <div className="text-2xl font-bold mt-1 animate-pulse-slow">
+          ${totalPrice.toFixed(2)}
         </div>
       </div>
     </div>

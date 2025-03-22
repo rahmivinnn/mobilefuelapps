@@ -5,6 +5,7 @@ import BottomNav from '@/components/layout/BottomNav';
 import StationCard from '@/components/ui/StationCard';
 import Map from '@/components/ui/Map';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 // Updated mock data for nearby stations in Memphis, Tennessee
 const nearbyStations = [
@@ -70,7 +71,7 @@ const Index: React.FC = () => {
   }, []);
   
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white">
+    <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Status bar mockup */}
       <div className="flex justify-between items-center p-2 text-xs">
         <div>{lastUpdated.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
@@ -85,7 +86,7 @@ const Index: React.FC = () => {
       <div className="flex justify-between items-center px-4 py-2">
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 overflow-hidden">
           <img 
-            src="/lovable-uploads/bd7d3e2c-d8cc-4ae3-b3f6-e23f3527fa24.png" 
+            src="/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png" 
             alt="Profile" 
             className="w-full h-full object-cover"
           />
@@ -95,17 +96,20 @@ const Index: React.FC = () => {
           <img 
             src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
             alt="FuelFriendly Logo" 
-            className="h-6 object-contain"
+            className="h-5 object-contain"
           />
         </div>
         
-        <button className="w-10 h-10 flex items-center justify-center">
-          <Bell className="h-6 w-6" />
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button className="w-10 h-10 flex items-center justify-center hover:bg-white/5 rounded-full transition-colors">
+            <Bell className="h-6 w-6" />
+          </button>
+        </div>
       </div>
       
       {/* Search bar */}
-      <div className="px-4 py-2 flex items-center space-x-3">
+      <div className="px-4 py-2 flex items-center space-x-3 animate-fade-in">
         <div className="relative flex-1">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
             <Search className="h-4 w-4 text-gray-500" />
@@ -113,20 +117,20 @@ const Index: React.FC = () => {
           <input
             type="text"
             placeholder="Search for fuel and gr..."
-            className="h-12 w-full rounded-full bg-gray-800/80 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+            className="h-12 w-full rounded-full bg-gray-800/80 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 dark:bg-gray-900/80 transition-colors"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <button className="h-12 w-12 flex items-center justify-center rounded-full bg-green-500/20">
+        <button className="h-12 w-12 flex items-center justify-center rounded-full bg-green-500/20 hover:bg-green-500/30 transition-colors active:scale-95">
           <Filter className="h-5 w-5 text-green-500" />
         </button>
       </div>
       
       {/* Map with real-time indicators - now smaller for portrait view */}
-      <div className="px-4 py-2 relative">
+      <div className="px-4 py-2 relative animate-fade-in" style={{ animationDelay: "0.2s" }}>
         <div className={`transition-opacity duration-1000 ${mapVisible ? 'opacity-100' : 'opacity-0'}`}>
-          <Map className="h-56 w-full rounded-lg" interactive showRoute={showTraffic} />
+          <Map className="h-56 w-full rounded-lg overflow-hidden shadow-xl" interactive showRoute={showTraffic} />
         </div>
         
         {/* Real-time indicators */}
@@ -152,10 +156,10 @@ const Index: React.FC = () => {
       </div>
       
       {/* Nearby Stations - more prominent in portrait view */}
-      <div className="px-4 pt-3 pb-20 flex-1">
-        <div className="flex justify-between items-center mb-3 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+      <div className="px-4 pt-3 pb-20 flex-1 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+        <div className="flex justify-between items-center mb-3">
           <h2 className="text-xl font-bold">Fuel Stations nearby</h2>
-          <button className="text-sm text-green-500">See all</button>
+          <button className="text-sm text-green-500 hover:text-green-400 transition-colors">See all</button>
         </div>
         
         <div className="space-y-3">

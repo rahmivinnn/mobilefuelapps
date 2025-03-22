@@ -26,10 +26,10 @@ const FuelSelector: React.FC<FuelSelectorProps> = ({
         <div 
           key={fuel.id}
           onClick={() => onSelectFuel(fuel.id)}
-          className={`relative p-4 rounded-xl glass flex items-center justify-between transition-all duration-200 cursor-pointer ${
+          className={`relative p-4 rounded-xl glass flex items-center justify-between transition-all duration-300 cursor-pointer transform hover:scale-[1.01] active:scale-[0.99] ${
             selectedFuel === fuel.id 
               ? 'border-green-500 shadow-[0_0_0_1.5px_rgb(0,230,118)]' 
-              : 'border-white/10 hover:border-white/20'
+              : 'border-white/10 hover:border-white/20 dark:border-white/5 dark:hover:border-white/10'
           }`}
         >
           <div>

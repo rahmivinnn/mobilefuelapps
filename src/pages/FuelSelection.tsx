@@ -55,18 +55,20 @@ const FuelSelection: React.FC = () => {
       <Header showBack title="Select Fuel" />
       
       <main className="page-container">
-        <div className="mb-6">
+        <div className="mb-6 animate-fade-in">
           <div className="mb-1 text-sm text-muted-foreground">Step 1 of 3</div>
           <h2 className="text-2xl font-bold">Choose Fuel Type</h2>
         </div>
         
-        <FuelSelector
-          fuelTypes={fuelTypes}
-          selectedFuel={selectedFuel}
-          onSelectFuel={setSelectedFuel}
-        />
+        <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+          <FuelSelector
+            fuelTypes={fuelTypes}
+            selectedFuel={selectedFuel}
+            onSelectFuel={setSelectedFuel}
+          />
+        </div>
         
-        <div className="my-6">
+        <div className="my-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
           <div className="mb-1 text-sm text-muted-foreground">Step 2 of 3</div>
           <h2 className="text-2xl font-bold mb-4">Set Amount</h2>
           
@@ -80,10 +82,10 @@ const FuelSelection: React.FC = () => {
           />
         </div>
         
-        <div className="mt-8">
+        <div className="mt-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
           <button 
             onClick={handleContinue}
-            className="w-full py-4 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.99] transition-all duration-200"
+            className="w-full py-4 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.98] transition-all duration-200"
           >
             Continue to Payment
           </button>

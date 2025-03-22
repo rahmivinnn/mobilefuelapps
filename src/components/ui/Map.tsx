@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -116,9 +115,6 @@ const Map: React.FC<MapProps> = ({
     setShowShareOptions(false);
   };
   
-  // Generate dynamic map URL
-  const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/${userLocation.lng},${userLocation.lat},${zoom},0/1200x600@2x?access_token=pk.eyJ1IjoibG92YWJsZWxsYyIsImEiOiJjbHEwd3RrcGkwaWpnMmtwNDR2Zzc1ZTY3In0.MlBl0yQcCQBTqN3mpV1LpA`;
-  
   return (
     <div className={`relative w-full bg-muted/10 overflow-hidden rounded-xl ${className}`}>
       {isLoading ? (
@@ -129,7 +125,7 @@ const Map: React.FC<MapProps> = ({
         <>
           <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
             <img 
-              src={mapUrl} 
+              src="/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png" 
               alt="Memphis Map" 
               className="w-full h-full object-cover"
             />
@@ -156,7 +152,7 @@ const Map: React.FC<MapProps> = ({
                 <Link
                   key={station.id}
                   to={`/station/${station.id}`}
-                  className="absolute z-20"
+                  className="absolute z-20 hover:scale-110 transition-transform duration-300"
                   style={{ top, left }}
                 >
                   <div className="relative">
@@ -202,13 +198,13 @@ const Map: React.FC<MapProps> = ({
           <div className="absolute bottom-20 left-4 flex flex-col space-y-2">
             <button 
               onClick={handleZoomIn}
-              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg"
+              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
             >
               <Plus className="h-5 w-5" />
             </button>
             <button 
               onClick={handleZoomOut}
-              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg"
+              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
             >
               <Minus className="h-5 w-5" />
             </button>
@@ -217,46 +213,46 @@ const Map: React.FC<MapProps> = ({
           {/* Navigation and Share buttons */}
           <div className="absolute bottom-4 right-4 flex space-x-2">
             {showRoute && (
-              <button className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg">
+              <button className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all">
                 <Navigation className="h-5 w-5" />
               </button>
             )}
             <button 
               onClick={handleShare}
-              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg relative"
+              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg relative hover:bg-gray-100 active:scale-95 transition-all"
             >
               <Share2 className="h-5 w-5" />
               
               {/* Share options popup */}
               {showShareOptions && (
-                <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-lg p-3 animate-fade-in">
+                <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-lg p-3 animate-fade-in dark:bg-gray-800">
                   <div className="flex space-x-3">
                     <button 
                       onClick={() => shareToSocial('facebook')}
-                      className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center"
+                      className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center hover:bg-blue-600 active:scale-95 transition-all"
                     >
                       <Facebook className="h-5 w-5" />
                     </button>
                     <button 
                       onClick={() => shareToSocial('twitter')}
-                      className="h-10 w-10 rounded-full bg-blue-400 text-white flex items-center justify-center"
+                      className="h-10 w-10 rounded-full bg-blue-400 text-white flex items-center justify-center hover:bg-blue-500 active:scale-95 transition-all"
                     >
                       <Twitter className="h-5 w-5" />
                     </button>
                     <button 
                       onClick={() => shareToSocial('instagram')}
-                      className="h-10 w-10 rounded-full bg-pink-500 text-white flex items-center justify-center"
+                      className="h-10 w-10 rounded-full bg-pink-500 text-white flex items-center justify-center hover:bg-pink-600 active:scale-95 transition-all"
                     >
                       <Instagram className="h-5 w-5" />
                     </button>
                     <button 
                       onClick={() => shareToSocial('email')}
-                      className="h-10 w-10 rounded-full bg-gray-500 text-white flex items-center justify-center"
+                      className="h-10 w-10 rounded-full bg-gray-500 text-white flex items-center justify-center hover:bg-gray-600 active:scale-95 transition-all"
                     >
                       <Mail className="h-5 w-5" />
                     </button>
                   </div>
-                  <div className="w-2 h-2 bg-white absolute bottom-0 right-4 transform translate-y-1 rotate-45"></div>
+                  <div className="w-2 h-2 bg-white absolute bottom-0 right-4 transform translate-y-1 rotate-45 dark:bg-gray-800"></div>
                 </div>
               )}
             </button>
@@ -264,7 +260,7 @@ const Map: React.FC<MapProps> = ({
           
           {interactive && (
             <button 
-              className="absolute right-4 top-4 h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg"
+              className="absolute right-4 top-4 h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
               onClick={() => setUserLocation({ lat: 35.1495, lng: -90.0490 })}
             >
               <Locate className="h-5 w-5" />
@@ -351,3 +347,4 @@ const Map: React.FC<MapProps> = ({
 };
 
 export default Map;
+
