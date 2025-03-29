@@ -41,21 +41,31 @@ const TrackOrder: React.FC = () => {
     const orderId = params.get('orderId');
     
     if (orderId) {
-      // Find the order in orderHistory
-      const foundOrder = orderHistory.find(o => o.id === orderId);
-      if (foundOrder) {
-        // Map the order data to match our required format
-        setOrder(prev => ({
-          ...prev,
-          id: foundOrder.id,
-          status: foundOrder.status || 'processing',
-          items: foundOrder.items || prev.items,
-          total: parseFloat(foundOrder.totalPrice) || prev.total,
-          driver: foundOrder.driver || prev.driver
-        }));
+      try {
+        // Find the order in orderHistory
+        const foundOrder = orderHistory.find(o => o.id === orderId);
+        if (foundOrder) {
+          // Map the order data to match our required format
+          setOrder(prevOrder => ({
+            ...prevOrder,
+            id: foundOrder.id,
+            status: foundOrder.status || 'processing',
+            items: foundOrder.items || prevOrder.items,
+            total: parseFloat(foundOrder.totalPrice) || prevOrder.total,
+            driver: foundOrder.driver || prevOrder.driver
+          }));
+        }
+        
+        console.log(`Fetching order details for ${orderId}`, foundOrder);
+      } catch (error) {
+        console.error("Error processing order data:", error);
+        // Toast to inform user
+        toast({
+          title: "Error",
+          description: "Could not load order details",
+          duration: 3000,
+        });
       }
-      
-      console.log(`Fetching order details for ${orderId}`, foundOrder);
     }
     
     // Status update every 5 seconds
@@ -72,12 +82,16 @@ const TrackOrder: React.FC = () => {
     
     const statusTimer = setInterval(() => {
       if (currentStep < statuses.length) {
-        setOrder(prev => ({
-          ...prev,
-          status: statuses[currentStep].status,
-          progress: statuses[currentStep].progress,
-          statusDetails: statuses[currentStep].statusDetails
-        }));
+        setOrder(prevOrder => {
+          if (!prevOrder) return prevOrder; // Safeguard against undefined order
+          
+          return {
+            ...prevOrder,
+            status: statuses[currentStep].status,
+            progress: statuses[currentStep].progress,
+            statusDetails: statuses[currentStep].statusDetails
+          };
+        });
         
         // Show toast notification for status changes
         toast({
@@ -105,6 +119,8 @@ const TrackOrder: React.FC = () => {
 
   // Helper function to determine status color
   const getStatusColor = (status) => {
+    if (!status) return 'bg-gray-500'; // Default fallback
+    
     switch(status) {
       case 'processing': return 'bg-yellow-500';
       case 'in-transit': return 'bg-green-500';
@@ -115,6 +131,8 @@ const TrackOrder: React.FC = () => {
 
   // Helper function to get status name
   const getStatusName = (status) => {
+    if (!status) return 'Unknown'; // Default fallback
+    
     switch(status) {
       case 'processing': return 'Processing';
       case 'in-transit': return 'In Transit';
@@ -122,6 +140,15 @@ const TrackOrder: React.FC = () => {
       default: return 'Unknown';
     }
   };
+
+  // Guard against undefined order
+  if (!order) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p>Loading order details...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -247,7 +274,7 @@ const TrackOrder: React.FC = () => {
         {/* Order items */}
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-3">Order</h3>
-          {order.items.map((item, i) => (
+          {order.items && order.items.map((item, i) => (
             <div key={i} className="flex justify-between mb-2">
               <p className="text-gray-300">{item.name}</p>
               <p className="font-medium">${item.price.toFixed(2)}</p>
