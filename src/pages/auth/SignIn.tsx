@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
-import { Facebook } from 'lucide-react';
 
 interface SignInProps {
   onLogin: (token: string) => void;
@@ -40,107 +39,89 @@ const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
       navigate('/');
     }, 1500);
   };
-  
-  const handleFacebookLogin = () => {
-    setIsLoading(true);
-    
-    // Simulate Facebook API call
-    setTimeout(() => {
-      const token = "facebook-auth-token-" + Math.random();
-      onLogin(token);
-      setIsLoading(false);
-      navigate('/');
-    }, 1500);
-  };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Top green wave */}
+      <div className="absolute top-0 left-0 w-full h-[25%] bg-green-500" style={{
+        borderBottomLeftRadius: '50%',
+        borderBottomRightRadius: '50%',
+      }} />
+
+      {/* Bottom green wave with hexagons */}
+      <div className="absolute bottom-0 left-0 w-full h-[25%] bg-green-500 overflow-hidden" style={{
+        borderTopLeftRadius: '50%',
+        borderTopRightRadius: '50%',
+      }}>
+        <div className="absolute bottom-0 right-0 w-[60%] h-[70%] opacity-80">
+          <img 
+            src="/lovable-uploads/ca994f82-30e0-40dc-9ec4-689ac65e3db6.png" 
+            alt="Hexagon Pattern" 
+            className="w-full h-full object-contain"
+          />
+        </div>
+      </div>
+
+      {/* Content */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md px-6 z-10"
       >
-        <div className="text-center mb-8">
-          <motion.img 
-            src="/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png"
-            alt="FuelFriendly Logo" 
-            className="w-24 h-24 mx-auto mb-4"
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.5 }}
-          />
+        {/* Logo and title */}
+        <div className="flex flex-col items-center mb-12">
+          <div className="w-24 h-24 rounded-full border-2 border-green-500 flex items-center justify-center mb-4">
+            <img 
+              src="/lovable-uploads/19fdfff8-09d0-4398-bcb2-6f4830ab5e38.png" 
+              alt="FuelFriendly Logo" 
+              className="w-16 h-16"
+            />
+          </div>
           <h1 
-            className="text-3xl font-bold mb-2 text-green-500" 
+            className="text-2xl font-bold text-green-500" 
             style={{ fontFamily: 'Impact, Haettenschweiler, Arial Narrow Bold, sans-serif', letterSpacing: '1px', fontStyle: 'italic' }}
           >
             FUELFRIENDLY
           </h1>
-          <p className="text-muted-foreground">Sign in to your account</p>
         </div>
 
-        <div className="bg-card p-6 rounded-xl border border-border">
-          <form onSubmit={handleSignIn} className="space-y-4">
-            <div>
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-12"
-                required
-              />
-            </div>
-            <div>
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-12"
-                required
-              />
-            </div>
-            <Button 
-              type="submit" 
-              className="w-full h-12 text-base font-semibold bg-green-500 hover:bg-green-600"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
-
-          <div className="mt-4 text-center">
-            <Link to="/forgot-password" className="text-green-500 hover:underline text-sm">
-              Forgot password?
-            </Link>
-          </div>
-
-          <div className="flex items-center my-6">
-            <div className="flex-1 h-px bg-border"></div>
-            <span className="px-4 text-sm text-muted-foreground">OR</span>
-            <div className="flex-1 h-px bg-border"></div>
-          </div>
-
+        {/* Buttons */}
+        <div className="space-y-4">
           <Button 
-            type="button" 
+            onClick={() => navigate('/sign-in')}
+            className="w-full h-12 text-base font-semibold bg-green-500 hover:bg-green-600 rounded-full"
+          >
+            Log in
+          </Button>
+          
+          <Button 
             variant="outline" 
-            className="w-full h-12 text-base font-medium border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-            onClick={handleFacebookLogin}
+            onClick={() => navigate('/sign-up')}
+            className="w-full h-12 text-base font-medium border-2 border-green-500 text-green-500 hover:bg-green-500/10 rounded-full"
+          >
+            Sign up
+          </Button>
+          
+          <div className="text-center text-white my-4">Or</div>
+          
+          <Button 
+            variant="outline" 
+            className="w-full h-12 text-base font-medium border-2 border-green-500 text-green-500 hover:bg-green-500/10 rounded-full"
+            onClick={() => {
+              setIsLoading(true);
+              setTimeout(() => {
+                const token = "google-auth-token-" + Math.random();
+                onLogin(token);
+                setIsLoading(false);
+                navigate('/');
+              }, 1500);
+            }}
             disabled={isLoading}
           >
-            <Facebook className="mr-2 h-5 w-5" />
-            Continue with Facebook
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 mr-2" />
+            Continue with Google
           </Button>
-        </div>
-
-        <div className="text-center mt-6">
-          <p className="text-muted-foreground text-sm">
-            Don't have an account?{' '}
-            <Link to="/sign-up" className="text-green-500 hover:underline font-medium">
-              Sign up
-            </Link>
-          </p>
         </div>
       </motion.div>
     </div>
