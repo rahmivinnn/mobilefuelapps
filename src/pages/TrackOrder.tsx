@@ -5,7 +5,7 @@ import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, M
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { orderHistory } from '@/data/dummyData';
 
 // Memphis-specific data
@@ -262,7 +262,7 @@ const TrackOrder: React.FC = () => {
     navigate('/chat');
   };
 
-  // Helper function to determine status color
+  // Helper function to determine status color with default value for safety
   const getStatusColor = (status: string | undefined) => {
     if (!status) return 'bg-gray-500'; // Default fallback
     
@@ -274,7 +274,7 @@ const TrackOrder: React.FC = () => {
     }
   };
 
-  // Helper function to get status name
+  // Helper function to get status name with default value for safety
   const getStatusName = (status: string | undefined) => {
     if (!status) return 'Unknown'; // Default fallback
     
@@ -286,7 +286,7 @@ const TrackOrder: React.FC = () => {
     }
   };
 
-  // Safely access properties with fallbacks
+  // Safely access properties with fallbacks to avoid undefined errors
   const status = order?.status || 'processing';
   const progress = order?.progress || 0;
   const statusDetails = order?.statusDetails || 'Processing your order';
@@ -297,6 +297,7 @@ const TrackOrder: React.FC = () => {
   const estimatedDelivery = order?.estimatedDelivery || 'Soon';
   const orderItems = order?.items || [];
   const orderTotal = order?.total || 0;
+  const orderId = order?.id || 'ORD-XXXX';
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -317,7 +318,7 @@ const TrackOrder: React.FC = () => {
             <div className={`w-3 h-3 rounded-full ${getStatusColor(status)} mr-2`}></div>
             <span className="font-medium">{getStatusName(status)}</span>
           </div>
-          <span className="text-sm text-gray-400">{order?.id}</span>
+          <span className="text-sm text-gray-400">{orderId}</span>
         </div>
         
         {/* Progress bar */}
