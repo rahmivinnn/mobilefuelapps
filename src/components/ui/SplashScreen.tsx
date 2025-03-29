@@ -36,7 +36,7 @@ const Logo = () => {
         </motion.div>
       </motion.div>
       
-      {/* Single FUELFRIENDLY text with increased size */}
+      {/* Single FUELFRIENDLY text - this is the only instance */}
       <motion.div 
         className="text-white"
         initial={{ opacity: 0, y: 20 }}
