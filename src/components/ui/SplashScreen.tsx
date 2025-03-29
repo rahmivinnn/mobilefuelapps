@@ -36,18 +36,19 @@ const Logo = () => {
         </motion.div>
       </motion.div>
       
-      {/* Much smaller FUELFRIENDLY text */}
+      {/* Increased FUELFRIENDLY text size */}
       <motion.div 
         className="text-white"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.5, type: "spring" }}
       >
-        <img 
-          src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
-          alt="FUELFRIENDLY" 
-          className="h-1.5" /* Further reduced height */
-        />
+        <h1 
+          className="text-xl font-bold text-white tracking-wider" 
+          style={{ fontFamily: 'Impact, Haettenschweiler, Arial Narrow Bold, sans-serif', letterSpacing: '2px', fontStyle: 'italic' }}
+        >
+          FUELFRIENDLY
+        </h1>
       </motion.div>
     </motion.div>
   );
@@ -57,7 +58,7 @@ const Logo = () => {
 const TopHexagonGrid = () => {
   return (
     <motion.div
-      className="absolute top-0 left-0 w-full h-1/5" /* Reduced from h-2/5 to h-1/5 */
+      className="absolute top-0 left-0 w-full h-1/5" 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
@@ -65,7 +66,7 @@ const TopHexagonGrid = () => {
       <img 
         src="/lovable-uploads/b9b9af0d-f75b-4949-89ca-178f3f449be9.png" 
         alt="Hexagon Pattern" 
-        className="w-full h-full object-cover opacity-60" /* Less transparent (changed from 0.3 to 0.6) */
+        className="w-full h-full object-cover opacity-60" 
       />
     </motion.div>
   );
@@ -74,7 +75,7 @@ const TopHexagonGrid = () => {
 const BottomHexagonGrid = () => {
   return (
     <motion.div
-      className="absolute bottom-0 left-0 w-full h-1/5" /* Reduced from h-2/5 to h-1/5 */
+      className="absolute bottom-0 left-0 w-full h-1/5" 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
@@ -82,7 +83,7 @@ const BottomHexagonGrid = () => {
       <img 
         src="/lovable-uploads/0c368b73-df56-4e77-94c3-14691cdc22b7.png" 
         alt="Hexagon Pattern" 
-        className="w-full h-full object-cover opacity-60" /* Less transparent (changed from 0.3 to 0.6) */
+        className="w-full h-full object-cover opacity-60" 
       />
     </motion.div>
   );
