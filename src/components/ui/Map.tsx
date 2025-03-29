@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
-import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface MapProps {
@@ -8,14 +8,17 @@ interface MapProps {
   showRoute?: boolean;
   showDeliveryInfo?: boolean;
   interactive?: boolean;
+  showBackButton?: boolean;
 }
 
 const Map: React.FC<MapProps> = ({ 
   className, 
   showRoute = false, 
   showDeliveryInfo = false,
-  interactive = false
+  interactive = false,
+  showBackButton = true
 }) => {
+  const navigate = useNavigate();
   const [zoom, setZoom] = useState(14);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +26,10 @@ const Map: React.FC<MapProps> = ({
   const [trafficIntensity, setTrafficIntensity] = useState("moderate");
   const [showDirections, setShowDirections] = useState(false);
   const [selectedStation, setSelectedStation] = useState(null);
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
   
   // Gas station data for Memphis
   const gasStations = [
@@ -324,6 +331,16 @@ const Map: React.FC<MapProps> = ({
               )}
             </button>
           </div>
+          
+          {/* Back button */}
+          {showBackButton && (
+            <button 
+              className="absolute top-4 left-4 h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all z-30"
+              onClick={handleGoBack}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+          )}
           
           {interactive && (
             <button 
