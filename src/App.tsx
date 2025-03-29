@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import StationDetails from "./pages/StationDetails";
@@ -29,28 +29,9 @@ const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   const [splashVisible, setSplashVisible] = React.useState(true);
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   
   const handleSplashFinish = () => {
     setSplashVisible(false);
-  };
-
-  React.useEffect(() => {
-    // Check if user is authenticated
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const login = (token: string) => {
-    localStorage.setItem('authToken', token);
-    setIsAuthenticated(true);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('authToken');
-    setIsAuthenticated(false);
   };
 
   return (
@@ -64,55 +45,30 @@ const App: React.FC = () => {
           ) : (
             <BrowserRouter>
               <Routes>
-                {/* Auth Routes */}
-                <Route path="/sign-in" element={
-                  isAuthenticated ? <Navigate to="/" /> : <SignIn onLogin={login} />
+                {/* Direct access routes - no auth required */}
+                <Route path="/" element={<Index />} />
+                <Route path="/station/:id" element={<StationDetails />} />
+                <Route path="/station/:id/fuel" element={<FuelSelection />} />
+                <Route path="/station/:id/payment" element={<Payment />} />
+                <Route path="/confirmation" element={<Confirmation />} />
+                <Route path="/track" element={<TrackOrder />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/orders" element={<OrderHistory />} />
+                <Route path="/map" element={
+                  <div className="h-screen w-full">
+                    <Map className="h-full w-full" />
+                  </div>
                 } />
-                <Route path="/sign-up" element={
-                  isAuthenticated ? <Navigate to="/" /> : <SignUp onLogin={login} />
-                } />
+                <Route path="/call" element={<CallScreen />} />
+                <Route path="/chat" element={<ChatScreen />} />
+                
+                {/* Auth pages - still available but not required */}
+                <Route path="/sign-in" element={<SignIn onLogin={() => {}} />} />
+                <Route path="/sign-up" element={<SignUp onLogin={() => {}} />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/verify-otp" element={<VerifyOtp />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
-
-                {/* Protected Routes */}
-                <Route path="/" element={
-                  isAuthenticated ? <Index /> : <Navigate to="/sign-in" />
-                } />
-                <Route path="/station/:id" element={
-                  isAuthenticated ? <StationDetails /> : <Navigate to="/sign-in" />
-                } />
-                <Route path="/station/:id/fuel" element={
-                  isAuthenticated ? <FuelSelection /> : <Navigate to="/sign-in" />
-                } />
-                <Route path="/station/:id/payment" element={
-                  isAuthenticated ? <Payment /> : <Navigate to="/sign-in" />
-                } />
-                <Route path="/confirmation" element={
-                  isAuthenticated ? <Confirmation /> : <Navigate to="/sign-in" />
-                } />
-                <Route path="/track" element={
-                  isAuthenticated ? <TrackOrder /> : <Navigate to="/sign-in" />
-                } />
-                <Route path="/settings" element={
-                  isAuthenticated ? <Settings onLogout={logout} /> : <Navigate to="/sign-in" />
-                } />
-                <Route path="/orders" element={
-                  isAuthenticated ? <OrderHistory /> : <Navigate to="/sign-in" />
-                } />
-                <Route path="/map" element={
-                  isAuthenticated ? (
-                    <div className="h-screen w-full">
-                      <Map className="h-full w-full" />
-                    </div>
-                  ) : <Navigate to="/sign-in" />
-                } />
-                <Route path="/call" element={
-                  isAuthenticated ? <CallScreen /> : <Navigate to="/sign-in" />
-                } />
-                <Route path="/chat" element={
-                  isAuthenticated ? <ChatScreen /> : <Navigate to="/sign-in" />
-                } />
+                
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
