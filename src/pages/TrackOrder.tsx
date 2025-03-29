@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
@@ -110,10 +111,9 @@ const TrackOrder: React.FC = () => {
           
           setDriverLocation(initialDriverLocation);
           
-          // Safely update the order with found data
-          setOrder(prevOrder => ({
+          // Safely update the order with found data - making sure we have all required properties
+          setOrder({
             ...defaultOrder, // Always include default values as fallback
-            ...prevOrder,
             id: foundOrder.id || defaultOrder.id,
             status: foundOrder.status || defaultOrder.status,
             estimatedDelivery: randomDeliveryTime,
@@ -122,8 +122,10 @@ const TrackOrder: React.FC = () => {
             licensePlate: randomLicensePlate,
             driver: randomDeliveryPerson,
             avatarIndex: randomAvatarIndex,
-            driverLocation: initialDriverLocation
-          }));
+            driverLocation: initialDriverLocation,
+            progress: defaultOrder.progress,
+            statusDetails: defaultOrder.statusDetails
+          });
         }
         
         console.log(`Fetching order details for ${orderId}`, foundOrder);
@@ -226,7 +228,7 @@ const TrackOrder: React.FC = () => {
       
       setOrder(prevOrder => {
         // Ensure prevOrder is never undefined by using defaultOrder as fallback
-        const safeOrder = prevOrder || defaultOrder;
+        const safeOrder = { ...defaultOrder, ...prevOrder };
         
         return {
           ...safeOrder,
@@ -280,10 +282,14 @@ const TrackOrder: React.FC = () => {
       setDriverLocation(newDriverLocation);
       
       // Also update the order object with the new location
-      setOrder(prev => ({
-        ...prev,
-        driverLocation: newDriverLocation
-      }));
+      setOrder(prev => {
+        // Ensure prev is not undefined
+        const safeOrder = prev || defaultOrder;
+        return {
+          ...safeOrder,
+          driverLocation: newDriverLocation
+        };
+      });
     }, 3000);
     
     return () => clearInterval(movementInterval);
@@ -307,10 +313,14 @@ const TrackOrder: React.FC = () => {
   }, [orderComplete, toast]);
 
   const handleCall = () => {
+    // Make sure to safely access driverName with fallback
+    const driverName = order?.driver?.name || 'Driver';
     navigate(`/call?driverName=${encodeURIComponent(driverName)}`);
   };
 
   const handleMessage = () => {
+    // Make sure to safely access driverName with fallback
+    const driverName = order?.driver?.name || 'Driver';
     navigate(`/chat?driverName=${encodeURIComponent(driverName)}`);
   };
 
