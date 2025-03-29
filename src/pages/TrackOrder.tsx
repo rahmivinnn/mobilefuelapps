@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings } from 'lucide-react';
+import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, UserCircle2 } from 'lucide-react';
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -13,11 +13,26 @@ const memphisLicensePlates = [
   "TN-56A782", "TN-23B471", "TN-78C912", "TN-34D654", "TN-91E349"
 ];
 
+// Driver vector avatars
+const driverAvatars = [
+  <UserCircle2 className="h-14 w-14 text-green-500 bg-black rounded-full p-0.5" />,
+  <svg className="h-14 w-14 text-green-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 5C13.66 5 15 6.34 15 8C15 9.66 13.66 11 12 11C10.34 11 9 9.66 9 8C9 6.34 10.34 5 12 5ZM12 19.2C9.5 19.2 7.29 17.92 6 15.98C6.03 13.99 10 12.9 12 12.9C13.99 12.9 17.97 13.99 18 15.98C16.71 17.92 14.5 19.2 12 19.2Z" fill="currentColor"/>
+  </svg>,
+  <svg className="h-14 w-14 text-green-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
+  </svg>,
+  <svg className="h-14 w-14 text-green-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C9.38 2 7.25 4.13 7.25 6.75C7.25 9.32 9.26 11.4 11.88 11.49C11.96 11.48 12.04 11.48 12.1 11.49C12.12 11.49 12.13 11.49 12.15 11.49C12.16 11.49 12.16 11.49 12.17 11.49C14.73 11.4 16.74 9.32 16.75 6.75C16.75 4.13 14.62 2 12 2Z" fill="currentColor"/>
+    <path d="M17.0809 14.1489C14.2909 12.2889 9.74094 12.2889 6.93094 14.1489C5.66094 14.9989 4.96094 16.1489 4.96094 17.3789C4.96094 18.6089 5.66094 19.7489 6.92094 20.5889C8.32094 21.5289 10.1609 21.9989 12.0009 21.9989C13.8409 21.9989 15.6809 21.5289 17.0809 20.5889C18.3409 19.7389 19.0409 18.5989 19.0409 17.3589C19.0309 16.1289 18.3409 14.9889 17.0809 14.1489Z" fill="currentColor"/>
+  </svg>
+];
+
 const deliveryPeople = [
-  { name: "Cristopert Dastin", location: "Memphis, TN", image: "/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png", rating: 4.8, phone: "+1 (901) 555-3478" },
-  { name: "Sarah Johnson", location: "Memphis, TN", image: "/lovable-uploads/c3b29f6b-a689-4ac3-a338-4194cbee5e0c.png", rating: 4.7, phone: "+1 (901) 555-9872" },
-  { name: "Michael Davis", location: "Memphis, TN", image: "/lovable-uploads/8a188651-80ec-4a90-8d5c-de0df713b6c7.png", rating: 4.9, phone: "+1 (901) 555-2341" },
-  { name: "Emily Wilson", location: "Memphis, TN", image: "/lovable-uploads/1bc06a60-0463-4f47-abde-502bc408852e.png", rating: 4.6, phone: "+1 (901) 555-7653" }
+  { name: "Cristopert Dastin", location: "Memphis, TN", phone: "+1 (901) 555-3478", rating: 4.8 },
+  { name: "Sarah Johnson", location: "Memphis, TN", phone: "+1 (901) 555-9872", rating: 4.7 },
+  { name: "Michael Davis", location: "Memphis, TN", phone: "+1 (901) 555-2341", rating: 4.9 },
+  { name: "Emily Wilson", location: "Memphis, TN", phone: "+1 (901) 555-7653", rating: 4.6 }
 ];
 
 const deliveryTimes = [
@@ -37,7 +52,8 @@ const defaultOrder = {
   licensePlate: memphisLicensePlates[0],
   driver: deliveryPeople[0],
   progress: 0,
-  statusDetails: 'Order received'
+  statusDetails: 'Order received',
+  avatarIndex: 0
 };
 
 // Sample driver messages
@@ -56,8 +72,24 @@ const TrackOrder: React.FC = () => {
   const { toast } = useToast();
   
   // Initialize with defaultOrder to avoid undefined issues
-  const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
+  const [order, setOrder] = useState<typeof defaultOrder>({...defaultOrder, avatarIndex: Math.floor(Math.random() * driverAvatars.length)});
   const [orderComplete, setOrderComplete] = useState(false);
+  const [driverLocation, setDriverLocation] = useState({ lat: 35.1175, lng: -89.9711 }); // Initial Memphis coordinates
+
+  // Update driver location randomly to simulate movement
+  useEffect(() => {
+    if (orderComplete) return;
+
+    const moveDriver = setInterval(() => {
+      // Generate small random movements
+      setDriverLocation(prev => ({
+        lat: prev.lat + (Math.random() * 0.002 - 0.001),
+        lng: prev.lng + (Math.random() * 0.002 - 0.001)
+      }));
+    }, 2000);
+
+    return () => clearInterval(moveDriver);
+  }, [orderComplete]);
 
   // Status progression logic
   useEffect(() => {
@@ -80,6 +112,9 @@ const TrackOrder: React.FC = () => {
           // Choose random delivery time
           const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
           
+          // Choose random avatar
+          const randomAvatarIndex = Math.floor(Math.random() * driverAvatars.length);
+          
           // Safely update the order with found data
           setOrder(prevOrder => ({
             ...defaultOrder, // Always include default values as fallback
@@ -90,7 +125,8 @@ const TrackOrder: React.FC = () => {
             items: foundOrder.items || defaultOrder.items,
             total: parseFloat(foundOrder.totalPrice) || defaultOrder.total,
             licensePlate: randomLicensePlate,
-            driver: randomDeliveryPerson
+            driver: randomDeliveryPerson,
+            avatarIndex: randomAvatarIndex
           }));
         }
         
@@ -170,6 +206,9 @@ const TrackOrder: React.FC = () => {
 
     // Update driver much more frequently (every 5-10 seconds)
     const driverUpdateTimer = setInterval(() => {
+      // Only continue if the order is not complete
+      if (orderComplete) return;
+      
       // Choose random Memphis license plate
       const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
       
@@ -192,6 +231,9 @@ const TrackOrder: React.FC = () => {
       // Choose random delivery time
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
       
+      // Choose random avatar
+      const randomAvatarIndex = Math.floor(Math.random() * driverAvatars.length);
+      
       setOrder(prevOrder => {
         // Ensure prevOrder is never undefined by using defaultOrder as fallback
         const safeOrder = prevOrder || defaultOrder;
@@ -200,7 +242,8 @@ const TrackOrder: React.FC = () => {
           ...safeOrder,
           estimatedDelivery: randomDeliveryTime,
           licensePlate: randomLicensePlate,
-          driver: randomDeliveryPerson
+          driver: randomDeliveryPerson,
+          avatarIndex: randomAvatarIndex
         };
       });
       
@@ -225,7 +268,7 @@ const TrackOrder: React.FC = () => {
           title: `Message from ${driverName}`,
           description: randomMessage,
           duration: 3000,
-          className: "bg-blue-500 border-blue-600 text-white"
+          className: "bg-green-500 border-green-600 text-white"
         });
       }
     }, Math.floor(Math.random() * 15000) + 15000); // Random time between 15-30 seconds
@@ -235,7 +278,7 @@ const TrackOrder: React.FC = () => {
       clearInterval(driverUpdateTimer);
       clearInterval(messageTimer);
     };
-  }, [location.search, toast, navigate, orderComplete]);
+  }, [location.search, toast, navigate, orderComplete, order?.driver?.name]);
 
   // Effect to watch for order completion and show additional notifications
   useEffect(() => {
@@ -267,9 +310,9 @@ const TrackOrder: React.FC = () => {
     if (!status) return 'bg-gray-500'; // Default fallback
     
     switch(status) {
-      case 'processing': return 'bg-yellow-500';
+      case 'processing': return 'bg-green-500';
       case 'in-transit': return 'bg-green-500';
-      case 'delivered': return 'bg-blue-500';
+      case 'delivered': return 'bg-green-500';
       default: return 'bg-gray-500';
     }
   };
@@ -291,13 +334,17 @@ const TrackOrder: React.FC = () => {
   const progress = order?.progress || 0;
   const statusDetails = order?.statusDetails || 'Processing your order';
   const driverName = order?.driver?.name || 'Driver';
-  const driverLocation = order?.driver?.location || 'Memphis, TN';
-  const driverImage = order?.driver?.image || '/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png';
+  const driverLocation1 = order?.driver?.location || 'Memphis, TN';
+  const driverPhone = order?.driver?.phone || '+1 (555) 555-5555';
   const licensePlate = order?.licensePlate || 'TN-XXXXX';
   const estimatedDelivery = order?.estimatedDelivery || 'Soon';
   const orderItems = order?.items || [];
   const orderTotal = order?.total || 0;
   const orderId = order?.id || 'ORD-XXXX';
+  const avatarIndex = order?.avatarIndex || 0;
+
+  // Get the driver avatar based on the current index
+  const driverAvatar = driverAvatars[avatarIndex] || driverAvatars[0];
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -337,7 +384,9 @@ const TrackOrder: React.FC = () => {
       <div className="h-[300px] mb-3">
         <Map 
           showRoute 
-          showDeliveryInfo 
+          showDeliveryInfo
+          driverLocation={driverLocation}
+          animate={true}
         />
       </div>
       
@@ -347,14 +396,12 @@ const TrackOrder: React.FC = () => {
         
         {/* Driver info */}
         <div className="flex items-center mb-6">
-          <img 
-            src={driverImage} 
-            alt={driverName} 
-            className="h-14 w-14 rounded-full object-cover mr-3"
-          />
+          <div className="mr-3">
+            {driverAvatar}
+          </div>
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{driverName}</h3>
-            <p className="text-gray-400">{driverLocation}</p>
+            <p className="text-gray-400">{driverLocation1}</p>
             <p className="text-gray-400 text-xs mt-1">Vehicle License: {licensePlate}</p>
           </div>
           <div className="flex space-x-2">
