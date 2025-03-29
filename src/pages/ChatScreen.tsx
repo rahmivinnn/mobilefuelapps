@@ -22,8 +22,13 @@ const ChatScreen = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const name = params.get('customerName');
+    const id = params.get('customerId');
+    
     if (name) {
       setCustomerName(name);
+    } else if (id) {
+      // If we only have an ID but no name, we can set a default or fetch the name based on ID
+      setCustomerName('John Doe'); // This could be replaced with actual fetching logic
     }
   }, [location]);
 
