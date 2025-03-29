@@ -59,10 +59,21 @@ const Index = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setLastUpdated(new Date());
+      // Show random traffic updates every minute
+      const roads = [...trafficConditions.light, ...trafficConditions.moderate, ...trafficConditions.heavy];
+      const randomRoad = roads[Math.floor(Math.random() * roads.length)];
+      const conditions = ["light", "moderate", "heavy"];
+      const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
+      
+      toast({
+        title: "Real-time Traffic Update",
+        description: `${randomCondition.charAt(0).toUpperCase() + randomCondition.slice(1)} traffic detected on ${randomRoad}.`,
+        duration: 5000,
+      });
     }, 60000);
     
     return () => clearInterval(timer);
-  }, []);
+  }, [toast]);
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -85,6 +96,14 @@ const Index = () => {
     navigate('/map');
   };
   
+  const handleNotificationClick = () => {
+    toast({
+      title: "Notifications",
+      description: "Viewing all notifications",
+      duration: 3000,
+    });
+  };
+  
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300 max-w-[420px] mx-auto">
       <div className="flex justify-between items-center px-4 py-2">
@@ -103,13 +122,16 @@ const Index = () => {
           <img 
             src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
             alt="FUELFRIENDLY" 
-            className="h-2.25 animate-fade-in" // Reduced by half from h-4.5 to h-2.25
+            className="h-1.75 animate-fade-in" // Reduced further from h-2.25 to h-1.75
           />
         </div>
         
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <button className="w-10 h-10 flex items-center justify-center hover:bg-white/5 rounded-full transition-all duration-300 relative overflow-hidden group">
+          <button 
+            className="w-10 h-10 flex items-center justify-center hover:bg-white/5 rounded-full transition-all duration-300 relative overflow-hidden group cursor-pointer"
+            onClick={handleNotificationClick}
+          >
             <Bell className="h-6 w-6 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 group-active:scale-90" />
             <span className="absolute top-2 right-2.5 h-2 w-2 bg-green-500 rounded-full animate-ping opacity-75"></span>
             <span className="absolute top-2 right-2.5 h-2 w-2 bg-green-500 rounded-full"></span>
@@ -137,7 +159,11 @@ const Index = () => {
       
       <div className="px-4 py-2 relative animate-fade-in" style={{ animationDelay: "0.2s" }}>
         <div className={`transition-all duration-1000 rounded-xl overflow-hidden transform ${mapVisible ? 'opacity-100 shadow-xl shadow-green-500/10 scale-100' : 'opacity-0 scale-95'}`}>
-          <Map className="h-56 w-full rounded-lg overflow-hidden" interactive showRoute={showTraffic} />
+          <Map 
+            className="h-56 w-full rounded-lg overflow-hidden" 
+            interactive={true} 
+            showRoute={showTraffic} 
+          />
         </div>
         
         <div className="absolute bottom-4 left-8 dark:bg-black/70 bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs flex items-center space-x-2 animate-fade-in hover:bg-green-500/20 transition-all duration-300 hover:pl-5 hover:pr-7">
@@ -158,6 +184,15 @@ const Index = () => {
             <div className="h-2 w-2 rounded-full bg-red-500"></div>
             <span className="dark:text-white text-green-800">Heavy</span>
           </div>
+        </div>
+        
+        <div className="absolute bottom-4 right-4 flex flex-col space-y-2">
+          <button className="h-8 w-8 rounded-full bg-white/80 text-black flex items-center justify-center shadow-lg hover:bg-white active:scale-95 transition-all">
+            <span className="text-lg font-bold">+</span>
+          </button>
+          <button className="h-8 w-8 rounded-full bg-white/80 text-black flex items-center justify-center shadow-lg hover:bg-white active:scale-95 transition-all">
+            <span className="text-lg font-bold">-</span>
+          </button>
         </div>
       </div>
       

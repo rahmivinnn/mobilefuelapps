@@ -36,7 +36,7 @@ const Logo = () => {
         </motion.div>
       </motion.div>
       
-      {/* FUELFRIENDLY text - reduced to half size (from h-3.375 to h-1.6875) */}
+      {/* FUELFRIENDLY text - reduced to 1/4 size (from h-3.375 to h-0.84375) */}
       <motion.div 
         className="text-white"
         initial={{ opacity: 0, y: 20 }}
@@ -46,7 +46,7 @@ const Logo = () => {
         <img 
           src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
           alt="FUELFRIENDLY" 
-          className="h-1.6875" // Reduced from h-3.375 to h-1.6875 (half of previous size)
+          className="h-0.84375" // Reduced from h-1.6875 to h-0.84375 (half of previous size)
         />
       </motion.div>
     </motion.div>

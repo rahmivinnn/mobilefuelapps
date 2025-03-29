@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone } from 'lucide-react';
+import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface MapProps {
@@ -19,6 +20,9 @@ const Map: React.FC<MapProps> = ({
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userLocation, setUserLocation] = useState({ lat: 35.1495, lng: -90.0490 }); // Memphis coordinates
+  const [trafficIntensity, setTrafficIntensity] = useState("moderate");
+  const [showDirections, setShowDirections] = useState(false);
+  const [selectedStation, setSelectedStation] = useState(null);
   
   // Gas station data for Memphis
   const gasStations = [
@@ -72,7 +76,17 @@ const Map: React.FC<MapProps> = ({
       );
     }
     
-    return () => clearTimeout(timer);
+    // Simulate traffic changes
+    const trafficTimer = setInterval(() => {
+      const intensities = ["light", "moderate", "heavy"];
+      const randomIntensity = intensities[Math.floor(Math.random() * intensities.length)];
+      setTrafficIntensity(randomIntensity);
+    }, 30000);
+    
+    return () => {
+      clearTimeout(timer);
+      clearInterval(trafficTimer);
+    };
   }, [interactive]);
   
   const handleZoomIn = () => {
@@ -85,6 +99,11 @@ const Map: React.FC<MapProps> = ({
   
   const handleShare = () => {
     setShowShareOptions(!showShareOptions);
+  };
+  
+  const handleShowDirections = (stationId) => {
+    setSelectedStation(stationId);
+    setShowDirections(true);
   };
   
   const shareToSocial = (platform: string) => {
@@ -115,8 +134,22 @@ const Map: React.FC<MapProps> = ({
     setShowShareOptions(false);
   };
   
+  // Get traffic color based on intensity
+  const getTrafficColor = () => {
+    switch(trafficIntensity) {
+      case "light":
+        return "#4ade80"; // green
+      case "moderate":
+        return "#facc15"; // yellow
+      case "heavy":
+        return "#ef4444"; // red
+      default:
+        return "#4ade80";
+    }
+  };
+  
   return (
-    <div className={`relative w-full bg-muted/10 overflow-hidden rounded-xl ${className}`}>
+    <div className={`relative w-full bg-muted/10 overflow-hidden rounded-xl ${className}`} style={{ transform: `scale(${zoom/14})`, transformOrigin: 'center' }}>
       {isLoading ? (
         <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
           <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
@@ -149,35 +182,45 @@ const Map: React.FC<MapProps> = ({
               const left = `${50 + lngDiff * scale}%`;
               
               return (
-                <Link
+                <div
                   key={station.id}
-                  to={`/station/${station.id}`}
                   className="absolute z-20 hover:scale-110 transition-transform duration-300"
                   style={{ top, left }}
                 >
                   <div className="relative">
                     <div className="h-10 w-10 flex items-center justify-center">
                       <div className="bg-white rounded-full p-1 shadow-lg">
-                        <div className="bg-red-500 h-6 w-6 rounded-full flex items-center justify-center">
-                          <MapPin className="h-4 w-4 text-white" />
-                        </div>
+                        <Link to={`/station/${station.id}`}>
+                          <div className="bg-red-500 h-6 w-6 rounded-full flex items-center justify-center">
+                            <MapPin className="h-4 w-4 text-white" />
+                          </div>
+                        </Link>
                       </div>
                     </div>
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 whitespace-nowrap mt-1 bg-black/70 text-white text-xs py-1 px-2 rounded">
-                      {station.name}
+                      {station.name} - ${station.price}
                     </div>
+                    
+                    {interactive && (
+                      <button 
+                        onClick={() => handleShowDirections(station.id)}
+                        className="absolute -top-1 -right-1 bg-green-500 rounded-full h-5 w-5 flex items-center justify-center shadow-lg"
+                      >
+                        <Navigation className="h-3 w-3 text-white" />
+                      </button>
+                    )}
                   </div>
-                </Link>
+                </div>
               );
             })}
             
             {/* Route path if enabled */}
-            {showRoute && (
+            {(showRoute || showDirections) && (
               <div className="absolute inset-0 pointer-events-none">
                 <svg width="100%" height="100%" className="absolute">
                   <path
                     d="M600,300 C550,320 480,340 420,330 C360,320 320,280 250,300"
-                    stroke="#4ade80"
+                    stroke={getTrafficColor()}
                     strokeWidth="6"
                     fill="none"
                     strokeLinecap="round"
@@ -185,11 +228,32 @@ const Map: React.FC<MapProps> = ({
                     className="animate-dash"
                   />
                   {/* Direction arrows along the path */}
-                  <circle cx="550" cy="315" r="4" fill="#4ade80" />
-                  <polygon points="480,335 490,325 470,325" fill="#4ade80" />
-                  <circle cx="360" cy="320" r="4" fill="#4ade80" />
-                  <polygon points="250,300 260,290 260,310" fill="#4ade80" />
+                  <circle cx="550" cy="315" r="4" fill={getTrafficColor()} />
+                  <polygon points="480,335 490,325 470,325" fill={getTrafficColor()} />
+                  <circle cx="360" cy="320" r="4" fill={getTrafficColor()} />
+                  <polygon points="250,300 260,290 260,310" fill={getTrafficColor()} />
                 </svg>
+                
+                {/* Direction instructions */}
+                {showDirections && (
+                  <div className="absolute bottom-4 left-4 right-4 bg-black/80 text-white text-sm p-3 rounded-lg animate-fade-in">
+                    <div className="flex items-center mb-2">
+                      <Navigation className="h-4 w-4 mr-2 text-green-500" />
+                      <span>Head south on Main St for 0.5 miles</span>
+                    </div>
+                    <div className="flex items-center mb-2">
+                      <ArrowDownRight className="h-4 w-4 mr-2 text-green-500" />
+                      <span>Turn right onto Popular Ave for 0.3 miles</span>
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-red-500" />
+                      <span>Arrive at destination on right</span>
+                    </div>
+                    <div className="mt-2 text-xs">
+                      ETA: 8 min (0.8 miles)
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -213,7 +277,10 @@ const Map: React.FC<MapProps> = ({
           {/* Navigation and Share buttons */}
           <div className="absolute bottom-4 right-4 flex space-x-2">
             {showRoute && (
-              <button className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all">
+              <button 
+                onClick={() => setShowDirections(!showDirections)}
+                className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
+              >
                 <Navigation className="h-5 w-5" />
               </button>
             )}
@@ -265,6 +332,13 @@ const Map: React.FC<MapProps> = ({
             >
               <Locate className="h-5 w-5" />
             </button>
+          )}
+          
+          {/* Traffic incident indicator */}
+          {trafficIntensity === "heavy" && (
+            <div className="absolute top-16 right-4 bg-red-500 text-white text-xs p-2 rounded-lg animate-pulse shadow-lg flex items-center">
+              <span className="mr-1">⚠️</span> Heavy traffic on I-240
+            </div>
           )}
           
           {/* Delivery info */}
@@ -347,4 +421,3 @@ const Map: React.FC<MapProps> = ({
 };
 
 export default Map;
-
