@@ -4,6 +4,10 @@ import { User, CreditCard, Bell, Shield, Wallet, Clock, ChevronRight, LogOut } f
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 
+interface SettingsProps {
+  onLogout?: () => void;
+}
+
 const paymentHistory = [
   {
     id: '1',
@@ -28,7 +32,13 @@ const paymentHistory = [
   }
 ];
 
-const Settings: React.FC = () => {
+const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+  };
+
   return (
     <>
       <Header showBack title="Account & Settings" />
@@ -124,7 +134,10 @@ const Settings: React.FC = () => {
         </div>
         
         {/* Logout button */}
-        <button className="w-full py-3 rounded-xl border border-red-500/30 text-red-500 flex items-center justify-center hover:bg-red-500/10 transition-colors">
+        <button 
+          className="w-full py-3 rounded-xl border border-red-500/30 text-red-500 flex items-center justify-center hover:bg-red-500/10 transition-colors"
+          onClick={handleLogout}
+        >
           <LogOut className="h-5 w-5 mr-2" />
           Sign Out
         </button>
