@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings } from 'lucide-react';
@@ -24,32 +23,29 @@ const deliveryTimes = [
   "7:15 - 7:45 PM", "8:30 - 9:15 PM", "6:45 - 7:30 PM", "9:00 - 9:45 PM", "7:30 - 8:15 PM"
 ];
 
+// Default order data to ensure we always have valid initial state
+const defaultOrder = {
+  id: 'ORD-1234',
+  status: 'processing',
+  estimatedDelivery: '8:30 - 9:15 PM',
+  items: [
+    { name: '2 Gallons Regular Unleaded', quantity: '1x', price: 7.34 },
+    { name: 'Chocolate cookies', quantity: '2x', price: 3.50 }
+  ],
+  total: 10.84,
+  licensePlate: memphisLicensePlates[0],
+  driver: deliveryPeople[0],
+  progress: 0,
+  statusDetails: 'Order received'
+};
+
 const TrackOrder: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Default order state with all required properties
-  const [order, setOrder] = useState({
-    id: 'ORD-1234',
-    status: 'processing',
-    estimatedDelivery: '8:30 - 9:15 PM',
-    items: [
-      { name: '2 Gallons Regular Unleaded', quantity: '1x', price: 7.34 },
-      { name: 'Chocolate cookies', quantity: '2x', price: 3.50 }
-    ],
-    total: 10.84,
-    licensePlate: memphisLicensePlates[0],
-    driver: {
-      name: 'Cristopert Dastin',
-      location: 'Memphis, TN',
-      image: '/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png',
-      rating: 4.8,
-      phone: '+1 (901) 555-3478'
-    },
-    progress: 0,
-    statusDetails: 'Order received'
-  });
+  // Initialize with defaultOrder to avoid undefined issues
+  const [order, setOrder] = useState(defaultOrder);
 
   // Status progression logic
   useEffect(() => {
@@ -61,6 +57,7 @@ const TrackOrder: React.FC = () => {
       try {
         // Find the order in orderHistory
         const foundOrder = orderHistory.find(o => o.id === orderId);
+        
         if (foundOrder) {
           // Choose random Memphis license plate
           const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
@@ -71,21 +68,17 @@ const TrackOrder: React.FC = () => {
           // Choose random delivery time
           const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
           
-          // Map the order data to match our required format
-          setOrder(prevOrder => {
-            if (!prevOrder) return prevOrder; // Safety check
-            
-            return {
-              ...prevOrder,
-              id: foundOrder.id,
-              status: foundOrder.status || 'processing',
-              estimatedDelivery: randomDeliveryTime,
-              items: foundOrder.items || prevOrder.items,
-              total: parseFloat(foundOrder.totalPrice) || prevOrder.total,
-              licensePlate: randomLicensePlate,
-              driver: randomDeliveryPerson
-            };
-          });
+          // Safely update the order with found data
+          setOrder(prevOrder => ({
+            ...prevOrder,
+            id: foundOrder.id,
+            status: foundOrder.status || prevOrder.status,
+            estimatedDelivery: randomDeliveryTime,
+            items: foundOrder.items || prevOrder.items,
+            total: parseFloat(foundOrder.totalPrice) || prevOrder.total,
+            licensePlate: randomLicensePlate,
+            driver: randomDeliveryPerson
+          }));
         }
         
         console.log(`Fetching order details for ${orderId}`, foundOrder);
@@ -117,16 +110,12 @@ const TrackOrder: React.FC = () => {
     // Update status every 5 seconds
     const statusTimer = setInterval(() => {
       if (currentStep < statuses.length) {
-        setOrder(prevOrder => {
-          if (!prevOrder) return prevOrder; // Safeguard against undefined order
-          
-          return {
-            ...prevOrder,
-            status: statuses[currentStep].status,
-            progress: statuses[currentStep].progress,
-            statusDetails: statuses[currentStep].statusDetails
-          };
-        });
+        setOrder(prevOrder => ({
+          ...prevOrder,
+          status: statuses[currentStep].status,
+          progress: statuses[currentStep].progress,
+          statusDetails: statuses[currentStep].statusDetails
+        }));
         
         // Show toast notification for status changes
         toast({
@@ -153,16 +142,12 @@ const TrackOrder: React.FC = () => {
       // Choose random delivery time
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
       
-      setOrder(prevOrder => {
-        if (!prevOrder) return prevOrder; // Safety check
-        
-        return {
-          ...prevOrder,
-          estimatedDelivery: randomDeliveryTime,
-          licensePlate: randomLicensePlate,
-          driver: randomDeliveryPerson
-        };
-      });
+      setOrder(prevOrder => ({
+        ...prevOrder,
+        estimatedDelivery: randomDeliveryTime,
+        licensePlate: randomLicensePlate,
+        driver: randomDeliveryPerson
+      }));
       
       toast({
         title: "Driver Update",
@@ -210,15 +195,7 @@ const TrackOrder: React.FC = () => {
     }
   };
 
-  // Guard against undefined order
-  if (!order) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p>Loading order details...</p>
-      </div>
-    );
-  }
-
+  // The render section remains unchanged
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
