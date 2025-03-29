@@ -9,6 +9,11 @@ interface MapProps {
   showDeliveryInfo?: boolean;
   interactive?: boolean;
   showBackButton?: boolean;
+  driverInfo?: {
+    name: string;
+    image: string;
+    location: string;
+  };
 }
 
 const Map: React.FC<MapProps> = ({ 
@@ -16,7 +21,8 @@ const Map: React.FC<MapProps> = ({
   showRoute = false, 
   showDeliveryInfo = false,
   interactive = false,
-  showBackButton = true
+  showBackButton = true,
+  driverInfo
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,6 +38,10 @@ const Map: React.FC<MapProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   
+  // Driver location animation
+  const [driverPosition, setDriverPosition] = useState({ x: 200, y: 400 });
+  const [routeProgress, setRouteProgress] = useState(0);
+  
   // Hide back button on home page
   const isHomePage = location.pathname === '/';
 
@@ -39,36 +49,62 @@ const Map: React.FC<MapProps> = ({
     navigate(-1);
   };
   
-  // Gas station data for Memphis
-  const gasStations = [
-    { 
-      id: '1', 
-      name: 'Shell', 
-      position: { lat: 35.1477, lng: -90.0518 }, 
-      price: 3.67, 
-      distance: '0.8' 
-    },
-    { 
-      id: '2', 
-      name: 'ExxonMobil', 
-      position: { lat: 35.1513, lng: -90.0425 }, 
-      price: 3.72, 
-      distance: '1.5' 
-    },
-    { 
-      id: '3', 
-      name: 'Chevron', 
-      position: { lat: 35.1448, lng: -90.0561 }, 
-      price: 3.65, 
-      distance: '2.3' 
-    },
-    { 
-      id: '4', 
-      name: 'BP', 
-      position: { lat: 35.1532, lng: -90.0389 }, 
-      price: 3.69, 
-      distance: '2.7' 
-    },
+  // Memphis neighborhoods and landmarks for more realistic updates
+  const memphisLocations = [
+    "Downtown Memphis", "Midtown", "Cooper-Young", "Overton Square", 
+    "Beale Street", "Harbor Town", "South Bluffs", "Mud Island",
+    "South Main Arts District", "Victorian Village", "The Pinch District",
+    "Memphis Medical District", "FedExForum area", "Crosstown Concourse",
+    "East Memphis", "University District", "Orange Mound", "Binghampton",
+    "Shelby Farms Park", "Germantown Parkway"
+  ];
+  
+  // Memphis roads for traffic updates
+  const memphisRoads = [
+    "Poplar Avenue", "Union Avenue", "Sam Cooper Boulevard", "I-240", 
+    "I-40", "Madison Avenue", "E Parkway", "Walnut Grove Road", 
+    "Summer Avenue", "Airways Boulevard", "Third Street", "Winchester Road",
+    "Germantown Parkway", "Shelby Drive", "Riverside Drive", "Front Street",
+    "McLean Boulevard", "Lamar Avenue", "Belvedere Boulevard", "Mississippi Boulevard"
+  ];
+  
+  // Traffic conditions and events
+  const trafficConditions = [
+    "slow moving traffic", "accident causing delays", "road work ahead",
+    "congestion building up", "vehicle breakdown", "police activity",
+    "event traffic", "debris on road", "flooding reported"
+  ];
+  
+  // Delivery update messages
+  const deliveryMessages = [
+    "Driver is picking up your order now",
+    "Driver has your order and is heading your way",
+    "Driver is navigating through traffic",
+    "Driver is taking the fastest route to your location",
+    "Driver will arrive at your location soon",
+    "Your driver is making good time",
+    "Driver is about 10 minutes away",
+    "Driver is about 5 minutes away",
+    "Driver is approaching your location",
+    "Driver has arrived at the pickup location",
+    "Your fuel is being loaded now",
+    "Your order is on its way",
+    "Driver is passing through {location} area",
+    "Driver is on {road} heading towards you",
+    "Driver is taking a slight detour to avoid traffic on {road}",
+    "Driver is about to turn onto your street"
+  ];
+  
+  // Route coordinates (simplified for visualization)
+  const routePoints = [
+    { x: 200, y: 400 },
+    { x: 250, y: 350 },
+    { x: 300, y: 320 },
+    { x: 350, y: 300 },
+    { x: 400, y: 320 },
+    { x: 450, y: 350 },
+    { x: 500, y: 300 },
+    { x: 500, y: 250 }
   ];
   
   // Simulate loading the map
@@ -91,28 +127,14 @@ const Map: React.FC<MapProps> = ({
       );
     }
     
-    // Simulate traffic changes - reduced to 15 seconds
+    // Simulate traffic changes
     const trafficTimer = setInterval(() => {
       const intensities = ["light", "moderate", "heavy"];
       const randomIntensity = intensities[Math.floor(Math.random() * intensities.length)];
       setTrafficIntensity(randomIntensity);
       
       // Generate random traffic update
-      if (typeof window !== 'undefined') {
-        const memphisRoads = [
-          "Poplar Avenue", "Union Avenue", "Sam Cooper Boulevard", "I-240", 
-          "I-40", "Madison Avenue", "E Parkway", "Walnut Grove Road", 
-          "Summer Avenue", "Airways Boulevard", "Third Street", "Winchester Road",
-          "Germantown Parkway", "Shelby Drive", "Riverside Drive", "Front Street",
-          "McLean Boulevard", "Lamar Avenue", "Belvedere Boulevard", "Mississippi Boulevard"
-        ];
-        
-        const trafficConditions = [
-          "slow moving traffic", "accident causing delays", "road work ahead",
-          "congestion building up", "vehicle breakdown", "police activity",
-          "event traffic", "debris on road", "flooding reported"
-        ];
-        
+      if (typeof window !== 'undefined' && showRoute) {
         const randomRoad = memphisRoads[Math.floor(Math.random() * memphisRoads.length)];
         const randomCondition = trafficConditions[Math.floor(Math.random() * trafficConditions.length)];
         
@@ -127,17 +149,105 @@ const Map: React.FC<MapProps> = ({
         setTimeout(() => {
           trafficUpdate.classList.add('animate-fade-out');
           setTimeout(() => {
-            document.body.removeChild(trafficUpdate);
+            if (document.body.contains(trafficUpdate)) {
+              document.body.removeChild(trafficUpdate);
+            }
           }, 300);
         }, 5000);
       }
-    }, 15000);
+    }, 20000); // Traffic updates every 20 seconds
+    
+    // Driver movement animation
+    let currentPointIndex = 0;
+    
+    const moveDriver = () => {
+      if (showRoute) {
+        if (currentPointIndex < routePoints.length - 1) {
+          const startPoint = routePoints[currentPointIndex];
+          const endPoint = routePoints[currentPointIndex + 1];
+          
+          // Calculate progress along current segment (0 to 1)
+          const segmentProgress = routeProgress - currentPointIndex;
+          
+          // Interpolate position
+          const newX = startPoint.x + (endPoint.x - startPoint.x) * segmentProgress;
+          const newY = startPoint.y + (endPoint.y - startPoint.y) * segmentProgress;
+          
+          setDriverPosition({ x: newX, y: newY });
+          
+          // Update overall route progress
+          setRouteProgress(prevProgress => {
+            const newProgress = prevProgress + 0.01;
+            
+            // If reached next point, increment current point index
+            if (newProgress >= currentPointIndex + 1) {
+              currentPointIndex = Math.floor(newProgress);
+            }
+            
+            // Reset when complete
+            if (newProgress >= routePoints.length - 1) {
+              return 0;
+            }
+            
+            return newProgress;
+          });
+        } else {
+          // Reset animation when complete
+          currentPointIndex = 0;
+          setRouteProgress(0);
+        }
+      }
+    };
+    
+    // Driver movement update interval
+    const driverTimer = setInterval(moveDriver, 100);
+    
+    // Driver status updates
+    const driverUpdateTimer = setInterval(() => {
+      if (showRoute) {
+        // Random message for driver update
+        let message = deliveryMessages[Math.floor(Math.random() * deliveryMessages.length)];
+        
+        // Replace placeholders with actual Memphis locations/roads
+        if (message.includes("{location}")) {
+          const randomLocation = memphisLocations[Math.floor(Math.random() * memphisLocations.length)];
+          message = message.replace("{location}", randomLocation);
+        }
+        
+        if (message.includes("{road}")) {
+          const randomRoad = memphisRoads[Math.floor(Math.random() * memphisRoads.length)];
+          message = message.replace("{road}", randomRoad);
+        }
+        
+        // Create driver update notification
+        const driverUpdate = document.createElement('div');
+        driverUpdate.className = 'fixed bottom-32 left-1/2 transform -translate-x-1/2 bg-green-500 text-black px-4 py-2 rounded-full text-sm z-50 animate-fade-in';
+        
+        // Use driver name if available
+        const driverName = driverInfo?.name || "Your driver";
+        driverUpdate.innerHTML = `<span class="font-bold">${driverName}:</span> ${message}`;
+        
+        document.body.appendChild(driverUpdate);
+        
+        // Remove after 4 seconds
+        setTimeout(() => {
+          driverUpdate.classList.add('animate-fade-out');
+          setTimeout(() => {
+            if (document.body.contains(driverUpdate)) {
+              document.body.removeChild(driverUpdate);
+            }
+          }, 300);
+        }, 4000);
+      }
+    }, 10000); // Driver updates every 10 seconds
     
     return () => {
       clearTimeout(timer);
       clearInterval(trafficTimer);
+      clearInterval(driverTimer);
+      clearInterval(driverUpdateTimer);
     };
-  }, [interactive]);
+  }, [interactive, showRoute, driverInfo]);
   
   // Map dragging functionality
   const handleMouseDown = (e) => {
@@ -203,39 +313,6 @@ const Map: React.FC<MapProps> = ({
     setShowShareOptions(!showShareOptions);
   };
   
-  const handleShowDirections = (stationId) => {
-    setSelectedStation(stationId);
-    setShowDirections(true);
-  };
-  
-  const shareToSocial = (platform: string) => {
-    const shareUrl = window.location.href;
-    const shareText = "Check out this gas station on FuelFriendly!";
-    
-    let shareLink = "";
-    
-    switch(platform) {
-      case 'facebook':
-        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-        break;
-      case 'twitter':
-        shareLink = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-        break;
-      case 'instagram':
-        alert("Instagram sharing requires the app. Copy the link and share manually.");
-        return;
-      case 'email':
-        shareLink = `mailto:?subject=${encodeURIComponent(shareText)}&body=${encodeURIComponent(shareUrl)}`;
-        break;
-    }
-    
-    if (shareLink) {
-      window.open(shareLink, '_blank');
-    }
-    
-    setShowShareOptions(false);
-  };
-  
   // Get traffic color based on intensity
   const getTrafficColor = () => {
     switch(trafficIntensity) {
@@ -273,105 +350,54 @@ const Map: React.FC<MapProps> = ({
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
           >
+            {/* Memphis Map Background */}
             <img 
-              src="/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png" 
+              src="/lovable-uploads/79dad56a-54cd-4a41-b420-9798ba1ff0bd.png" 
               alt="Memphis Map" 
               className="w-full h-full object-cover"
               draggable="false"
             />
             
+            {/* Driver Position - Animated */}
+            {showRoute && (
+              <div 
+                className="absolute z-20 transition-all duration-100" 
+                style={{ 
+                  top: `${driverPosition.y}px`, 
+                  left: `${driverPosition.x}px`,
+                }}
+              >
+                <div className="h-8 w-8 rounded-full bg-red-500 border-2 border-white flex items-center justify-center animate-pulse">
+                  <Navigation className="h-5 w-5 text-white" />
+                </div>
+              </div>
+            )}
+            
             {/* User location blue dot */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+            <div className="absolute bottom-48 right-48 z-10">
               <div className="relative">
                 <div className="h-5 w-5 bg-blue-500 rounded-full border-2 border-white"></div>
                 <div className="absolute inset-0 h-5 w-5 bg-blue-500/50 rounded-full animate-ping opacity-75"></div>
               </div>
             </div>
             
-            {/* Gas station markers */}
-            {gasStations.map((station) => {
-              // Calculate position on the map (this is simplified)
-              const latDiff = station.position.lat - userLocation.lat;
-              const lngDiff = station.position.lng - userLocation.lng;
-              const scale = 50; // Adjust based on zoom level for a real implementation
-              
-              const top = `${50 - latDiff * scale}%`;
-              const left = `${50 + lngDiff * scale}%`;
-              
-              return (
-                <div
-                  key={station.id}
-                  className="absolute z-20 hover:scale-110 transition-transform duration-300"
-                  style={{ top, left }}
-                >
-                  <div className="relative">
-                    <div className="h-10 w-10 flex items-center justify-center">
-                      <div className="bg-white rounded-full p-1 shadow-lg">
-                        <Link to={`/station/${station.id}`}>
-                          <div className="bg-red-500 h-6 w-6 rounded-full flex items-center justify-center">
-                            <MapPin className="h-4 w-4 text-white" />
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 whitespace-nowrap mt-1 bg-black/70 text-white text-xs py-1 px-2 rounded">
-                      {station.name} - ${station.price}
-                    </div>
-                    
-                    {interactive && (
-                      <button 
-                        onClick={() => handleShowDirections(station.id)}
-                        className="absolute -top-1 -right-1 bg-green-500 rounded-full h-5 w-5 flex items-center justify-center shadow-lg"
-                      >
-                        <Navigation className="h-3 w-3 text-white" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-            
-            {/* Route path if enabled */}
-            {(showRoute || showDirections) && (
-              <div className="absolute inset-0 pointer-events-none">
-                <svg width="100%" height="100%" className="absolute">
-                  <path
-                    d="M600,300 C550,320 480,340 420,330 C360,320 320,280 250,300"
-                    stroke={getTrafficColor()}
-                    strokeWidth="6"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray="1,0"
-                    className="animate-dash"
-                  />
-                  {/* Direction arrows along the path */}
-                  <circle cx="550" cy="315" r="4" fill={getTrafficColor()} />
-                  <polygon points="480,335 490,325 470,325" fill={getTrafficColor()} />
-                  <circle cx="360" cy="320" r="4" fill={getTrafficColor()} />
-                  <polygon points="250,300 260,290 260,310" fill={getTrafficColor()} />
-                </svg>
+            {/* Route path - Animated Green Line */}
+            {showRoute && (
+              <svg className="absolute inset-0 z-0 pointer-events-none" width="100%" height="100%">
+                <path
+                  d={`M${routePoints.map(p => `${p.x},${p.y}`).join(' L')}`}
+                  stroke="#10b981"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeDasharray="8,4"
+                  className="animate-dash"
+                />
                 
-                {/* Direction instructions */}
-                {showDirections && (
-                  <div className="absolute bottom-4 left-4 right-4 bg-black/80 text-white text-sm p-3 rounded-lg animate-fade-in">
-                    <div className="flex items-center mb-2">
-                      <Navigation className="h-4 w-4 mr-2 text-green-500" />
-                      <span>Head south on Main St for 0.5 miles</span>
-                    </div>
-                    <div className="flex items-center mb-2">
-                      <ArrowDownRight className="h-4 w-4 mr-2 text-green-500" />
-                      <span>Turn right onto Popular Ave for 0.3 miles</span>
-                    </div>
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-2 text-red-500" />
-                      <span>Arrive at destination on right</span>
-                    </div>
-                    <div className="mt-2 text-xs">
-                      ETA: 8 min (0.8 miles)
-                    </div>
-                  </div>
-                )}
-              </div>
+                {/* Destination marker */}
+                <circle cx={routePoints[routePoints.length-1].x} cy={routePoints[routePoints.length-1].y} r="8" fill="#10b981" />
+                <circle cx={routePoints[routePoints.length-1].x} cy={routePoints[routePoints.length-1].y} r="16" fill="#10b981" fillOpacity="0.3" />
+              </svg>
             )}
           </div>
           
@@ -379,73 +405,22 @@ const Map: React.FC<MapProps> = ({
           <div className="absolute bottom-20 left-4 flex flex-col space-y-2">
             <button 
               onClick={handleZoomIn}
-              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
+              className="h-10 w-10 rounded-full bg-green-500 text-black flex items-center justify-center shadow-lg hover:bg-green-600 active:scale-95 transition-all"
             >
               <Plus className="h-5 w-5" />
             </button>
             <button 
               onClick={handleZoomOut}
-              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
+              className="h-10 w-10 rounded-full bg-green-500 text-black flex items-center justify-center shadow-lg hover:bg-green-600 active:scale-95 transition-all"
             >
               <Minus className="h-5 w-5" />
-            </button>
-          </div>
-          
-          {/* Navigation and Share buttons */}
-          <div className="absolute bottom-4 right-4 flex space-x-2">
-            {showRoute && (
-              <button 
-                onClick={() => setShowDirections(!showDirections)}
-                className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
-              >
-                <Navigation className="h-5 w-5" />
-              </button>
-            )}
-            <button 
-              onClick={handleShare}
-              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg relative hover:bg-gray-100 active:scale-95 transition-all"
-            >
-              <Share2 className="h-5 w-5" />
-              
-              {/* Share options popup */}
-              {showShareOptions && (
-                <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-lg p-3 animate-fade-in dark:bg-gray-800">
-                  <div className="flex space-x-3">
-                    <button 
-                      onClick={() => shareToSocial('facebook')}
-                      className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center hover:bg-blue-600 active:scale-95 transition-all"
-                    >
-                      <Facebook className="h-5 w-5" />
-                    </button>
-                    <button 
-                      onClick={() => shareToSocial('twitter')}
-                      className="h-10 w-10 rounded-full bg-blue-400 text-white flex items-center justify-center hover:bg-blue-500 active:scale-95 transition-all"
-                    >
-                      <Twitter className="h-5 w-5" />
-                    </button>
-                    <button 
-                      onClick={() => shareToSocial('instagram')}
-                      className="h-10 w-10 rounded-full bg-pink-500 text-white flex items-center justify-center hover:bg-pink-600 active:scale-95 transition-all"
-                    >
-                      <Instagram className="h-5 w-5" />
-                    </button>
-                    <button 
-                      onClick={() => shareToSocial('email')}
-                      className="h-10 w-10 rounded-full bg-gray-500 text-white flex items-center justify-center hover:bg-gray-600 active:scale-95 transition-all"
-                    >
-                      <Mail className="h-5 w-5" />
-                    </button>
-                  </div>
-                  <div className="w-2 h-2 bg-white absolute bottom-0 right-4 transform translate-y-1 rotate-45 dark:bg-gray-800"></div>
-                </div>
-              )}
             </button>
           </div>
           
           {/* Back button - only show on non-home pages */}
           {showBackButton && !isHomePage && (
             <button 
-              className="absolute top-4 left-4 h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all z-30"
+              className="absolute top-4 left-4 h-10 w-10 rounded-full bg-black border border-gray-700 text-white flex items-center justify-center shadow-lg hover:bg-gray-900 active:scale-95 transition-all z-30"
               onClick={handleGoBack}
             >
               <ArrowLeft className="h-5 w-5" />
@@ -454,7 +429,7 @@ const Map: React.FC<MapProps> = ({
           
           {interactive && (
             <button 
-              className="absolute right-4 top-4 h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
+              className="absolute right-4 top-4 h-10 w-10 rounded-full bg-green-500 text-black flex items-center justify-center shadow-lg hover:bg-green-600 active:scale-95 transition-all"
               onClick={() => setUserLocation({ lat: 35.1495, lng: -90.0490 })}
             >
               <Locate className="h-5 w-5" />
@@ -462,72 +437,29 @@ const Map: React.FC<MapProps> = ({
           )}
           
           {/* Traffic incident indicator */}
-          {trafficIntensity === "heavy" && (
+          {trafficIntensity === "heavy" && showRoute && (
             <div className="absolute top-16 right-4 bg-red-500 text-white text-xs p-2 rounded-lg animate-pulse shadow-lg flex items-center">
               <span className="mr-1">⚠️</span> Heavy traffic on I-240
             </div>
           )}
           
-          {/* Delivery info with updated driver avatar */}
-          {showDeliveryInfo && (
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-background/90 backdrop-blur-sm rounded-t-xl">
-              <div className="flex items-center mb-2">
-                {/* Replace image with a simple green circle avatar */}
-                <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center border-2 border-green-500 mr-3 text-black">
-                  <User className="h-8 w-8" />
+          {/* Delivery info with driver avatar */}
+          {showDeliveryInfo && driverInfo && (
+            <div className="absolute bottom-0 left-0 right-0 bg-black/95 backdrop-blur p-3 rounded-t-xl">
+              <div className="flex items-center">
+                <img 
+                  src={driverInfo.image || "/lovable-uploads/cb5a3b54-642b-4e6d-aa2c-2e489e9956dc.png"} 
+                  alt={driverInfo.name} 
+                  className="h-14 w-14 rounded-full object-cover mr-3 border-2 border-green-500"
+                />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg">{driverInfo.name}</h3>
+                  <p className="text-gray-400">{driverInfo.location}</p>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg">Mike Johnson</h3>
-                  <p className="text-muted-foreground">Memphis, TN</p>
-                </div>
-                <div className="ml-auto flex space-x-2">
-                  <button className="h-12 w-12 flex items-center justify-center rounded-full bg-green-500">
-                    <MessageCircle className="h-6 w-6 text-black" />
-                  </button>
+                <div className="flex space-x-2">
                   <button className="h-12 w-12 flex items-center justify-center rounded-full bg-green-500">
                     <Phone className="h-6 w-6 text-black" />
                   </button>
-                </div>
-              </div>
-              
-              <div className="mt-4">
-                <h4 className="text-muted-foreground text-sm mb-1">Your Delivery Time</h4>
-                <p className="font-semibold">Estimated 8:30 - 9:15 PM</p>
-              </div>
-              
-              <div className="mt-4 flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center">
-                    <MapPin className="h-3 w-3 text-black" />
-                  </div>
-                </div>
-                <div className="flex-1 mx-2 h-0.5 border-t-2 border-dashed border-green-500"></div>
-                <div className="flex items-center">
-                  <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center">
-                    <svg className="h-3 w-3 text-black" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5m1.5-9H17V12h4.46L19.5 9.5M6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3M3 6v9h.76c.55-.61 1.35-1 2.24-1 .89 0 1.69.39 2.24 1H15V6H3z"/>
-                    </svg>
-                  </div>
-                </div>
-                <div className="flex-1 mx-2 h-0.5 border-t-2 border-dashed border-green-500"></div>
-                <div className="flex items-center">
-                  <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
-                    <svg className="h-3 w-3 text-muted-foreground" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-4">
-                <h4 className="text-sm font-medium mb-1">Order</h4>
-                <div className="flex justify-between">
-                  <span>5 Gallons Regular Unleaded</span>
-                  <span className="font-semibold">$18.95</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>2x Snickers bars</span>
-                  <span className="font-semibold">$3.50</span>
                 </div>
               </div>
             </div>
