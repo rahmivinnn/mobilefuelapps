@@ -9,6 +9,9 @@ interface MapProps {
   showDeliveryInfo?: boolean;
   interactive?: boolean;
   showBackButton?: boolean;
+  driverPosition?: { lat: number, lng: number };
+  driverDestination?: { lat: number, lng: number };
+  driverMoving?: boolean;
 }
 
 const Map: React.FC<MapProps> = ({ 
@@ -16,7 +19,10 @@ const Map: React.FC<MapProps> = ({
   showRoute = false, 
   showDeliveryInfo = false,
   interactive = false,
-  showBackButton = true
+  showBackButton = true,
+  driverPosition,
+  driverDestination,
+  driverMoving = false
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,6 +37,9 @@ const Map: React.FC<MapProps> = ({
   const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [currentDriverPosition, setCurrentDriverPosition] = useState(
+    driverPosition || { lat: 35.1477, lng: -90.0538 }
+  );
   
   // Hide back button on home page
   const isHomePage = location.pathname === '/';
@@ -70,6 +79,47 @@ const Map: React.FC<MapProps> = ({
       distance: '2.7' 
     },
   ];
+  
+  // Update driver position when props change
+  useEffect(() => {
+    if (driverPosition) {
+      setCurrentDriverPosition(driverPosition);
+    }
+  }, [driverPosition]);
+  
+  // Simulate driver movement if tracking is active
+  useEffect(() => {
+    if (!driverMoving || !driverDestination) return;
+    
+    const destination = driverDestination;
+    const moveDriver = setInterval(() => {
+      setCurrentDriverPosition(prevPos => {
+        // Calculate distance to move per step
+        const latStep = (destination.lat - prevPos.lat) / 50;
+        const lngStep = (destination.lng - prevPos.lng) / 50;
+        
+        // Calculate new position
+        const newLat = prevPos.lat + latStep;
+        const newLng = prevPos.lng + lngStep;
+        
+        // Check if we've reached very close to destination
+        const isCloseToDestination = 
+          Math.abs(newLat - destination.lat) < 0.0001 && 
+          Math.abs(newLng - destination.lng) < 0.0001;
+        
+        // If close enough, return destination
+        if (isCloseToDestination) {
+          clearInterval(moveDriver);
+          return destination;
+        }
+        
+        // Otherwise return new position
+        return { lat: newLat, lng: newLng };
+      });
+    }, 300); // Move every 300ms for smooth animation
+    
+    return () => clearInterval(moveDriver);
+  }, [driverMoving, driverDestination]);
   
   // Simulate loading the map
   useEffect(() => {
@@ -250,6 +300,19 @@ const Map: React.FC<MapProps> = ({
     }
   };
   
+  // Calculate position for driver on the map
+  const calculateDriverPosition = () => {
+    // Calculate position based on the difference between current position and user location
+    const latDiff = currentDriverPosition.lat - userLocation.lat;
+    const lngDiff = currentDriverPosition.lng - userLocation.lng;
+    const scale = 50; // Adjust as needed
+    
+    const top = `${50 - latDiff * scale}%`;
+    const left = `${50 + lngDiff * scale}%`;
+    
+    return { top, left };
+  };
+  
   const mapStyles = {
     transform: interactive ? `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${zoom/14})` : `scale(${zoom/14})`,
     cursor: isDragging ? 'grabbing' : (interactive ? 'grab' : 'default'),
@@ -330,6 +393,24 @@ const Map: React.FC<MapProps> = ({
                 </div>
               );
             })}
+            
+            {/* Driver position marker for tracking */}
+            {showRoute && driverMoving && (
+              <div 
+                className="absolute z-30 transition-all duration-300"
+                style={calculateDriverPosition()}
+              >
+                <div className="relative">
+                  <div className="h-12 w-12 flex items-center justify-center">
+                    <div className="bg-white rounded-full p-1 shadow-lg">
+                      <div className="bg-green-500 h-10 w-10 rounded-full flex items-center justify-center">
+                        <User className="h-6 w-6 text-black" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             
             {/* Route path if enabled */}
             {(showRoute || showDirections) && (
@@ -413,25 +494,25 @@ const Map: React.FC<MapProps> = ({
                   <div className="flex space-x-3">
                     <button 
                       onClick={() => shareToSocial('facebook')}
-                      className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center hover:bg-blue-600 active:scale-95 transition-all"
+                      className="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 active:scale-95 transition-all"
                     >
                       <Facebook className="h-5 w-5" />
                     </button>
                     <button 
                       onClick={() => shareToSocial('twitter')}
-                      className="h-10 w-10 rounded-full bg-blue-400 text-white flex items-center justify-center hover:bg-blue-500 active:scale-95 transition-all"
+                      className="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 active:scale-95 transition-all"
                     >
                       <Twitter className="h-5 w-5" />
                     </button>
                     <button 
                       onClick={() => shareToSocial('instagram')}
-                      className="h-10 w-10 rounded-full bg-pink-500 text-white flex items-center justify-center hover:bg-pink-600 active:scale-95 transition-all"
+                      className="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 active:scale-95 transition-all"
                     >
                       <Instagram className="h-5 w-5" />
                     </button>
                     <button 
                       onClick={() => shareToSocial('email')}
-                      className="h-10 w-10 rounded-full bg-gray-500 text-white flex items-center justify-center hover:bg-gray-600 active:scale-95 transition-all"
+                      className="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 active:scale-95 transition-all"
                     >
                       <Mail className="h-5 w-5" />
                     </button>
@@ -472,7 +553,6 @@ const Map: React.FC<MapProps> = ({
           {showDeliveryInfo && (
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-background/90 backdrop-blur-sm rounded-t-xl">
               <div className="flex items-center mb-2">
-                {/* Replace image with a simple green circle avatar */}
                 <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center border-2 border-green-500 mr-3 text-black">
                   <User className="h-8 w-8" />
                 </div>

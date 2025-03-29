@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -138,19 +139,19 @@ const Index = () => {
         <div className="relative group">
           <Avatar className="w-10 h-10 bg-green-500 ring-2 ring-green-500/50 hover:ring-green-500 transition-all duration-300 transform hover:scale-110 group-hover:rotate-6">
             <AvatarFallback className="bg-gradient-to-br from-green-400 to-green-600">
-              <User className="h-5 w-5 text-white" />
+              <User className="h-5 w-5 text-black" />
             </AvatarFallback>
           </Avatar>
           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <span className="text-[10px] text-white font-bold">+</span>
+            <span className="text-[10px] text-black font-bold">+</span>
           </div>
         </div>
         
         <div className="flex-1 flex justify-center">
           <img 
-            src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
+            src="/lovable-uploads/5a274a76-fe96-4013-bfe4-3fd75876ef27.png" 
             alt="FUELFRIENDLY" 
-            className="h-1.75 animate-fade-in" 
+            className="h-8 animate-fade-in" 
           />
         </div>
         
@@ -190,7 +191,7 @@ const Index = () => {
           <Map 
             className="h-56 w-full rounded-lg overflow-hidden" 
             interactive={true} 
-            showRoute={showTraffic}
+            showRoute={false}
             showBackButton={false}
           />
         </div>
