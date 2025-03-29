@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft, User } from 'lucide-react';
@@ -9,6 +10,8 @@ interface MapProps {
   showDeliveryInfo?: boolean;
   interactive?: boolean;
   showBackButton?: boolean;
+  driverLocation?: { lat: number; lng: number; };
+  animate?: boolean;
 }
 
 const Map: React.FC<MapProps> = ({ 
@@ -16,7 +19,9 @@ const Map: React.FC<MapProps> = ({
   showRoute = false, 
   showDeliveryInfo = false,
   interactive = false,
-  showBackButton = true
+  showBackButton = true,
+  driverLocation,
+  animate = false
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,6 +36,30 @@ const Map: React.FC<MapProps> = ({
   const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [currentDriverLocation, setCurrentDriverLocation] = useState(
+    driverLocation || { lat: 35.1477, lng: -90.0518 }
+  );
+  
+  // Update driver location when prop changes
+  useEffect(() => {
+    if (driverLocation) {
+      setCurrentDriverLocation(driverLocation);
+    }
+  }, [driverLocation]);
+  
+  // Animate driver location if animate is true
+  useEffect(() => {
+    if (!animate || !showRoute) return;
+    
+    const animationTimer = setInterval(() => {
+      setCurrentDriverLocation(prev => ({
+        lat: prev.lat + (Math.random() * 0.001 - 0.0005),
+        lng: prev.lng + (Math.random() * 0.001 - 0.0005)
+      }));
+    }, 2000);
+    
+    return () => clearInterval(animationTimer);
+  }, [animate, showRoute]);
   
   // Hide back button on home page
   const isHomePage = location.pathname === '/';
@@ -287,6 +316,27 @@ const Map: React.FC<MapProps> = ({
                 <div className="absolute inset-0 h-5 w-5 bg-blue-500/50 rounded-full animate-ping opacity-75"></div>
               </div>
             </div>
+            
+            {/* Driver location marker (conditionally shown) */}
+            {showRoute && (
+              <div className="absolute z-30">
+                <div 
+                  className="relative"
+                  style={{
+                    top: `${50 - (currentDriverLocation.lat - userLocation.lat) * 50}%`,
+                    left: `${50 + (currentDriverLocation.lng - userLocation.lng) * 50}%`,
+                    transition: animate ? 'all 2s ease-in-out' : 'none'
+                  }}
+                >
+                  <div className="h-8 w-8 bg-green-500 rounded-full border-2 border-white flex items-center justify-center -translate-x-1/2 -translate-y-1/2">
+                    <User className="h-5 w-5 text-black" />
+                  </div>
+                  {animate && (
+                    <div className="absolute inset-0 h-8 w-8 bg-green-500/30 rounded-full -translate-x-1/2 -translate-y-1/2 animate-ping"></div>
+                  )}
+                </div>
+              </div>
+            )}
             
             {/* Gas station markers */}
             {gasStations.map((station) => {

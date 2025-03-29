@@ -383,8 +383,8 @@ const TrackOrder: React.FC = () => {
       {/* Map section */}
       <div className="h-[300px] mb-3">
         <Map 
-          showRoute 
-          showDeliveryInfo
+          showRoute={true}
+          showDeliveryInfo={true}
           driverLocation={driverLocation}
           animate={true}
         />
