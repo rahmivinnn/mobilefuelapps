@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -148,9 +149,9 @@ const Index = () => {
         
         <div className="flex-1 flex justify-center">
           <img 
-            src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
+            src="/lovable-uploads/b7cbe6a1-fde1-465f-83bd-89d5065f5fc7.png" 
             alt="FUELFRIENDLY" 
-            className="h-1.75 animate-fade-in" 
+            className="h-10 animate-fade-in" 
           />
         </div>
         

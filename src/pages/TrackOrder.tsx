@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings } from 'lucide-react';
+import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -54,10 +54,15 @@ const TrackOrder: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const mapRef = useRef(null);
   
   // Initialize with defaultOrder to avoid undefined issues
   const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
   const [orderComplete, setOrderComplete] = useState(false);
+  // New state for driver position animation
+  const [driverPosition, setDriverPosition] = useState({ lat: 35.1495, lng: -90.0490 });
+  const [driverDestination, setDriverDestination] = useState({ lat: 35.1495, lng: -90.0490 });
+  const [driverMoving, setDriverMoving] = useState(false);
 
   // Status progression logic
   useEffect(() => {
@@ -225,7 +230,7 @@ const TrackOrder: React.FC = () => {
           title: `Message from ${driverName}`,
           description: randomMessage,
           duration: 3000,
-          className: "bg-blue-500 border-blue-600 text-white"
+          className: "bg-green-500 border-green-600 text-white"
         });
       }
     }, Math.floor(Math.random() * 15000) + 15000); // Random time between 15-30 seconds
@@ -236,6 +241,36 @@ const TrackOrder: React.FC = () => {
       clearInterval(messageTimer);
     };
   }, [location.search, toast, navigate, orderComplete]);
+
+  // Effect to animate driver movement on the map
+  useEffect(() => {
+    // Initialize driver position 
+    setDriverPosition({ lat: 35.1495, lng: -90.0490 });
+    
+    // Set up driver movement timer
+    const driverMovementTimer = setInterval(() => {
+      // Only animate driver if not complete
+      if (!orderComplete) {
+        // Generate a new random position within Memphis area
+        const newLat = 35.1495 + (Math.random() * 0.03 - 0.015);
+        const newLng = -90.0490 + (Math.random() * 0.03 - 0.015);
+        
+        // Set new destination
+        setDriverDestination({ lat: newLat, lng: newLng });
+        
+        // Start moving animation
+        setDriverMoving(true);
+        
+        // After a short delay, update the actual position
+        setTimeout(() => {
+          setDriverPosition({ lat: newLat, lng: newLng });
+          setDriverMoving(false);
+        }, 3000);
+      }
+    }, 8000);
+    
+    return () => clearInterval(driverMovementTimer);
+  }, [orderComplete]);
 
   // Effect to watch for order completion and show additional notifications
   useEffect(() => {
@@ -333,12 +368,34 @@ const TrackOrder: React.FC = () => {
         <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
-      {/* Map section */}
-      <div className="h-[300px] mb-3">
+      {/* Map section with driver position */}
+      <div className="h-[300px] mb-3 relative">
         <Map 
-          showRoute 
-          showDeliveryInfo 
+          ref={mapRef}
+          showRoute={true}
+          showDeliveryInfo={true}
+          driverPosition={driverPosition}
+          driverDestination={driverDestination}
+          driverMoving={driverMoving}
         />
+        
+        {/* Animated driver indicator */}
+        <motion.div 
+          className="absolute z-10 driver-avatar-animation"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          style={{ 
+            // These values would be calculated based on the map bounds in a real app
+            left: '50%', 
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: orderComplete ? 'none' : 'flex'
+          }}
+        >
+          <div className="h-12 w-12 rounded-full bg-green-500 flex items-center justify-center shadow-lg border-2 border-white">
+            <User className="h-6 w-6 text-black" />
+          </div>
+        </motion.div>
       </div>
       
       {/* Driver info and order details */}
@@ -347,11 +404,9 @@ const TrackOrder: React.FC = () => {
         
         {/* Driver info */}
         <div className="flex items-center mb-6">
-          <img 
-            src={driverImage} 
-            alt={driverName} 
-            className="h-14 w-14 rounded-full object-cover mr-3"
-          />
+          <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center text-black mr-3">
+            <User className="h-8 w-8 text-black" />
+          </div>
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{driverName}</h3>
             <p className="text-gray-400">{driverLocation}</p>

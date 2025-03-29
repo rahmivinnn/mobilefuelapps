@@ -16,11 +16,6 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Map from "./components/ui/Map";
 import SplashScreen from "./components/ui/SplashScreen";
-import SignIn from "./pages/auth/SignIn";
-import SignUp from "./pages/auth/SignUp";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import VerifyOtp from "./pages/auth/VerifyOtp";
-import ResetPassword from "./pages/auth/ResetPassword";
 import OrderHistory from "./pages/OrderHistory";
 import CallScreen from "./pages/CallScreen";
 import ChatScreen from "./pages/ChatScreen";
@@ -45,7 +40,7 @@ const App: React.FC = () => {
           ) : (
             <BrowserRouter>
               <Routes>
-                {/* Direct access routes - no auth required */}
+                {/* All routes accessible directly */}
                 <Route path="/" element={<Index />} />
                 <Route path="/station/:id" element={<StationDetails />} />
                 <Route path="/station/:id/fuel" element={<FuelSelection />} />
@@ -61,13 +56,6 @@ const App: React.FC = () => {
                 } />
                 <Route path="/call" element={<CallScreen />} />
                 <Route path="/chat" element={<ChatScreen />} />
-                
-                {/* Auth pages - still available but not required */}
-                <Route path="/sign-in" element={<SignIn onLogin={() => {}} />} />
-                <Route path="/sign-up" element={<SignUp onLogin={() => {}} />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/verify-otp" element={<VerifyOtp />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
