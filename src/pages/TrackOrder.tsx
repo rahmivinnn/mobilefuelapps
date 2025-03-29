@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
@@ -7,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
 import { orderHistory } from '@/data/dummyData';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Memphis-specific data
 const memphisLicensePlates = [
@@ -72,6 +72,7 @@ const TrackOrder: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   // Explicitly initialize with defaultOrder as a safety measure
   const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
@@ -404,20 +405,21 @@ const TrackOrder: React.FC = () => {
           className="w-full h-full object-cover"
         />
         
-        {/* Route path */}
+        {/* Route path - enhanced visibility for mobile */}
         <div className="absolute inset-0 pointer-events-none">
           <svg width="100%" height="100%" className="absolute">
-            {/* Animated route path */}
+            {/* Animated route path - increased stroke width for mobile */}
             <path
               d="M300,900 C350,750 400,650 450,500 C500,300 550,200 650,180"
               stroke={routeColor}
-              strokeWidth="6"
+              strokeWidth={isMobile ? "8" : "6"}
               fill="none"
               strokeLinecap="round"
-              strokeDasharray="10,10"
+              strokeDasharray={isMobile ? "12,12" : "10,10"}
               className="animate-dash"
               style={{
                 opacity: showDirections ? 1 : 0.5,
+                display: 'block', // Force display on all devices
               }}
             />
           </svg>
@@ -426,8 +428,8 @@ const TrackOrder: React.FC = () => {
         {/* User location (destination) */}
         <div className="absolute bottom-1/4 right-1/4 z-20">
           <div className="relative">
-            <div className="h-6 w-6 bg-green-500 rounded-full border-2 border-white"></div>
-            <div className="absolute inset-0 h-6 w-6 bg-green-500/50 rounded-full animate-ping opacity-75"></div>
+            <div className={`h-${isMobile ? '8' : '6'} w-${isMobile ? '8' : '6'} bg-green-500 rounded-full border-2 border-white`}></div>
+            <div className={`absolute inset-0 h-${isMobile ? '8' : '6'} w-${isMobile ? '8' : '6'} bg-green-500/50 rounded-full animate-ping opacity-75`}></div>
           </div>
         </div>
         
@@ -440,8 +442,8 @@ const TrackOrder: React.FC = () => {
           }}
         >
           <div className="relative">
-            <div className="h-8 w-8 bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-pulse">
-              <MapPin className="h-5 w-5 text-white" />
+            <div className={`h-${isMobile ? '10' : '8'} w-${isMobile ? '10' : '8'} bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-pulse`}>
+              <MapPin className={`h-${isMobile ? '6' : '5'} w-${isMobile ? '6' : '5'} text-white`} />
             </div>
           </div>
         </div>
@@ -507,8 +509,8 @@ const TrackOrder: React.FC = () => {
         <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
-      {/* Map section - Now using the custom Google style map */}
-      <div className="h-[300px] mb-4 mt-2 relative">
+      {/* Map section - Now using the custom Google style map with mobile enhancements */}
+      <div className={`h-[${isMobile ? '350px' : '300px'}] mb-4 mt-2 relative`}>
         <GoogleStyleMap />
       </div>
       
@@ -572,7 +574,7 @@ const TrackOrder: React.FC = () => {
             <div className="flex flex-col items-center">
               <div className={`w-8 h-8 ${progress >= 80 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
                 <svg className={`h-4 w-4 ${progress >= 80 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M18 10a1 1 0 0 1-1-1 1 1 0 0 1 1-1 1 1 0 0 1 1 1 1 1 0 0 1-1 1m-6 0H6V5h6m7.77 2.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11C16.17 7 15.5 7.93 15.5 9a2.5 2.5 0 0 0 2.5 2.5c.36 0 .69-.08 1-.21v7.21a1 1 0 0 1-1 1 1 1 0 0 1-1-1V14a2 2 0 0 0-2-2h-1V5a2 2 0 0 0-2-2H6c-1.11 0-2 .89-2 2v16h10v-7.5h1.5v5a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5V9c0-.69-.28-1.32-.73-1.77M12 10H6V9h6m0-2H6V7h6M6 19v-3h5v3H6m6-4.5V19h-1v-4.5"/>
+                  <path fill="currentColor" d="M18 10a1 1 0 0 1-1-1 1 1 0 0 1 1-1 1 1 0 0 1 1 1 1 1 0 0 1-1 1m-6 0H6V5h6m7.77 2.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11C16.17 7 15.5 7.93 15.5 9a2.5 2.5 0 0 0 2.5 2.5c.36 0 .69-.08 1-.21v7.21a1 1 0 0 1-1 1 1 1 0 0 1-1-1V14a2 2 0 0 0-2-2h-1V5a2 2 0 0 0-2-2H6c-1.11 0-2 .89-2 2v16h10v-7.5h1.5v5a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5V9c0-.69-.28-1.32-.73-1.77M12 10H6V9h6m0-2H6V7h6M6 19v-3h5v3H6m0-4.5V19h-1v-4.5"/>
                 </svg>
               </div>
               <p className="text-xs text-gray-400 mt-1">Arriving</p>
