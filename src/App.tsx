@@ -1,9 +1,10 @@
+
 import * as React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import StationDetails from "./pages/StationDetails";
@@ -15,6 +16,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Map from "./components/ui/Map";
 import SplashScreen from "./components/ui/SplashScreen";
+import Welcome from "./pages/auth/Welcome";
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -28,9 +30,29 @@ const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   const [splashVisible, setSplashVisible] = React.useState(true);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   
   const handleSplashFinish = () => {
     setSplashVisible(false);
+  };
+  
+  const handleLogin = (token: string) => {
+    // Save the token to localStorage for persistence
+    localStorage.setItem('auth-token', token);
+    setIsAuthenticated(true);
+  };
+  
+  // Check for existing token on app load
+  React.useEffect(() => {
+    const token = localStorage.getItem('auth-token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+  
+  const handleLogout = () => {
+    localStorage.removeItem('auth-token');
+    setIsAuthenticated(false);
   };
 
   return (
@@ -44,28 +66,93 @@ const App: React.FC = () => {
           ) : (
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/station/:id" element={<StationDetails />} />
-                <Route path="/station/:id/fuel" element={<FuelSelection />} />
-                <Route path="/station/:id/payment" element={<Payment />} />
-                <Route path="/confirmation" element={<Confirmation />} />
-                <Route path="/track" element={<TrackOrder />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/orders" element={<OrderHistory />} />
-                <Route path="/map" element={
-                  <div className="h-screen w-full">
-                    <Map className="h-full w-full" />
-                  </div>
-                } />
-                <Route path="/call" element={<CallScreen />} />
-                <Route path="/chat" element={<ChatScreen />} />
+                {/* Auth routes */}
+                <Route 
+                  path="/" 
+                  element={isAuthenticated ? <Navigate to="/home" /> : <Welcome />} 
+                />
+                <Route 
+                  path="/sign-in" 
+                  element={isAuthenticated ? <Navigate to="/home" /> : <SignIn onLogin={handleLogin} />} 
+                />
+                <Route 
+                  path="/sign-up" 
+                  element={isAuthenticated ? <Navigate to="/home" /> : <SignUp onLogin={handleLogin} />} 
+                />
+                <Route 
+                  path="/forgot-password" 
+                  element={isAuthenticated ? <Navigate to="/home" /> : <ForgotPassword />} 
+                />
+                <Route 
+                  path="/verify-otp" 
+                  element={isAuthenticated ? <Navigate to="/home" /> : <VerifyOtp />} 
+                />
+                <Route 
+                  path="/reset-password" 
+                  element={isAuthenticated ? <Navigate to="/home" /> : <ResetPassword />} 
+                />
                 
-                <Route path="/sign-in" element={<SignIn onLogin={() => {}} />} />
-                <Route path="/sign-up" element={<SignUp onLogin={() => {}} />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/verify-otp" element={<VerifyOtp />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+                {/* Protected routes */}
+                <Route 
+                  path="/home" 
+                  element={isAuthenticated ? <Index /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/station/:id" 
+                  element={isAuthenticated ? <StationDetails /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/station/:id/fuel" 
+                  element={isAuthenticated ? <FuelSelection /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/station/:id/payment" 
+                  element={isAuthenticated ? <Payment /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/confirmation" 
+                  element={isAuthenticated ? <Confirmation /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/track" 
+                  element={isAuthenticated ? <TrackOrder /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/settings" 
+                  element={
+                    isAuthenticated ? (
+                      <Settings onLogout={handleLogout} />
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/orders" 
+                  element={isAuthenticated ? <OrderHistory /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/map" 
+                  element={
+                    isAuthenticated ? (
+                      <div className="h-screen w-full">
+                        <Map className="h-full w-full" />
+                      </div>
+                    ) : (
+                      <Navigate to="/" />
+                    )
+                  } 
+                />
+                <Route 
+                  path="/call" 
+                  element={isAuthenticated ? <CallScreen /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/chat" 
+                  element={isAuthenticated ? <ChatScreen /> : <Navigate to="/" />} 
+                />
                 
+                {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
