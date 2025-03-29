@@ -78,6 +78,8 @@ const TrackOrder: React.FC = () => {
   const [orderComplete, setOrderComplete] = useState(false);
   const [driverLocation, setDriverLocation] = useState({ lat: 35.149, lng: -90.048 });
   const [showDirections, setShowDirections] = useState(true);
+  const [routeColor, setRouteColor] = useState('#4ade80'); // Green route color
+  const [mapImage] = useState('/lovable-uploads/f7931378-76e5-4e0a-bc3c-1d7b4fff6f0d.png');
 
   // Status progression logic
   useEffect(() => {
@@ -177,6 +179,15 @@ const TrackOrder: React.FC = () => {
             statusDetails: statuses[currentStep].statusDetails
           };
         });
+        
+        // Update route color based on status
+        if (statuses[currentStep].status === 'processing') {
+          setRouteColor('#facc15'); // Yellow
+        } else if (statuses[currentStep].status === 'in-transit') {
+          setRouteColor('#4ade80'); // Green
+        } else if (statuses[currentStep].status === 'delivered') {
+          setRouteColor('#3b82f6'); // Blue
+        }
         
         // Show toast notification for status changes
         toast({
@@ -383,6 +394,86 @@ const TrackOrder: React.FC = () => {
   // Get the driver avatar based on the current index
   const driverAvatar = driverAvatars[avatarIndex] || driverAvatars[0];
 
+  // Custom Map component to match the provided reference image
+  const GoogleStyleMap = () => {
+    return (
+      <div className="relative w-full h-full overflow-hidden rounded-lg">
+        {/* Base map image */}
+        <img 
+          src={mapImage}
+          alt="Memphis Map" 
+          className="w-full h-full object-cover"
+        />
+        
+        {/* Route path */}
+        <div className="absolute inset-0 pointer-events-none">
+          <svg width="100%" height="100%" className="absolute">
+            {/* Animated route path */}
+            <path
+              d="M300,900 C350,750 400,650 450,500 C500,300 550,200 650,180"
+              stroke={routeColor}
+              strokeWidth="6"
+              fill="none"
+              strokeLinecap="round"
+              strokeDasharray="10,10"
+              className="animate-dash"
+              style={{
+                opacity: showDirections ? 1 : 0.5,
+              }}
+            />
+          </svg>
+        </div>
+        
+        {/* User location (destination) */}
+        <div className="absolute bottom-1/4 right-1/4 z-20">
+          <div className="relative">
+            <div className="h-6 w-6 bg-green-500 rounded-full border-2 border-white"></div>
+            <div className="absolute inset-0 h-6 w-6 bg-green-500/50 rounded-full animate-ping opacity-75"></div>
+          </div>
+        </div>
+        
+        {/* Driver location */}
+        <div 
+          className="absolute z-30 transition-all duration-700"
+          style={{
+            top: `${40 + (Math.random() * 5)}%`,
+            left: `${45 + (Math.random() * 5)}%`,
+          }}
+        >
+          <div className="relative">
+            <div className="h-8 w-8 bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-pulse">
+              <MapPin className="h-5 w-5 text-white" />
+            </div>
+          </div>
+        </div>
+        
+        {/* Zoom controls */}
+        <div className="absolute bottom-4 right-4 flex flex-col space-y-2">
+          <button className="h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md">
+            <div className="h-5 w-5 flex items-center justify-center text-xl font-bold text-gray-700">+</div>
+          </button>
+          <button className="h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md">
+            <div className="h-5 w-5 flex items-center justify-center text-2xl font-bold text-gray-700">−</div>
+          </button>
+        </div>
+        
+        {/* Location pin */}
+        <button className="absolute bottom-4 right-20 h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md">
+          <div className="h-6 w-6 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-700">
+              <path fill="currentColor" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+            </svg>
+          </div>
+        </button>
+        
+        {/* Map attribution */}
+        <div className="absolute bottom-1 left-1 text-xs text-gray-500 bg-white/70 px-1 rounded">
+          Map data ©2023
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
@@ -417,15 +508,9 @@ const TrackOrder: React.FC = () => {
         <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
-      {/* Map section with enhanced directions - now between status and driver info */}
-      <div className="h-[250px] mb-4 mt-2">
-        <Map 
-          showRoute={true}
-          showDeliveryInfo={false}
-          driverLocation={driverLocation}
-          animate={true}
-          driverName={driverName}
-        />
+      {/* Map section - Now using the custom Google style map */}
+      <div className="h-[300px] mb-4 mt-2 relative">
+        <GoogleStyleMap />
       </div>
       
       {/* Driver info and order details */}
