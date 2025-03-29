@@ -55,20 +55,6 @@ const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
 
   return (
     <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
-      {/* Top green wave */}
-      <div className="absolute top-0 left-0 w-full h-1/4 bg-green-500 rounded-b-[50%] z-0" />
-      
-      {/* Bottom green section with hexagon pattern */}
-      <div className="absolute bottom-0 left-0 w-full h-1/4 bg-green-500 z-0">
-        <div className="absolute bottom-0 left-0 w-full h-full opacity-30">
-          <img 
-            src="/lovable-uploads/0c368b73-df56-4e77-94c3-14691cdc22b7.png" 
-            alt="Hexagon Pattern" 
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </div>
-      
       {/* Header */}
       <div className="pt-6 px-6 z-10">
         <Link to="/" className="inline-flex items-center text-green-500 hover:text-green-400">

@@ -10,20 +10,6 @@ const Welcome: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
-      {/* Top green wave */}
-      <div className="absolute top-0 left-0 w-full h-1/4 bg-green-500 rounded-b-[50%] z-0" />
-      
-      {/* Bottom green section with hexagon pattern */}
-      <div className="absolute bottom-0 left-0 w-full h-1/4 bg-green-500 z-0">
-        <div className="absolute bottom-0 left-0 w-full h-full opacity-30">
-          <img 
-            src="/lovable-uploads/0c368b73-df56-4e77-94c3-14691cdc22b7.png" 
-            alt="Hexagon Pattern" 
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </div>
-      
       {/* Content container */}
       <div className="flex-1 flex flex-col items-center justify-between z-10 px-6 py-12">
         <div />
