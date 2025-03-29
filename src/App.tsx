@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -45,7 +44,6 @@ const App: React.FC = () => {
           ) : (
             <BrowserRouter>
               <Routes>
-                {/* Direct access routes - no auth required */}
                 <Route path="/" element={<Index />} />
                 <Route path="/station/:id" element={<StationDetails />} />
                 <Route path="/station/:id/fuel" element={<FuelSelection />} />
@@ -62,7 +60,6 @@ const App: React.FC = () => {
                 <Route path="/call" element={<CallScreen />} />
                 <Route path="/chat" element={<ChatScreen />} />
                 
-                {/* Auth pages - still available but not required */}
                 <Route path="/sign-in" element={<SignIn onLogin={() => {}} />} />
                 <Route path="/sign-up" element={<SignUp onLogin={() => {}} />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

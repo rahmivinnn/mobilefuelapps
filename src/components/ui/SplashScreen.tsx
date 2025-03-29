@@ -54,6 +54,7 @@ const Logo = () => {
 };
 
 // Updated Hexagon Grid components with more interactive animations
+// Reduced hexagon size by 0.5x using transform: scale(0.5)
 const TopHexagonGrid = () => {
   return (
     <motion.div
@@ -66,7 +67,7 @@ const TopHexagonGrid = () => {
         className="w-full h-full relative overflow-hidden"
         animate={{
           rotate: [0, 3, -3, 0],
-          scale: [1, 1.05, 0.98, 1]
+          scale: [0.5, 0.525, 0.49, 0.5] // Reduced size by 0.5x
         }}
         transition={{
           duration: 8,
@@ -105,7 +106,7 @@ const BottomHexagonGrid = () => {
         className="w-full h-full relative overflow-hidden"
         animate={{
           rotate: [0, -3, 3, 0],
-          scale: [1, 0.98, 1.05, 1]
+          scale: [0.5, 0.49, 0.525, 0.5] // Reduced size by 0.5x
         }}
         transition={{
           duration: 8,
@@ -135,10 +136,11 @@ const BottomHexagonGrid = () => {
 };
 
 // Floating hexagons that appear randomly
+// Reduced hexagon size by 0.5x
 const FloatingHexagons = () => {
   const hexagons = Array.from({ length: 6 }).map((_, i) => ({
     id: i,
-    size: Math.random() * 20 + 10,
+    size: (Math.random() * 20 + 10) * 0.5, // Reduced size by 0.5x
     x: Math.random() * 100,
     y: Math.random() * 100,
     delay: Math.random() * 2,
@@ -150,7 +152,7 @@ const FloatingHexagons = () => {
       {hexagons.map((hex) => (
         <motion.div
           key={hex.id}
-          className="absolute w-8 h-8 opacity-10"
+          className="absolute w-4 h-4 opacity-10" // Reduced from w-8 h-8 to w-4 h-4 (0.5x)
           style={{
             left: `${hex.x}%`,
             top: `${hex.y}%`,
@@ -183,10 +185,11 @@ const FloatingHexagons = () => {
 };
 
 // Energy particles that flow upward
+// Reduced particle size by 0.5x
 const EnergyParticles = () => {
   const particles = Array.from({ length: 10 }).map((_, i) => ({
     id: i,
-    size: Math.random() * 6 + 2,
+    size: (Math.random() * 6 + 2) * 0.5, // Reduced size by 0.5x
     x: Math.random() * 100,
     delay: Math.random() * 3,
     duration: Math.random() * 4 + 4
@@ -229,10 +232,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
     // Start animation immediately
     setAnimate(true);
     
-    // Handle splash screen timing - increased to 5000ms (5 seconds)
+    // Handle splash screen timing - increased to 10000ms (10 seconds)
     const timer = setTimeout(() => {
       onFinish();
-    }, 5000);
+    }, 10000);
     
     return () => {
       clearTimeout(timer);
