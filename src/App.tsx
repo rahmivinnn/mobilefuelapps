@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -23,6 +24,9 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import OrderHistory from "./pages/OrderHistory";
 import CallScreen from "./pages/CallScreen";
 import ChatScreen from "./pages/ChatScreen";
+import FuelFriendHome from "./pages/FuelFriendHome";
+import AllOrders from "./pages/AllOrders";
+import TrackCustomer from "./pages/TrackCustomer";
 
 const queryClient = new QueryClient();
 
@@ -90,7 +94,7 @@ const App: React.FC = () => {
                   element={isAuthenticated ? <Navigate to="/home" /> : <ResetPassword />} 
                 />
                 
-                {/* Protected routes */}
+                {/* Protected routes - Customer View */}
                 <Route 
                   path="/home" 
                   element={isAuthenticated ? <Index /> : <Navigate to="/" />} 
@@ -148,6 +152,20 @@ const App: React.FC = () => {
                 <Route 
                   path="/chat" 
                   element={isAuthenticated ? <ChatScreen /> : <Navigate to="/" />} 
+                />
+                
+                {/* Protected routes - Agent View */}
+                <Route 
+                  path="/fuel-friend-home" 
+                  element={isAuthenticated ? <FuelFriendHome /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/all-orders" 
+                  element={isAuthenticated ? <AllOrders /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/track-customer" 
+                  element={isAuthenticated ? <TrackCustomer /> : <Navigate to="/" />} 
                 />
                 
                 {/* Catch-all route */}

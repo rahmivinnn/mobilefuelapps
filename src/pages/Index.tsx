@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -10,6 +11,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { allStations } from "@/data/dummyData";
+import { Switch } from "@/components/ui/switch";
 
 const trafficConditions = {
   light: ['Union Ave', 'Madison Ave', 'Cooper St'],
@@ -29,6 +31,7 @@ const Index = () => {
   const { toast } = useToast();
   const [startX, setStartX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isAgent, setIsAgent] = useState(false);
   
   const filteredStations = allStations
     .filter(station => 
@@ -132,6 +135,21 @@ const Index = () => {
     setIsDragging(false);
   };
   
+  // Function to toggle between agent and customer view
+  const handleToggleView = (checked: boolean) => {
+    setIsAgent(checked);
+    if (checked) {
+      // Navigate to agent home
+      navigate('/fuel-friend-home');
+    }
+    
+    toast({
+      title: checked ? "Agent View Activated" : "Customer View Activated",
+      description: `You are now in ${checked ? "agent" : "customer"} mode`,
+      duration: 2000,
+    });
+  };
+  
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300 max-w-[420px] mx-auto">
       <div className="flex justify-between items-center px-4 py-2">
@@ -165,6 +183,16 @@ const Index = () => {
             <span className="absolute top-2 right-2.5 h-2 w-2 bg-green-500 rounded-full"></span>
           </button>
         </div>
+      </div>
+      
+      {/* Agent/Customer mode switch */}
+      <div className="px-4 py-2 flex justify-between items-center bg-gray-900/20 mx-4 rounded-lg mb-2">
+        <span className="text-sm">Switch to {isAgent ? "Customer" : "Agent"} Mode</span>
+        <Switch 
+          checked={isAgent} 
+          onCheckedChange={handleToggleView} 
+          className="data-[state=checked]:bg-green-500"
+        />
       </div>
       
       <div className="px-4 py-2 flex items-center space-x-3 animate-fade-in">
