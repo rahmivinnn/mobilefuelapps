@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import StationDetails from "./pages/StationDetails";
@@ -16,6 +16,11 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Map from "./components/ui/Map";
 import SplashScreen from "./components/ui/SplashScreen";
+import SignIn from "./pages/auth/SignIn";
+import SignUp from "./pages/auth/SignUp";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import VerifyOtp from "./pages/auth/VerifyOtp";
+import ResetPassword from "./pages/auth/ResetPassword";
 import OrderHistory from "./pages/OrderHistory";
 import CallScreen from "./pages/CallScreen";
 import ChatScreen from "./pages/ChatScreen";
@@ -51,18 +56,18 @@ const App: React.FC = () => {
                 <Route path="/orders" element={<OrderHistory />} />
                 <Route path="/map" element={
                   <div className="h-screen w-full">
-                    <Map className="h-full w-full" interactive={true} />
+                    <Map className="h-full w-full" />
                   </div>
                 } />
                 <Route path="/call" element={<CallScreen />} />
                 <Route path="/chat" element={<ChatScreen />} />
                 
-                {/* Auth pages - redirect to home */}
-                <Route path="/sign-in" element={<Navigate to="/" replace />} />
-                <Route path="/sign-up" element={<Navigate to="/" replace />} />
-                <Route path="/forgot-password" element={<Navigate to="/" replace />} />
-                <Route path="/verify-otp" element={<Navigate to="/" replace />} />
-                <Route path="/reset-password" element={<Navigate to="/" replace />} />
+                {/* Auth pages - still available but not required */}
+                <Route path="/sign-in" element={<SignIn onLogin={() => {}} />} />
+                <Route path="/sign-up" element={<SignUp onLogin={() => {}} />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/verify-otp" element={<VerifyOtp />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

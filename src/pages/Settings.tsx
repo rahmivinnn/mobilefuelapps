@@ -1,11 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { User, CreditCard, Bell, Shield, Wallet, Clock, ChevronRight, LogOut, ChevronLeft, MapPin, Sun, Moon } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { User, CreditCard, Bell, Shield, Wallet, Clock, ChevronRight, LogOut, ChevronLeft, MapPin } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
 import { Switch } from '@/components/ui/switch';
-import { useTheme } from 'next-themes';
-import { useToast } from '@/hooks/use-toast';
 
 interface SettingsProps {
   onLogout?: () => void;
@@ -36,107 +34,16 @@ const paymentHistory = [
 ];
 
 const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
-  const { setTheme, theme } = useTheme();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(theme === 'dark');
+  const [darkMode, setDarkMode] = useState(true);
   const [locationServices, setLocationServices] = useState(true);
   const [savePaymentInfo, setSavePaymentInfo] = useState(true);
   const [biometricLogin, setBiometricLogin] = useState(false);
   
-  // Update theme when darkMode changes
-  useEffect(() => {
-    if (darkMode) {
-      setTheme('dark');
-    } else {
-      setTheme('light');
-    }
-  }, [darkMode, setTheme]);
-  
-  // Sync darkMode state with actual theme
-  useEffect(() => {
-    setDarkMode(theme === 'dark');
-  }, [theme]);
-  
   const handleLogout = () => {
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out",
-      duration: 3000
-    });
-    
     if (onLogout) {
       onLogout();
     }
-    
-    // Navigate to home page
-    setTimeout(() => {
-      navigate('/');
-    }, 800);
-  };
-  
-  const handleNotificationsChange = (checked: boolean) => {
-    setNotifications(checked);
-    toast({
-      title: checked ? "Notifications Enabled" : "Notifications Disabled",
-      description: checked ? "You will now receive notifications" : "You will no longer receive notifications",
-      duration: 2000
-    });
-  };
-  
-  const handleDarkModeChange = (checked: boolean) => {
-    setDarkMode(checked);
-    toast({
-      title: checked ? "Dark Mode Enabled" : "Light Mode Enabled",
-      description: checked ? "App theme set to dark" : "App theme set to light",
-      duration: 2000
-    });
-  };
-  
-  const handleLocationChange = (checked: boolean) => {
-    setLocationServices(checked);
-    toast({
-      title: checked ? "Location Services Enabled" : "Location Services Disabled",
-      description: checked ? "Your location will be used to find nearby stations" : "Location services have been disabled",
-      duration: 2000
-    });
-  };
-  
-  const handleSavePaymentChange = (checked: boolean) => {
-    setSavePaymentInfo(checked);
-    toast({
-      title: checked ? "Payment Info Saving Enabled" : "Payment Info Saving Disabled",
-      description: checked ? "Your payment info will be saved for future use" : "Your payment info will not be saved",
-      duration: 2000
-    });
-  };
-  
-  const handleBiometricChange = (checked: boolean) => {
-    setBiometricLogin(checked);
-    toast({
-      title: checked ? "Biometric Login Enabled" : "Biometric Login Disabled",
-      description: checked ? "You can now use biometric authentication" : "Biometric authentication has been disabled",
-      duration: 2000
-    });
-  };
-  
-  const handleViewAllTransactions = () => {
-    navigate('/orders');
-    toast({
-      title: "Transaction History",
-      description: "Viewing all transactions",
-      duration: 2000
-    });
-  };
-  
-  const handlePaymentMethodsClick = () => {
-    toast({
-      title: "Payment Methods",
-      description: "Manage your payment methods",
-      duration: 2000
-    });
   };
 
   return (
@@ -180,7 +87,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
             </div>
             <Switch 
               checked={notifications} 
-              onCheckedChange={handleNotificationsChange} 
+              onCheckedChange={setNotifications} 
               className="data-[state=checked]:bg-green-500"
             />
           </div>
@@ -188,17 +95,16 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
           <div className="p-4 border-b border-gray-800 flex items-center justify-between">
             <div className="flex items-center">
               <div className="h-10 w-10 rounded-full bg-black flex items-center justify-center mr-3 border border-gray-800">
-                {darkMode ? (
-                  <Moon className="h-5 w-5 text-green-500" />
-                ) : (
-                  <Sun className="h-5 w-5 text-green-500" />
-                )}
+                <svg className="h-5 w-5 text-green-500" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 18.5C15.5899 18.5 18.5 15.5899 18.5 12C18.5 8.41015 15.5899 5.5 12 5.5C8.41015 5.5 5.5 8.41015 5.5 12C5.5 15.5899 8.41015 18.5 12 18.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M19.14 19.14L19.01 19.01M19.01 4.99L19.14 4.86L19.01 4.99ZM4.86 19.14L4.99 19.01L4.86 19.14ZM12 2.08V2V2.08ZM12 22V21.92V22ZM2.08 12H2H2.08ZM22 12H21.92H22ZM4.99 4.99L4.86 4.86L4.99 4.99Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
               <span>Dark Mode</span>
             </div>
             <Switch 
               checked={darkMode} 
-              onCheckedChange={handleDarkModeChange} 
+              onCheckedChange={setDarkMode} 
               className="data-[state=checked]:bg-green-500"
             />
           </div>
@@ -212,7 +118,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
             </div>
             <Switch 
               checked={locationServices} 
-              onCheckedChange={handleLocationChange} 
+              onCheckedChange={setLocationServices} 
               className="data-[state=checked]:bg-green-500"
             />
           </div>
@@ -221,10 +127,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
         <h3 className="text-lg font-medium mb-3">Payment & Security</h3>
         
         <div className="bg-gray-900 rounded-xl overflow-hidden mb-4">
-          <div 
-            className="p-4 border-b border-gray-800 flex items-center justify-between cursor-pointer hover:bg-gray-800/50 transition-colors"
-            onClick={handlePaymentMethodsClick}
-          >
+          <div className="p-4 border-b border-gray-800 flex items-center justify-between">
             <div className="flex items-center">
               <div className="h-10 w-10 rounded-full bg-black flex items-center justify-center mr-3 border border-gray-800">
                 <CreditCard className="h-5 w-5 text-green-500" />
@@ -246,7 +149,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
             </div>
             <Switch 
               checked={savePaymentInfo} 
-              onCheckedChange={handleSavePaymentChange} 
+              onCheckedChange={setSavePaymentInfo} 
               className="data-[state=checked]:bg-green-500"
             />
           </div>
@@ -260,7 +163,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
             </div>
             <Switch 
               checked={biometricLogin} 
-              onCheckedChange={handleBiometricChange} 
+              onCheckedChange={setBiometricLogin} 
               className="data-[state=checked]:bg-green-500"
             />
           </div>
@@ -294,12 +197,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
           ))}
           
           <div className="p-4 text-center">
-            <button 
-              className="text-green-500 text-sm hover:underline"
-              onClick={handleViewAllTransactions}
-            >
-              View All Transactions
-            </button>
+            <button className="text-green-500 text-sm hover:underline">View All Transactions</button>
           </div>
         </div>
         

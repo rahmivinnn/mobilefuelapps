@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
+import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings } from 'lucide-react';
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -14,10 +14,10 @@ const memphisLicensePlates = [
 ];
 
 const deliveryPeople = [
-  { name: "Cristopert Dastin", location: "Memphis, TN", image: "/lovable-uploads/5a274a76-fe96-4013-bfe4-3fd75876ef27.png", rating: 4.8, phone: "+1 (901) 555-3478" },
-  { name: "Sarah Johnson", location: "Memphis, TN", image: "/lovable-uploads/5a274a76-fe96-4013-bfe4-3fd75876ef27.png", rating: 4.7, phone: "+1 (901) 555-9872" },
-  { name: "Michael Davis", location: "Memphis, TN", image: "/lovable-uploads/5a274a76-fe96-4013-bfe4-3fd75876ef27.png", rating: 4.9, phone: "+1 (901) 555-2341" },
-  { name: "Emily Wilson", location: "Memphis, TN", image: "/lovable-uploads/5a274a76-fe96-4013-bfe4-3fd75876ef27.png", rating: 4.6, phone: "+1 (901) 555-7653" }
+  { name: "Cristopert Dastin", location: "Memphis, TN", image: "/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png", rating: 4.8, phone: "+1 (901) 555-3478" },
+  { name: "Sarah Johnson", location: "Memphis, TN", image: "/lovable-uploads/c3b29f6b-a689-4ac3-a338-4194cbee5e0c.png", rating: 4.7, phone: "+1 (901) 555-9872" },
+  { name: "Michael Davis", location: "Memphis, TN", image: "/lovable-uploads/8a188651-80ec-4a90-8d5c-de0df713b6c7.png", rating: 4.9, phone: "+1 (901) 555-2341" },
+  { name: "Emily Wilson", location: "Memphis, TN", image: "/lovable-uploads/1bc06a60-0463-4f47-abde-502bc408852e.png", rating: 4.6, phone: "+1 (901) 555-7653" }
 ];
 
 const deliveryTimes = [
@@ -50,28 +50,15 @@ const driverMessages = [
   "Thank you for using our service!"
 ];
 
-// Driver position data
-const driverPositions = [
-  { lat: 35.1477, lng: -90.0538 }, // Starting position
-  { lat: 35.1488, lng: -90.0520 },
-  { lat: 35.1495, lng: -90.0505 },
-  { lat: 35.1500, lng: -90.0490 }, // Destination near user
-];
-
 const TrackOrder: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const mapRef = useRef(null);
   
   // Initialize with defaultOrder to avoid undefined issues
   const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
   const [orderComplete, setOrderComplete] = useState(false);
-  const [driverPosition, setDriverPosition] = useState(driverPositions[0]);
-  const [driverDestination, setDriverDestination] = useState(driverPositions[driverPositions.length - 1]);
-  const [driverMoving, setDriverMoving] = useState(false);
-  const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
-  
+
   // Status progression logic
   useEffect(() => {
     // Get orderId from URL query params
@@ -120,11 +107,6 @@ const TrackOrder: React.FC = () => {
       }
     }
     
-    // Start driver movement after a delay
-    setTimeout(() => {
-      setDriverMoving(true);
-    }, 2000);
-    
     // Status update every 5 seconds for demonstration purposes
     // In reality, this would be connected to a backend with real updates
     const statuses = [
@@ -153,17 +135,6 @@ const TrackOrder: React.FC = () => {
           };
         });
         
-        // Update driver position for visual feedback
-        if (currentStep > 0) {
-          const newPositionIndex = Math.min(currentStep, driverPositions.length - 1);
-          setCurrentPositionIndex(newPositionIndex);
-          setDriverPosition(driverPositions[newPositionIndex]);
-          
-          if (newPositionIndex < driverPositions.length - 1) {
-            setDriverDestination(driverPositions[newPositionIndex + 1]);
-          }
-        }
-        
         // Show toast notification for status changes
         toast({
           title: "Order Update",
@@ -174,7 +145,6 @@ const TrackOrder: React.FC = () => {
         // Check if this is the final step (delivery complete)
         if (currentStep === statuses.length - 1) {
           setOrderComplete(true);
-          setDriverMoving(false);
           
           // Show smaller delivery completion toast when delivered
           setTimeout(() => {
@@ -255,7 +225,7 @@ const TrackOrder: React.FC = () => {
           title: `Message from ${driverName}`,
           description: randomMessage,
           duration: 3000,
-          className: "bg-green-500 border-green-600 text-white"
+          className: "bg-blue-500 border-blue-600 text-white"
         });
       }
     }, Math.floor(Math.random() * 15000) + 15000); // Random time between 15-30 seconds
@@ -299,7 +269,7 @@ const TrackOrder: React.FC = () => {
     switch(status) {
       case 'processing': return 'bg-yellow-500';
       case 'in-transit': return 'bg-green-500';
-      case 'delivered': return 'bg-green-500';
+      case 'delivered': return 'bg-blue-500';
       default: return 'bg-gray-500';
     }
   };
@@ -322,7 +292,7 @@ const TrackOrder: React.FC = () => {
   const statusDetails = order?.statusDetails || 'Processing your order';
   const driverName = order?.driver?.name || 'Driver';
   const driverLocation = order?.driver?.location || 'Memphis, TN';
-  const driverImage = order?.driver?.image || '/lovable-uploads/5a274a76-fe96-4013-bfe4-3fd75876ef27.png';
+  const driverImage = order?.driver?.image || '/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png';
   const licensePlate = order?.licensePlate || 'TN-XXXXX';
   const estimatedDelivery = order?.estimatedDelivery || 'Soon';
   const orderItems = order?.items || [];
@@ -366,11 +336,8 @@ const TrackOrder: React.FC = () => {
       {/* Map section */}
       <div className="h-[300px] mb-3">
         <Map 
-          showRoute={true} 
-          showDeliveryInfo={true}
-          driverPosition={driverPosition}
-          driverDestination={driverDestination}
-          driverMoving={driverMoving}
+          showRoute 
+          showDeliveryInfo 
         />
       </div>
       
@@ -380,10 +347,12 @@ const TrackOrder: React.FC = () => {
         
         {/* Driver info */}
         <div className="flex items-center mb-6">
-          <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center text-black overflow-hidden">
-            <User className="h-8 w-8" />
-          </div>
-          <div className="flex-1 ml-3">
+          <img 
+            src={driverImage} 
+            alt={driverName} 
+            className="h-14 w-14 rounded-full object-cover mr-3"
+          />
+          <div className="flex-1">
             <h3 className="font-semibold text-lg">{driverName}</h3>
             <p className="text-gray-400">{driverLocation}</p>
             <p className="text-gray-400 text-xs mt-1">Vehicle License: {licensePlate}</p>
