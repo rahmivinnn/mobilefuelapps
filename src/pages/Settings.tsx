@@ -6,23 +6,58 @@ import BottomNav from "@/components/layout/BottomNav";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { ChevronRight, Moon, Sun, Bell, Shield, CreditCard, HelpCircle, LogOut } from "lucide-react";
+import { useTheme } from "next-themes";
 
 interface SettingsProps {
   onLogout: () => void;
 }
 
 const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
-  const [isDarkMode, setIsDarkMode] = React.useState(true);
+  const { theme, setTheme } = useTheme();
+  const isDarkMode = theme === 'dark';
 
   const handleToggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    const newTheme = isDarkMode ? 'light' : 'dark';
+    setTheme(newTheme);
     toast({
       title: isDarkMode ? "Light mode activated" : "Dark mode activated",
       description: "Your theme preference has been updated",
     });
   };
 
+  const handleNotifications = () => {
+    toast({
+      title: "Notifications",
+      description: "Notifications settings page coming soon",
+    });
+  };
+
+  const handleSecurity = () => {
+    toast({
+      title: "Security",
+      description: "Security settings page coming soon",
+    });
+  };
+
+  const handlePaymentMethods = () => {
+    toast({
+      title: "Payment Methods",
+      description: "Payment methods settings page coming soon",
+    });
+  };
+
+  const handleHelpCenter = () => {
+    toast({
+      title: "Help Center",
+      description: "Help center page coming soon",
+    });
+  };
+
   const handleLogout = () => {
+    toast({
+      title: "Logging out",
+      description: "You have been logged out successfully",
+    });
     onLogout();
     // The redirect will happen automatically because of the protected route in App.tsx
   };
@@ -46,17 +81,17 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
         {
           name: "Notifications",
           icon: <Bell className="h-5 w-5" />,
-          action: () => {},
+          action: handleNotifications,
         },
         {
           name: "Security",
           icon: <Shield className="h-5 w-5" />,
-          action: () => {},
+          action: handleSecurity,
         },
         {
           name: "Payment Methods",
           icon: <CreditCard className="h-5 w-5" />,
-          action: () => {},
+          action: handlePaymentMethods,
         },
       ],
     },
@@ -66,7 +101,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
         {
           name: "Help Center",
           icon: <HelpCircle className="h-5 w-5" />,
-          action: () => {},
+          action: handleHelpCenter,
         },
       ],
     },
