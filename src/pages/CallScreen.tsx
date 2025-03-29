@@ -1,14 +1,25 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { PhoneOff, Mic, MicOff, Phone, Users, UserPlus, MoreVertical, MessageSquare } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { PhoneOff, Mic, MicOff, Phone, Users, UserPlus, MoreVertical, MessageSquare, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const CallScreen = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [driverName, setDriverName] = useState('Driver');
   const [callDuration, setCallDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
+  
+  useEffect(() => {
+    // Get driver name from URL query parameters
+    const params = new URLSearchParams(location.search);
+    const name = params.get('driverName');
+    if (name) {
+      setDriverName(name);
+    }
+  }, [location]);
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -37,7 +48,7 @@ const CallScreen = () => {
   };
   
   const handleOpenChat = () => {
-    navigate('/chat');
+    navigate(`/chat?driverName=${encodeURIComponent(driverName)}`);
   };
   
   return (
@@ -50,12 +61,8 @@ const CallScreen = () => {
           transition={{ duration: 0.5 }}
           className="relative"
         >
-          <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-green-500">
-            <img 
-              src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png"
-              alt="Robin Sharma" 
-              className="w-full h-full object-cover"
-            />
+          <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-green-500 bg-green-500 flex items-center justify-center">
+            <User className="h-20 w-20 text-black" />
           </div>
           <motion.div 
             className="absolute -inset-1 rounded-full border-2 border-green-500 opacity-50"
@@ -65,7 +72,7 @@ const CallScreen = () => {
           />
         </motion.div>
         
-        <h2 className="text-3xl font-bold mt-6 text-white">Robin Sharma</h2>
+        <h2 className="text-3xl font-bold mt-6 text-white">{driverName}</h2>
         <p className="text-xl text-gray-400 mt-2">{formatTime(callDuration)}</p>
       </div>
       

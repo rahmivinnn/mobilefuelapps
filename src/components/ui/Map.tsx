@@ -9,6 +9,9 @@ interface MapProps {
   showDeliveryInfo?: boolean;
   interactive?: boolean;
   showBackButton?: boolean;
+  driverLocation?: { lat: number; lng: number; };
+  animate?: boolean;
+  driverName?: string;
 }
 
 const Map: React.FC<MapProps> = ({ 
@@ -16,7 +19,10 @@ const Map: React.FC<MapProps> = ({
   showRoute = false, 
   showDeliveryInfo = false,
   interactive = false,
-  showBackButton = true
+  showBackButton = true,
+  driverLocation = { lat: 35.1495, lng: -90.0490 },
+  animate = false,
+  driverName = "Driver"
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,6 +31,7 @@ const Map: React.FC<MapProps> = ({
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userLocation, setUserLocation] = useState({ lat: 35.1495, lng: -90.0490 }); // Memphis coordinates
+  const [currentDriverLocation, setCurrentDriverLocation] = useState(driverLocation);
   const [trafficIntensity, setTrafficIntensity] = useState("moderate");
   const [showDirections, setShowDirections] = useState(false);
   const [selectedStation, setSelectedStation] = useState(null);
@@ -34,6 +41,25 @@ const Map: React.FC<MapProps> = ({
   
   // Hide back button on home page
   const isHomePage = location.pathname === '/';
+
+  // Update driver location with animation
+  useEffect(() => {
+    if (animate) {
+      const interval = setInterval(() => {
+        setCurrentDriverLocation(prev => {
+          // Generate small random movements to simulate driver movement
+          const latDelta = (Math.random() - 0.5) * 0.002;
+          const lngDelta = (Math.random() - 0.5) * 0.002;
+          return {
+            lat: prev.lat + latDelta,
+            lng: prev.lng + lngDelta
+          };
+        });
+      }, 2000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [animate]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -118,7 +144,7 @@ const Map: React.FC<MapProps> = ({
         
         // Create traffic update element
         const trafficUpdate = document.createElement('div');
-        trafficUpdate.className = 'fixed top-16 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-full text-sm z-50 animate-fade-in';
+        trafficUpdate.className = 'fixed top-16 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-full text-sm z-50 animate-fade-in dark:bg-black/80';
         trafficUpdate.innerHTML = `<span class="font-bold">Traffic Alert:</span> ${randomRoad} - ${randomCondition}`;
         
         document.body.appendChild(trafficUpdate);
@@ -288,6 +314,26 @@ const Map: React.FC<MapProps> = ({
               </div>
             </div>
             
+            {/* Driver location marker */}
+            {(showRoute || showDeliveryInfo) && (
+              <div 
+                className="absolute z-30 transition-all duration-700"
+                style={{
+                  top: `${50 - (currentDriverLocation.lat - userLocation.lat) * 5000}%`,
+                  left: `${50 + (currentDriverLocation.lng - userLocation.lng) * 5000}%`
+                }}
+              >
+                <div className="relative">
+                  <div className="h-8 w-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-pulse-slow">
+                    <User className="h-5 w-5 text-black" />
+                  </div>
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 whitespace-nowrap mt-1 bg-black/70 text-xs py-1 px-2 rounded">
+                    {driverName}
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Gas station markers */}
             {gasStations.map((station) => {
               // Calculate position on the map (this is simplified)
@@ -336,7 +382,7 @@ const Map: React.FC<MapProps> = ({
               <div className="absolute inset-0 pointer-events-none">
                 <svg width="100%" height="100%" className="absolute">
                   <path
-                    d="M600,300 C550,320 480,340 420,330 C360,320 320,280 250,300"
+                    d={`M${50 + (currentDriverLocation.lng - userLocation.lng) * 5000}%,${50 - (currentDriverLocation.lat - userLocation.lat) * 5000}% C550,320 480,340 420,330 C360,320 320,280 250,300`}
                     stroke={getTrafficColor()}
                     strokeWidth="6"
                     fill="none"
@@ -472,21 +518,24 @@ const Map: React.FC<MapProps> = ({
           {showDeliveryInfo && (
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-background/90 backdrop-blur-sm rounded-t-xl">
               <div className="flex items-center mb-2">
-                {/* Replace image with a simple green circle avatar */}
                 <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center border-2 border-green-500 mr-3 text-black">
                   <User className="h-8 w-8" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Mike Johnson</h3>
+                  <h3 className="font-semibold text-lg">{driverName}</h3>
                   <p className="text-muted-foreground">Memphis, TN</p>
                 </div>
                 <div className="ml-auto flex space-x-2">
-                  <button className="h-12 w-12 flex items-center justify-center rounded-full bg-green-500">
-                    <MessageCircle className="h-6 w-6 text-black" />
-                  </button>
-                  <button className="h-12 w-12 flex items-center justify-center rounded-full bg-green-500">
-                    <Phone className="h-6 w-6 text-black" />
-                  </button>
+                  <Link to={`/chat?driverName=${encodeURIComponent(driverName)}`}>
+                    <button className="h-12 w-12 flex items-center justify-center rounded-full bg-green-500">
+                      <MessageCircle className="h-6 w-6 text-black" />
+                    </button>
+                  </Link>
+                  <Link to={`/call?driverName=${encodeURIComponent(driverName)}`}>
+                    <button className="h-12 w-12 flex items-center justify-center rounded-full bg-green-500">
+                      <Phone className="h-6 w-6 text-black" />
+                    </button>
+                  </Link>
                 </div>
               </div>
               

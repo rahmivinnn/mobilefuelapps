@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Phone, Send, Image, Mic, Paperclip, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ArrowLeft, Phone, Send, Image, Mic, Paperclip, X, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ChatScreen = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [driverName, setDriverName] = useState('Driver');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
     { id: 1, text: "Hey, I'll be there in 10 minutes with your fuel delivery", sender: 'driver', time: '10:30 AM' },
@@ -13,12 +15,21 @@ const ChatScreen = () => {
     { id: 3, text: "Sure, it's $45.75 for 10 gallons of premium fuel. You can pay through the app when I arrive.", sender: 'driver', time: '10:33 AM' },
   ]);
 
+  // Get driver name from URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const name = params.get('driverName');
+    if (name) {
+      setDriverName(name);
+    }
+  }, [location]);
+
   const handleBack = () => {
     navigate(-1);
   };
 
   const handleCall = () => {
-    navigate('/call');
+    navigate(`/call?driverName=${encodeURIComponent(driverName)}`);
   };
 
   const handleSendMessage = () => {
@@ -54,15 +65,11 @@ const ChatScreen = () => {
             <ArrowLeft className="h-6 w-6" />
           </button>
           <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full overflow-hidden mr-3">
-              <img 
-                src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
-                alt="Driver" 
-                className="h-full w-full object-cover"
-              />
+            <div className="h-10 w-10 rounded-full overflow-hidden mr-3 bg-green-500 flex items-center justify-center">
+              <User className="h-6 w-6 text-black" />
             </div>
             <div>
-              <h2 className="font-semibold">Robin Sharma</h2>
+              <h2 className="font-semibold">{driverName}</h2>
               <p className="text-xs text-muted-foreground">Driver • Online</p>
             </div>
           </div>
@@ -71,7 +78,7 @@ const ChatScreen = () => {
           onClick={handleCall}
           className="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center"
         >
-          <Phone className="h-5 w-5 text-white" />
+          <Phone className="h-5 w-5 text-black" />
         </button>
       </div>
       

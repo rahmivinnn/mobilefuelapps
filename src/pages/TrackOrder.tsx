@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings } from 'lucide-react';
+import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -14,17 +13,33 @@ const memphisLicensePlates = [
 ];
 
 const deliveryPeople = [
-  { name: "Cristopert Dastin", location: "Memphis, TN", image: "/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png", rating: 4.8, phone: "+1 (901) 555-3478" },
+  { name: "Christopher Dastin", location: "Memphis, TN", image: "/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png", rating: 4.8, phone: "+1 (901) 555-3478" },
   { name: "Sarah Johnson", location: "Memphis, TN", image: "/lovable-uploads/c3b29f6b-a689-4ac3-a338-4194cbee5e0c.png", rating: 4.7, phone: "+1 (901) 555-9872" },
   { name: "Michael Davis", location: "Memphis, TN", image: "/lovable-uploads/8a188651-80ec-4a90-8d5c-de0df713b6c7.png", rating: 4.9, phone: "+1 (901) 555-2341" },
   { name: "Emily Wilson", location: "Memphis, TN", image: "/lovable-uploads/1bc06a60-0463-4f47-abde-502bc408852e.png", rating: 4.6, phone: "+1 (901) 555-7653" }
+];
+
+// Generate driver avatars using the User icon
+const driverAvatars = [
+  <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center border-2 border-white text-black">
+    <User className="h-8 w-8" />
+  </div>,
+  <div className="h-14 w-14 rounded-full bg-green-600 flex items-center justify-center border-2 border-white text-black">
+    <User className="h-8 w-8" />
+  </div>,
+  <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center border-2 border-white text-black">
+    <User className="h-8 w-8" />
+  </div>,
+  <div className="h-14 w-14 rounded-full bg-green-600 flex items-center justify-center border-2 border-white text-black">
+    <User className="h-8 w-8" />
+  </div>
 ];
 
 const deliveryTimes = [
   "7:15 - 7:45 PM", "8:30 - 9:15 PM", "6:45 - 7:30 PM", "9:00 - 9:45 PM", "7:30 - 8:15 PM"
 ];
 
-// Default order data to ensure we always have valid initial state
+// Default order data
 const defaultOrder = {
   id: 'ORD-1234',
   status: 'processing',
@@ -37,7 +52,9 @@ const defaultOrder = {
   licensePlate: memphisLicensePlates[0],
   driver: deliveryPeople[0],
   progress: 0,
-  statusDetails: 'Order received'
+  statusDetails: 'Order received',
+  avatarIndex: 0,
+  driverLocation: { lat: 35.149, lng: -90.048 }
 };
 
 // Sample driver messages
@@ -58,6 +75,7 @@ const TrackOrder: React.FC = () => {
   // Initialize with defaultOrder to avoid undefined issues
   const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [driverLocation, setDriverLocation] = useState({ lat: 35.149, lng: -90.048 });
 
   // Status progression logic
   useEffect(() => {
@@ -80,6 +98,17 @@ const TrackOrder: React.FC = () => {
           // Choose random delivery time
           const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
           
+          // Random avatar index
+          const randomAvatarIndex = Math.floor(Math.random() * driverAvatars.length);
+          
+          // Random initial driver location (near Memphis)
+          const initialDriverLocation = {
+            lat: 35.149 + (Math.random() - 0.5) * 0.01,
+            lng: -90.048 + (Math.random() - 0.5) * 0.01
+          };
+          
+          setDriverLocation(initialDriverLocation);
+          
           // Safely update the order with found data
           setOrder(prevOrder => ({
             ...defaultOrder, // Always include default values as fallback
@@ -90,7 +119,9 @@ const TrackOrder: React.FC = () => {
             items: foundOrder.items || defaultOrder.items,
             total: parseFloat(foundOrder.totalPrice) || defaultOrder.total,
             licensePlate: randomLicensePlate,
-            driver: randomDeliveryPerson
+            driver: randomDeliveryPerson,
+            avatarIndex: randomAvatarIndex,
+            driverLocation: initialDriverLocation
           }));
         }
         
@@ -237,6 +268,26 @@ const TrackOrder: React.FC = () => {
     };
   }, [location.search, toast, navigate, orderComplete]);
 
+  // Simulate driver movement
+  useEffect(() => {
+    const movementInterval = setInterval(() => {
+      // Update driver location with small random changes to simulate movement
+      const newDriverLocation = {
+        lat: driverLocation.lat + (Math.random() - 0.5) * 0.002,
+        lng: driverLocation.lng + (Math.random() - 0.5) * 0.002
+      };
+      setDriverLocation(newDriverLocation);
+      
+      // Also update the order object with the new location
+      setOrder(prev => ({
+        ...prev,
+        driverLocation: newDriverLocation
+      }));
+    }, 3000);
+    
+    return () => clearInterval(movementInterval);
+  }, [driverLocation]);
+
   // Effect to watch for order completion and show additional notifications
   useEffect(() => {
     if (orderComplete) {
@@ -255,11 +306,11 @@ const TrackOrder: React.FC = () => {
   }, [orderComplete, toast]);
 
   const handleCall = () => {
-    navigate('/call');
+    navigate(`/call?driverName=${encodeURIComponent(driverName)}`);
   };
 
   const handleMessage = () => {
-    navigate('/chat');
+    navigate(`/chat?driverName=${encodeURIComponent(driverName)}`);
   };
 
   // Helper function to determine status color with default value for safety
@@ -291,13 +342,17 @@ const TrackOrder: React.FC = () => {
   const progress = order?.progress || 0;
   const statusDetails = order?.statusDetails || 'Processing your order';
   const driverName = order?.driver?.name || 'Driver';
-  const driverLocation = order?.driver?.location || 'Memphis, TN';
-  const driverImage = order?.driver?.image || '/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png';
+  const driverLocation1 = order?.driver?.location || 'Memphis, TN';
+  const driverPhone = order?.driver?.phone || '+1 (901) 555-1234';
   const licensePlate = order?.licensePlate || 'TN-XXXXX';
   const estimatedDelivery = order?.estimatedDelivery || 'Soon';
   const orderItems = order?.items || [];
   const orderTotal = order?.total || 0;
   const orderId = order?.id || 'ORD-XXXX';
+  const avatarIndex = order?.avatarIndex || 0;
+
+  // Get the driver avatar based on the current index
+  const driverAvatar = driverAvatars[avatarIndex] || driverAvatars[0];
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -333,11 +388,14 @@ const TrackOrder: React.FC = () => {
         <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
-      {/* Map section */}
+      {/* Map section - IMPORTANT: keep this above the driver info section */}
       <div className="h-[300px] mb-3">
         <Map 
-          showRoute 
-          showDeliveryInfo 
+          showRoute={true}
+          showDeliveryInfo={true}
+          driverLocation={driverLocation}
+          animate={true}
+          driverName={driverName}
         />
       </div>
       
@@ -347,14 +405,12 @@ const TrackOrder: React.FC = () => {
         
         {/* Driver info */}
         <div className="flex items-center mb-6">
-          <img 
-            src={driverImage} 
-            alt={driverName} 
-            className="h-14 w-14 rounded-full object-cover mr-3"
-          />
+          <div className="mr-3">
+            {driverAvatar}
+          </div>
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{driverName}</h3>
-            <p className="text-gray-400">{driverLocation}</p>
+            <p className="text-gray-400">{driverLocation1}</p>
             <p className="text-gray-400 text-xs mt-1">Vehicle License: {licensePlate}</p>
           </div>
           <div className="flex space-x-2">
