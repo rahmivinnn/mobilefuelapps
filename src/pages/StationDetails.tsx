@@ -5,6 +5,7 @@ import { Star, MapPin, Clock, Navigation, Share2, Facebook, Twitter, Instagram, 
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import Map from '@/components/ui/Map';
+import { toast } from '@/components/ui/use-toast';
 
 // Mock data for the station
 const stationData = {
@@ -18,6 +19,8 @@ const stationData = {
   hours: '24 Hours',
   imageUrl: 'https://images.unsplash.com/photo-1560005262-823d9d53e891?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
   description: 'One of the premier Shell gas stations in Memphis, offering a wide variety of fuel types and additional services including a convenience store and ATM.',
+  latitude: 35.1477,
+  longitude: -90.0518
 };
 
 const StationDetails: React.FC = () => {
@@ -36,6 +39,18 @@ const StationDetails: React.FC = () => {
     setShowShareOptions(!showShareOptions);
   };
   
+  const getDirections = () => {
+    // In a real app, we would use a maps API
+    // For this demo, we'll open Google Maps
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${stationData.latitude},${stationData.longitude}&travelmode=driving`;
+    window.open(url, '_blank');
+    
+    toast({
+      title: "Opening directions",
+      description: "Directions to Shell Gas Station are opening in a new tab",
+    });
+  };
+  
   const shareToSocial = (platform: string) => {
     const shareUrl = window.location.href;
     const shareText = `Check out ${stationData.name} on FuelFriendly!`;
@@ -51,7 +66,10 @@ const StationDetails: React.FC = () => {
         break;
       case 'instagram':
         // Instagram doesn't have a direct share URL, this would typically open the app
-        alert("Instagram sharing requires the app. Copy the link and share manually.");
+        toast({
+          title: "Instagram sharing",
+          description: "Instagram sharing requires the app. Copy the link and share manually.",
+        });
         return;
       case 'email':
         shareLink = `mailto:?subject=${encodeURIComponent(shareText)}&body=${encodeURIComponent(shareUrl)}`;
@@ -105,7 +123,10 @@ const StationDetails: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-2 gap-3 mb-5">
-          <button className="glass card-shadow rounded-xl p-4 flex items-center justify-center">
+          <button 
+            onClick={getDirections}
+            className="glass card-shadow rounded-xl p-4 flex items-center justify-center"
+          >
             <Navigation className="h-5 w-5 mr-2 text-green-500" />
             <span>Directions</span>
           </button>

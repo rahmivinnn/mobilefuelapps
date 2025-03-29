@@ -6,7 +6,7 @@ interface SplashScreenProps {
   onFinish: () => void;
 }
 
-// Hexagon component
+// Interactive Hexagon component with hover effects
 const Hexagon = ({ 
   size, 
   x, 
@@ -14,7 +14,8 @@ const Hexagon = ({
   delay, 
   color = "rgba(0, 230, 118, 0.1)",
   hoverColor = "rgba(0, 230, 118, 0.4)",
-  duration = 3
+  duration = 3,
+  rotation = 0
 }) => {
   return (
     <motion.div
@@ -27,18 +28,19 @@ const Hexagon = ({
         zIndex: 1,
         background: color,
         clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+        rotate: `${rotation}deg`,
       }}
       initial={{ opacity: 0, scale: 0.2, rotate: -20 }}
       animate={{ 
         opacity: 1, 
         scale: 1, 
-        rotate: 0,
+        rotate: rotation,
         y: [0, -5, 0, 5, 0]
       }}
       whileHover={{ 
         scale: 1.2, 
         background: hoverColor,
-        rotate: 10, 
+        rotate: rotation + 10, 
         zIndex: 5,
         transition: { duration: 0.3 }
       }}
@@ -52,6 +54,52 @@ const Hexagon = ({
         }
       }}
     />
+  );
+};
+
+// Fuel icon component
+const FuelIcon = ({ x, y, delay, size = 40, icon }) => {
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        top: `${y}%`,
+        left: `${x}%`,
+        zIndex: 2,
+      }}
+      initial={{ opacity: 0, scale: 0, y: 20 }}
+      animate={{ 
+        opacity: 1, 
+        scale: 1,
+        y: 0,
+        rotate: [0, -5, 0, 5, 0]
+      }}
+      whileHover={{ 
+        scale: 1.3,
+        rotate: 15,
+        transition: { duration: 0.3 } 
+      }}
+      transition={{ 
+        delay: delay + 0.5, 
+        duration: 0.5,
+        rotate: {
+          repeat: Infinity,
+          duration: 6,
+          ease: "easeInOut"
+        }
+      }}
+    >
+      <div 
+        className="bg-white/20 backdrop-blur-sm p-2 rounded-full"
+        style={{ width: `${size}px`, height: `${size}px` }}
+      >
+        <img 
+          src={icon} 
+          alt="Fuel icon" 
+          className="w-full h-full object-contain"
+        />
+      </div>
+    </motion.div>
   );
 };
 
@@ -73,45 +121,92 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
     };
   }, [onFinish]);
 
-  // Generate random hexagons
-  const hexagons = React.useMemo(() => {
+  // Generate hexagons for top and bottom patterns
+  const topHexagons = React.useMemo(() => {
     const result = [];
-    // Generate large background hexagons
-    for (let i = 0; i < 20; i++) {
-      const size = Math.random() * 60 + 40;
-      result.push({
-        id: `hex-bg-${i}`,
-        size,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        delay: Math.random() * 0.5,
-        color: "rgba(0, 230, 118, 0.07)",
-        hoverColor: "rgba(0, 230, 118, 0.2)",
-        duration: Math.random() * 2 + 2
-      });
-    }
-    
-    // Generate smaller interactive hexagons
+    // Generate hexagons for top section
     for (let i = 0; i < 15; i++) {
-      const size = Math.random() * 40 + 20;
+      const size = Math.random() * 50 + 30;
       result.push({
-        id: `hex-fg-${i}`,
+        id: `hex-top-${i}`,
         size,
         x: Math.random() * 100,
-        y: Math.random() * 100,
-        delay: Math.random() * 0.8 + 0.2,
-        color: "rgba(0, 230, 118, 0.15)",
-        hoverColor: "rgba(0, 230, 118, 0.5)",
-        duration: Math.random() * 1 + 1.5
+        y: Math.random() * 40, // Only in top 40% of screen
+        delay: Math.random() * 0.5,
+        color: "rgba(0, 230, 118, 0.1)",
+        hoverColor: "rgba(0, 230, 118, 0.4)",
+        duration: Math.random() * 2 + 2,
+        rotation: Math.random() * 60 - 30
       });
     }
     return result;
   }, []);
   
+  const bottomHexagons = React.useMemo(() => {
+    const result = [];
+    // Generate hexagons for bottom section
+    for (let i = 0; i < 15; i++) {
+      const size = Math.random() * 50 + 30;
+      result.push({
+        id: `hex-bottom-${i}`,
+        size,
+        x: Math.random() * 100,
+        y: 60 + Math.random() * 40, // Only in bottom 40% of screen
+        delay: Math.random() * 0.5,
+        color: "rgba(0, 230, 118, 0.1)",
+        hoverColor: "rgba(0, 230, 118, 0.4)",
+        duration: Math.random() * 2 + 2,
+        rotation: Math.random() * 60 - 30
+      });
+    }
+    return result;
+  }, []);
+  
+  // Icons for the fuel app
+  const fuelIcons = React.useMemo(() => {
+    return [
+      {
+        id: 'icon-1',
+        x: 20,
+        y: 20,
+        delay: 0.2,
+        icon: '/lovable-uploads/4b652733-7a86-4ae9-9dd6-5de3955387cb.png'
+      },
+      {
+        id: 'icon-2',
+        x: 70,
+        y: 15,
+        delay: 0.4,
+        icon: '/lovable-uploads/adc046bc-ee7b-4717-9b91-a691a4dff4d3.png'
+      },
+      {
+        id: 'icon-3',
+        x: 25,
+        y: 75,
+        delay: 0.6,
+        icon: '/lovable-uploads/499bda01-017d-4d29-aa1b-81c15573b1b3.png'
+      },
+      {
+        id: 'icon-4',
+        x: 75,
+        y: 80,
+        delay: 0.8,
+        icon: '/lovable-uploads/44255d9c-f0ec-4c0a-b4f4-bcb56907f835.png'
+      },
+      {
+        id: 'icon-5',
+        x: 50,
+        y: 30,
+        delay: 1,
+        icon: '/lovable-uploads/eae60343-1690-40a7-b50c-306bad0bfeae.png'
+      }
+    ];
+  }, []);
+  
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-green-500 overflow-hidden">
-      {/* Hexagon pattern background */}
-      {hexagons.map((hex) => (
+      {/* Top hexagons */}
+      {topHexagons.map((hex) => (
         <Hexagon
           key={hex.id}
           size={hex.size}
@@ -121,15 +216,42 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           color={hex.color}
           hoverColor={hex.hoverColor}
           duration={hex.duration}
+          rotation={hex.rotation}
+        />
+      ))}
+      
+      {/* Bottom hexagons */}
+      {bottomHexagons.map((hex) => (
+        <Hexagon
+          key={hex.id}
+          size={hex.size}
+          x={hex.x}
+          y={hex.y}
+          delay={hex.delay}
+          color={hex.color}
+          hoverColor={hex.hoverColor}
+          duration={hex.duration}
+          rotation={hex.rotation}
+        />
+      ))}
+      
+      {/* Floating fuel icons */}
+      {fuelIcons.map((icon) => (
+        <FuelIcon
+          key={icon.id}
+          x={icon.x}
+          y={icon.y}
+          delay={icon.delay}
+          icon={icon.icon}
         />
       ))}
       
       {/* Logo and Text */}
       <motion.div 
         className="flex flex-col items-center justify-center z-20 relative"
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: showLogo ? 0 : -50, opacity: showLogo ? 1 : 0 }}
-        transition={{ type: "spring", damping: 12, stiffness: 100 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showLogo ? 1 : 0 }}
+        transition={{ duration: 0.5 }}
       >
         <motion.div 
           className="relative w-32 h-32 mb-6"
