@@ -36,7 +36,7 @@ const Logo = () => {
         </motion.div>
       </motion.div>
       
-      {/* New text with moderate size (1.5x) */}
+      {/* Brand text with moderate size (1.5x) */}
       <motion.div 
         className="text-white"
         initial={{ opacity: 0, y: 20 }}
@@ -47,7 +47,7 @@ const Logo = () => {
           className="text-2xl font-bold text-white tracking-wider" 
           style={{ fontFamily: 'Impact, Haettenschweiler, Arial Narrow Bold, sans-serif', letterSpacing: '2px', fontStyle: 'italic' }}
         >
-          ganti text di splashscreen dengan ini. ukurannya 1,5 saja pas ga terlalu besar
+          FUELFRIENDLY
         </h1>
       </motion.div>
     </motion.div>
