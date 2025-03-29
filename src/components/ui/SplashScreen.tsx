@@ -6,7 +6,7 @@ interface SplashScreenProps {
   onFinish: () => void;
 }
 
-// Logo component
+// Logo component with updated design
 const Logo = () => {
   return (
     <motion.div 
@@ -15,7 +15,7 @@ const Logo = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
     >
-      {/* Circle with new flame icon */}
+      {/* Circle with new logo */}
       <motion.div 
         className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center"
         initial={{ scale: 0 }}
@@ -27,39 +27,33 @@ const Logo = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1, duration: 0.5, ease: "easeOut" }}
         >
-          {/* New flame logo SVG from the reference image */}
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path 
-              d="M24 4C13.5 4 5 12.5 5 23C5 33.5 13.5 42 24 42C34.5 42 43 33.5 43 23C43 12.5 34.5 4 24 4ZM24 38C15.7 38 9 31.3 9 23C9 14.7 15.7 8 24 8C32.3 8 39 14.7 39 23C39 31.3 32.3 38 24 38Z" 
-              fill="white" 
-            />
-            <path 
-              d="M24 12C21.5 12 19.2 12.8 17.3 14.1C17.1 14.3 17 14.6 17 14.9C17 15.2 17.1 15.5 17.3 15.7C17.5 15.9 17.8 16 18.1 16C18.4 16 18.7 15.9 18.9 15.7C20.4 14.6 22.1 14 24 14C29.5 14 34 18.5 34 24C34 25.9 33.4 27.6 32.3 29.1C32.1 29.3 32 29.6 32 29.9C32 30.2 32.1 30.5 32.3 30.7C32.5 30.9 32.8 31 33.1 31C33.4 31 33.7 30.9 33.9 30.7C35.2 28.8 36 26.5 36 24C36 17.4 30.6 12 24 12Z"
-              fill="white" 
-            />
-            <path 
-              d="M23.5 16C21.6 16 20 17.6 20 19.5C20 19.7 20 19.9 20.1 20.1C20.3 21.6 21.2 23.1 22.2 24.3C22.5 24.7 22.8 25 23 25.2C23.1 25.3 23.2 25.4 23.4 25.5C23.4 25.5 23.4 25.5 23.4 25.5C23.4 25.5 23.5 25.6 23.5 25.6C23.5 25.6 23.5 25.6 23.5 25.6C23.5 25.6 23.6 25.6 23.6 25.6C23.6 25.6 23.6 25.6 23.6 25.6C23.7 25.6 23.7 25.6 23.8 25.5C23.9 25.5 23.9 25.4 24 25.4C24.1 25.3 24.2 25.2 24.3 25.1C24.5 24.9 24.8 24.6 25.1 24.2C26 23.1 27 21.5 27 20C27 17.8 25.4 16 23.5 16Z"
-              fill="white" 
-            />
-          </svg>
+          {/* New logo from uploaded image */}
+          <img 
+            src="/lovable-uploads/19fdfff8-09d0-4398-bcb2-6f4830ab5e38.png" 
+            alt="FuelFriendly Logo" 
+            className="w-16 h-16"
+          />
         </motion.div>
       </motion.div>
       
-      {/* Updated FUELFRIENDLY text with correct styling */}
+      {/* Updated FUELFRIENDLY text with image */}
       <motion.div 
-        className="text-white text-4xl font-bold tracking-wider"
-        style={{ fontStyle: 'italic', fontWeight: 'bold', letterSpacing: '0.05em' }}
+        className="text-white"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.5 }}
       >
-        FUELFRIENDLY
+        <img 
+          src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
+          alt="FUELFRIENDLY" 
+          className="h-8"
+        />
       </motion.div>
     </motion.div>
   );
 };
 
-// Hexagon Grid components to match the reference image exactly
+// Hexagon Grid components
 const TopHexagonGrid = () => {
   return (
     <motion.div
