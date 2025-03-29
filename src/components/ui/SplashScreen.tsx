@@ -1,239 +1,198 @@
 
-import * as React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SplashScreenProps {
   onFinish: () => void;
 }
 
-// Enhanced Logo component with better animations
-const Logo = () => {
-  return (
-    <motion.div 
-      className="flex flex-col items-center justify-center gap-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-    >
-      {/* Circle with logo */}
-      <motion.div 
-        className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center"
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ 
-          delay: 0.3, 
-          duration: 0.8, 
-          type: "spring", 
-          stiffness: 100,
-          bounce: 0.5 
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ 
-            delay: 0.7, 
-            duration: 0.6, 
-            ease: "easeOut",
-            type: "spring",
-            stiffness: 200 
-          }}
-        >
-          {/* Logo image with spinning animation */}
-          <motion.img 
-            src="/lovable-uploads/19fdfff8-09d0-4398-bcb2-6f4830ab5e38.png" 
-            alt="FuelFriendly Logo" 
-            className="w-16 h-16"
-            animate={{ 
-              rotateY: [0, 360],
-            }}
-            transition={{ 
-              repeat: 1,
-              repeatType: "reverse",
-              duration: 1.2,
-              delay: 0.9,
-              ease: "easeInOut" 
-            }}
-          />
-        </motion.div>
-      </motion.div>
-      
-      {/* FUELFRIENDLY text - reduced even further to 1/8 original size */}
-      <motion.div 
-        className="text-white"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ 
-          delay: 1, 
-          duration: 0.5,
-          type: "spring",
-          stiffness: 100
-        }}
-      >
-        <img 
-          src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
-          alt="FUELFRIENDLY" 
-          className="h-0.42" // Reduced from h-0.84375 to h-0.42 (half of previous size)
-        />
-      </motion.div>
-    </motion.div>
-  );
-};
-
-// Updated Hexagon Grid components with better animations
-const TopHexagonGrid = () => {
-  return (
-    <motion.div
-      className="absolute top-0 left-0 w-full h-2/5"
-      initial={{ opacity: 0, y: -40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.2 }}
-    >
-      <motion.img 
-        src="/lovable-uploads/b9b9af0d-f75b-4949-89ca-178f3f449be9.png" 
-        alt="Hexagon Pattern" 
-        className="w-full h-full object-cover opacity-30"
-        animate={{ 
-          scale: [1, 1.05, 1],
-          rotate: [0, 1, 0]
-        }}
-        transition={{ 
-          duration: 4,
-          repeat: Infinity,
-          repeatType: "reverse"
-        }}
-      />
-    </motion.div>
-  );
-};
-
-const BottomHexagonGrid = () => {
-  return (
-    <motion.div
-      className="absolute bottom-0 left-0 w-full h-2/5"
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.2 }}
-    >
-      <motion.img 
-        src="/lovable-uploads/0c368b73-df56-4e77-94c3-14691cdc22b7.png" 
-        alt="Hexagon Pattern" 
-        className="w-full h-full object-cover opacity-30"
-        animate={{ 
-          scale: [1, 1.05, 1],
-          rotate: [0, -1, 0]
-        }}
-        transition={{ 
-          duration: 4,
-          repeat: Infinity,
-          repeatType: "reverse"
-        }}
-      />
-    </motion.div>
-  );
-};
-
 const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
-  // Enhanced animated background effect
-  const [animate, setAnimate] = React.useState(false);
+  const [showText, setShowText] = useState(false);
+  const [showLogo, setShowLogo] = useState(false);
+  const [progress, setProgress] = useState(0);
   
-  React.useEffect(() => {
-    // Start animation immediately
-    setAnimate(true);
+  useEffect(() => {
+    // Sequence of animations
+    const showLogoTimer = setTimeout(() => {
+      setShowLogo(true);
+    }, 300);
     
-    // Handle splash screen timing
-    const timer = setTimeout(() => {
-      onFinish();
-    }, 2500); // 2500ms to go to home screen
+    const showTextTimer = setTimeout(() => {
+      setShowText(true);
+    }, 800);
+    
+    // Progress bar animation
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          setTimeout(() => {
+            onFinish();
+          }, 500);
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 100);
     
     return () => {
-      clearTimeout(timer);
+      clearTimeout(showLogoTimer);
+      clearTimeout(showTextTimer);
+      clearInterval(progressInterval);
     };
   }, [onFinish]);
   
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-green-500 overflow-hidden">
-      {/* Enhanced background pulse animation */}
-      <motion.div
-        className="absolute inset-0 bg-green-600"
-        initial={{ opacity: 0 }}
-        animate={{ 
-          opacity: animate ? [0, 0.3, 0] : 0 
-        }}
-        transition={{ 
-          duration: 1.5, 
-          repeat: Infinity, 
-          repeatType: "loop",
-          times: [0, 0.5, 1]
-        }}
-      />
-      
-      {/* Animated particles in background */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-white/20"
-            style={{
-              width: Math.random() * 10 + 5,
-              height: Math.random() * 10 + 5,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+    <div className="fixed inset-0 z-50 bg-green-950 flex flex-col items-center justify-center">
+      <div className="max-w-sm w-full mx-auto p-6 relative">
+        <AnimatePresence>
+          {showLogo && (
+            <motion.div 
+              className="mb-8 flex justify-center"
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1, y: [0, -20, 0], rotate: [0, -5, 5, 0] }}
+              transition={{ 
+                duration: 0.8, 
+                type: "spring",
+                stiffness: 100,
+                bounce: 0.5
+              }}
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-green-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
+                <img 
+                  src="/lovable-uploads/8a188651-80ec-4a90-8d5c-de0df713b6c7.png" 
+                  alt="Fuel Drop" 
+                  className="h-24 w-24 object-contain z-10 relative"
+                />
+                
+                <motion.div 
+                  className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-green-500 rounded-full"
+                  animate={{
+                    scaleX: [1, 1.5, 1],
+                    opacity: [0.3, 0.8, 0.3]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        <AnimatePresence>
+          {showText && (
+            <motion.div 
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.img
+                src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png"
+                alt="FUELFRIENDLY"
+                className="h-0.5 mx-auto" // Further reduced to h-0.5 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: 1,
+                  y: [0, -5, 0],
+                }}
+                transition={{ 
+                  duration: 0.8,
+                  y: {
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
+                }}
+              />
+              
+              <motion.p 
+                className="text-green-400 text-sm mt-2 opacity-80"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0.8, 0] }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }}
+              >
+                Fuel delivery made simple
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        <div className="mt-12 relative">
+          <div className="h-1 bg-green-900 rounded-full overflow-hidden">
+            <motion.div 
+              className="h-full bg-green-500 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.2 }}
+            />
+          </div>
+          
+          <motion.div 
+            className="absolute -top-6 left-0 text-xs text-green-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: progress > 0 ? 1 : 0 }}
+            style={{ left: `${progress}%`, transform: 'translateX(-50%)' }}
+          >
+            {progress}%
+          </motion.div>
+          
+          <motion.div 
+            className="mt-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ 
+              opacity: progress > 70 ? 1 : 0,
+              y: [5, 0, 5]
             }}
-            animate={{
-              y: [0, -100],
-              x: [0, Math.random() * 40 - 20],
-              opacity: [0, 0.7, 0]
+            transition={{ 
+              opacity: { duration: 0.3 },
+              y: { 
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }
             }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Infinity,
-              delay: Math.random() * 2
-            }}
-          />
-        ))}
-      </div>
-      
-      {/* Subtle background hexagons that float */}
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center"
-        animate={{ 
-          scale: animate ? [1, 1.05, 1] : 1,
-          rotate: animate ? [0, 2, 0] : 0
-        }}
-        transition={{ 
-          duration: 8, 
-          repeat: Infinity, 
-          repeatType: "reverse"
-        }}
-      >
-        <div className="w-full h-full absolute opacity-10">
-          <div className="w-full h-full absolute" 
-               style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0) 70%)' }} />
+          >
+            <p className="text-green-500 text-xs">Loading resources...</p>
+          </motion.div>
         </div>
-      </motion.div>
-      
-      {/* Top hexagon pattern with improved animations */}
-      <TopHexagonGrid />
-      
-      {/* Bottom hexagon pattern with improved animations */}
-      <BottomHexagonGrid />
-      
-      {/* Centered logo with updated styling and animations */}
-      <motion.div 
-        className="z-10 flex items-center justify-center"
-        initial={{ scale: 0.9 }}
-        animate={{ 
-          scale: [0.9, 1.1, 1],
-          y: [10, -10, 0]
-        }}
-        transition={{ 
-          duration: 1.2,
-          times: [0, 0.6, 1]
-        }}
-      >
-        <Logo />
-      </motion.div>
+        
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(10)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-green-500/20"
+              style={{
+                width: Math.random() * 20 + 5,
+                height: Math.random() * 20 + 5,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -100, 0],
+                x: [0, Math.random() * 50 - 25, 0],
+                opacity: [0, 0.7, 0]
+              }}
+              transition={{
+                duration: Math.random() * 3 + 2,
+                repeat: Infinity,
+                repeatType: "loop",
+                delay: Math.random() * 2
+              }}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
