@@ -6,11 +6,14 @@ import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
+import { orderHistory } from '@/data/dummyData';
 
 const TrackOrder: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Default order state with all required properties
   const [order, setOrder] = useState({
     id: 'ORD-1234',
     status: 'processing',
@@ -36,9 +39,23 @@ const TrackOrder: React.FC = () => {
     // Get orderId from URL query params
     const params = new URLSearchParams(location.search);
     const orderId = params.get('orderId');
+    
     if (orderId) {
-      // In a real app, you would fetch order details here
-      console.log(`Fetching order details for ${orderId}`);
+      // Find the order in orderHistory
+      const foundOrder = orderHistory.find(o => o.id === orderId);
+      if (foundOrder) {
+        // Map the order data to match our required format
+        setOrder(prev => ({
+          ...prev,
+          id: foundOrder.id,
+          status: foundOrder.status || 'processing',
+          items: foundOrder.items || prev.items,
+          total: parseFloat(foundOrder.totalPrice) || prev.total,
+          driver: foundOrder.driver || prev.driver
+        }));
+      }
+      
+      console.log(`Fetching order details for ${orderId}`, foundOrder);
     }
     
     // Status update every 5 seconds
