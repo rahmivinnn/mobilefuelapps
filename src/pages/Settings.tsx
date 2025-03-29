@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { User, CreditCard, Bell, Shield, Wallet, Clock, ChevronRight, LogOut, ChevronLeft, MapPin } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -33,7 +34,6 @@ const paymentHistory = [
 ];
 
 const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
-  const [batteryLevel, setBatteryLevel] = useState(100);
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
   const [locationServices, setLocationServices] = useState(true);
@@ -45,14 +45,6 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
       onLogout();
     }
   };
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setBatteryLevel(prev => Math.max(10, prev - 1));
-    }, 60000);
-    
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white pb-20">
