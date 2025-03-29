@@ -1,12 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, Phone, MessageSquare, Bell, ChevronLeft, ChevronRight } from 'lucide-react';
-import BottomNav from '@/components/layout/BottomNav';
+import { MapPin, Phone, MessageSquare, Bell, ChevronLeft, ChevronRight, User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
-import { Switch } from "@/components/ui/switch";
 import { Button } from '@/components/ui/button';
 
 // Sample data for pending and active orders
@@ -20,7 +18,7 @@ const pendingOrders = [
     status: "Pending"
   },
   {
-    id: "1", // Duplicate ID for demo
+    id: "2",
     date: "25/03/2025",
     pickupLocation: "Shell Station- Abc Town",
     dropoffLocation: "Shell Station- Abc Town",
@@ -39,7 +37,7 @@ const activeOrders = [
     status: "Active"
   },
   {
-    id: "123", // Duplicate ID for demo
+    id: "124",
     date: "25/03/2025",
     pickupLocation: "Shell Station- Tennessee",
     dropoffLocation: "Shell Station-Tennessee",
@@ -51,18 +49,44 @@ const activeOrders = [
 const FuelFriendHome: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isAgent, setIsAgent] = useState(true);
+  const [acceptedJobs, setAcceptedJobs] = useState<string[]>([]);
   
   // Function to handle job acceptance
   const handleAcceptJob = (orderId: string) => {
+    setAcceptedJobs(prev => [...prev, orderId]);
+    
     toast({
       title: "Job Accepted",
       description: `You have accepted order #${orderId}`,
       duration: 3000,
     });
     
-    // In a real app, you would update the order status in the backend
-    // For now we'll just show a toast notification
+    // Show job success modal
+    setTimeout(() => {
+      showJobSuccessModal(orderId);
+    }, 500);
+  };
+  
+  // Function to show job success modal
+  const showJobSuccessModal = (orderId: string) => {
+    const modal = document.getElementById('job-success-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  };
+  
+  // Function to close job success modal
+  const closeJobSuccessModal = () => {
+    const modal = document.getElementById('job-success-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  };
+  
+  // Function to handle tracking from modal
+  const handleTrackFromModal = () => {
+    closeJobSuccessModal();
+    navigate(`/track-customer?orderId=1`);
   };
   
   // Function to handle job cancellation
@@ -72,8 +96,6 @@ const FuelFriendHome: React.FC = () => {
       description: `You have cancelled order #${orderId}`,
       duration: 3000,
     });
-    
-    // In a real app, you would update the order status in the backend
   };
   
   // Function to handle customer tracking
@@ -89,24 +111,6 @@ const FuelFriendHome: React.FC = () => {
   // Function to handle messaging customer
   const handleMessage = (orderId: string) => {
     navigate(`/chat?orderId=${orderId}`);
-  };
-  
-  // Function to toggle between agent and customer view
-  const handleToggleView = (checked: boolean) => {
-    setIsAgent(checked);
-    if (!checked) {
-      // Navigate to customer home
-      navigate('/home');
-    } else {
-      // Stay on agent home
-      // We're already here, so no navigation needed
-    }
-    
-    toast({
-      title: checked ? "Agent View Activated" : "Customer View Activated",
-      description: `You are now in ${checked ? "agent" : "customer"} mode`,
-      duration: 2000,
-    });
   };
   
   // Simulating real-time updates
@@ -150,12 +154,13 @@ const FuelFriendHome: React.FC = () => {
       <div className="p-4 flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <Avatar className="h-12 w-12 border-2 border-green-500">
-            <AvatarImage src="/lovable-uploads/893a14eb-ea70-4596-ac39-7c0ae489e743.png" alt="Profile" />
-            <AvatarFallback className="bg-green-900">SH</AvatarFallback>
+            <AvatarFallback className="bg-gray-800">
+              <User className="h-6 w-6 text-green-500" />
+            </AvatarFallback>
           </Avatar>
           <div>
             <p className="text-gray-400 text-sm">Hello!</p>
-            <h2 className="text-xl font-semibold">Shah Hussain</h2>
+            <h2 className="text-xl font-semibold">Fuel Friend</h2>
           </div>
         </div>
         
@@ -163,16 +168,6 @@ const FuelFriendHome: React.FC = () => {
         <button className="h-10 w-10 flex items-center justify-center rounded-full">
           <Bell className="h-6 w-6" />
         </button>
-      </div>
-      
-      {/* Agent/Customer mode switch */}
-      <div className="px-4 py-2 flex justify-between items-center bg-gray-900/50 mx-4 rounded-lg">
-        <span className="text-sm">Switch to {isAgent ? "Customer" : "Agent"} Mode</span>
-        <Switch 
-          checked={isAgent} 
-          onCheckedChange={handleToggleView} 
-          className="data-[state=checked]:bg-green-500"
-        />
       </div>
       
       {/* Order Requests section */}
@@ -229,12 +224,21 @@ const FuelFriendHome: React.FC = () => {
                 >
                   Cancel Job
                 </button>
-                <button 
-                  onClick={() => handleAcceptJob(order.id)}
-                  className="py-3 px-4 bg-green-500 rounded-lg text-black font-medium text-center"
-                >
-                  Accept Job
-                </button>
+                {acceptedJobs.includes(order.id) ? (
+                  <button 
+                    className="py-3 px-4 bg-gray-600 rounded-lg text-white font-medium text-center"
+                    disabled
+                  >
+                    Accepted
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => handleAcceptJob(order.id)}
+                    className="py-3 px-4 bg-green-500 rounded-lg text-black font-medium text-center"
+                  >
+                    Accept Job
+                  </button>
+                )}
               </div>
             </motion.div>
           ))}
@@ -314,6 +318,61 @@ const FuelFriendHome: React.FC = () => {
               </div>
             </motion.div>
           ))}
+        </div>
+      </div>
+      
+      {/* Job Success Modal */}
+      <div id="job-success-modal" className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
+        <div className="bg-black mx-4 rounded-2xl max-w-md w-full p-6 border border-gray-800">
+          <div className="flex justify-end">
+            <button onClick={closeJobSuccessModal} className="h-8 w-8 flex items-center justify-center rounded-full">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="h-6 w-6">
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="flex flex-col items-center text-center">
+            <div className="h-24 w-24 rounded-full bg-black flex items-center justify-center mb-4 relative">
+              <div className="h-20 w-20 rounded-full border-4 border-green-500 absolute animate-pulse"></div>
+              <svg className="h-12 w-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            
+            <h2 className="text-2xl font-bold mb-3">Job Started Successfully!</h2>
+            <p className="text-gray-400 mb-6">Track your customer's location to ensure a smooth delivery!</p>
+            
+            <div className="space-y-3 w-full mb-6">
+              <div className="flex items-center text-left">
+                <div className="h-6 w-6 text-red-500 mr-3">
+                  <MapPin className="h-6 w-6" />
+                </div>
+                <span>Pickup: Shell Station- Abc Town</span>
+              </div>
+              
+              <div className="flex items-center text-left">
+                <div className="h-6 w-6 flex items-center justify-center mr-3">
+                  <span className="h-3 w-3 rounded-full bg-red-500"></span>
+                </div>
+                <span>Drop off: Shell Station- Abc Town</span>
+              </div>
+              
+              <div className="flex items-center text-left">
+                <div className="h-6 w-6 text-green-500 mr-3">
+                  ☑
+                </div>
+                <span>Order type: Fuel delivery</span>
+              </div>
+            </div>
+            
+            <button 
+              onClick={handleTrackFromModal}
+              className="w-full py-4 bg-green-500 rounded-full text-black font-semibold"
+            >
+              Track Order
+            </button>
+          </div>
         </div>
       </div>
       

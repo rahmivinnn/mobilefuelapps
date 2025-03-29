@@ -27,6 +27,7 @@ import ChatScreen from "./pages/ChatScreen";
 import FuelFriendHome from "./pages/FuelFriendHome";
 import AllOrders from "./pages/AllOrders";
 import TrackCustomer from "./pages/TrackCustomer";
+import Wallet from "./pages/Wallet";
 
 const queryClient = new QueryClient();
 
@@ -166,6 +167,10 @@ const App: React.FC = () => {
                 <Route 
                   path="/track-customer" 
                   element={isAuthenticated ? <TrackCustomer /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/wallet" 
+                  element={isAuthenticated ? <Wallet /> : <Navigate to="/" />} 
                 />
                 
                 {/* Catch-all route */}

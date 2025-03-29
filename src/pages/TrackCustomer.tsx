@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { MapPin, Phone, MessageSquare, ChevronLeft, User } from 'lucide-react';
+import { MapPin, Phone, MessageSquare, ChevronLeft, User, X, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +15,16 @@ const customerData = {
   avatar: "/lovable-uploads/30d22db4-3900-420c-92ef-c56914fef98a.png"
 };
 
+// Sample order data
+const orderData = {
+  id: "1",
+  date: "25/03/2025",
+  pickupLocation: "Shell Station- Abc Town",
+  dropoffLocation: "Shell Station- Abc Town",
+  orderType: "Fuel delivery",
+  status: "Active"
+};
+
 const TrackCustomer: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,6 +33,7 @@ const TrackCustomer: React.FC = () => {
   const [deliveryStage, setDeliveryStage] = useState(1);
   const [mapZoom, setMapZoom] = useState(14);
   const [customer] = useState(customerData);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   
   // Parse the orderId from URL
   useEffect(() => {
@@ -68,6 +79,13 @@ const TrackCustomer: React.FC = () => {
     return () => clearInterval(timer);
   }, [toast]);
   
+  // Show success modal immediately on entering page
+  useEffect(() => {
+    setTimeout(() => {
+      setShowSuccessModal(true);
+    }, 1000);
+  }, []);
+  
   // Function to handle calling customer
   const handleCall = () => {
     navigate(`/call?customerId=${customer.id}`);
@@ -90,6 +108,16 @@ const TrackCustomer: React.FC = () => {
   
   const handleZoomOut = () => {
     setMapZoom(prev => Math.max(prev - 1, 10));
+  };
+  
+  // Function to handle tracking from modal
+  const handleTrackFromModal = () => {
+    setShowSuccessModal(false);
+  };
+  
+  // Function to close modal
+  const handleCloseModal = () => {
+    setShowSuccessModal(false);
   };
   
   return (
@@ -121,6 +149,11 @@ const TrackCustomer: React.FC = () => {
           <ChevronLeft className="h-5 w-5" />
         </button>
         <h1 className="text-xl font-semibold">Track Customer</h1>
+      </div>
+      
+      {/* Job Status */}
+      <div className="px-4 py-2">
+        <h2 className="text-2xl font-bold">Job accepted</h2>
       </div>
       
       {/* Order Details */}
@@ -320,6 +353,98 @@ const TrackCustomer: React.FC = () => {
             <MessageSquare className="h-5 w-5" />
             <span>Message</span>
           </button>
+        </div>
+      </div>
+      
+      {/* Job Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="bg-black mx-4 rounded-2xl max-w-md w-full p-6 border border-gray-800">
+            <div className="flex justify-end">
+              <button onClick={handleCloseModal} className="h-8 w-8 flex items-center justify-center rounded-full">
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="flex flex-col items-center text-center">
+              <div className="h-24 w-24 rounded-full bg-black flex items-center justify-center mb-4 relative">
+                <div className="h-20 w-20 rounded-full border-4 border-green-500 absolute animate-pulse"></div>
+                <Check className="h-12 w-12 text-green-500" />
+              </div>
+              
+              <h2 className="text-2xl font-bold mb-3">Job Started Successfully!</h2>
+              <p className="text-gray-400 mb-6">Track your customer's location to ensure a smooth delivery!</p>
+              
+              <div className="space-y-3 w-full mb-6">
+                <div className="flex items-center text-left">
+                  <MapPin className="h-6 w-6 text-red-500 mr-3" />
+                  <span>Pickup: {orderData.pickupLocation}</span>
+                </div>
+                
+                <div className="flex items-center text-left">
+                  <div className="h-6 w-6 flex items-center justify-center mr-3">
+                    <span className="h-3 w-3 rounded-full bg-red-500"></span>
+                  </div>
+                  <span>Drop off: {orderData.dropoffLocation}</span>
+                </div>
+                
+                <div className="flex items-center text-left">
+                  <div className="h-6 w-6 text-green-500 mr-3">
+                    ☑
+                  </div>
+                  <span>Order type: {orderData.orderType}</span>
+                </div>
+              </div>
+              
+              <button 
+                onClick={handleTrackFromModal}
+                className="w-full py-4 bg-green-500 rounded-full text-black font-semibold"
+              >
+                Track Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Custom bottom navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 py-2">
+        <div className="max-w-md mx-auto flex justify-around">
+          <Link to="/fuel-friend-home" className="flex flex-col items-center">
+            <div className="h-6 w-6 text-green-500">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+              </svg>
+            </div>
+            <span className="text-xs text-green-500">Home</span>
+          </Link>
+          
+          <Link to="/all-orders" className="flex flex-col items-center">
+            <div className="h-6 w-6 text-gray-400">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-4H8v-2h2V9h2v2h2v2h-2v4zm3-8h-2V7h-2V5h2V3h2v2h2v2h-2z" />
+              </svg>
+            </div>
+            <span className="text-xs text-gray-400">My Orders</span>
+          </Link>
+          
+          <Link to="/wallet" className="flex flex-col items-center">
+            <div className="h-6 w-6 text-gray-400">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+              </svg>
+            </div>
+            <span className="text-xs text-gray-400">Wallet</span>
+          </Link>
+          
+          <Link to="/settings" className="flex flex-col items-center">
+            <div className="h-6 w-6 text-gray-400">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+              </svg>
+            </div>
+            <span className="text-xs text-gray-400">Settings</span>
+          </Link>
         </div>
       </div>
     </div>
