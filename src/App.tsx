@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,15 +27,15 @@ import ChatScreen from "./pages/ChatScreen";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  const [splashVisible, setSplashVisible] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const App: React.FC = () => {
+  const [splashVisible, setSplashVisible] = React.useState(true);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   
   const handleSplashFinish = () => {
     setSplashVisible(false);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Check if user is authenticated
     const token = localStorage.getItem('authToken');
     if (token) {
