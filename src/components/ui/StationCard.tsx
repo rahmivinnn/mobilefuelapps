@@ -29,7 +29,8 @@ const StationCard: React.FC<StationCardProps> = ({
   isOpen = true
 }) => {
   const navigate = useNavigate();
-  const displayImage = image || imageUrl;
+  // Use the new Shell image for all station cards
+  const displayImage = "/lovable-uploads/8ed0bc34-d448-42c8-804a-8dda4e3e6840.png";
   const displayStatus = openStatus || (isOpen ? "Open" : "Closed");
   
   // Get the lowest price from the first fuel type if price is not provided

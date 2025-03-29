@@ -16,27 +16,24 @@ const stationData = {
   reviews: 234,
   isOpen: true,
   hours: '24 Hours',
-  imageUrl: '/lovable-uploads/00333baa-ca73-4e51-8f20-49acab199b5b.png',
+  imageUrl: '/lovable-uploads/8ed0bc34-d448-42c8-804a-8dda4e3e6840.png',
   description: 'One of the premier Shell gas stations in Memphis, offering a wide variety of fuel types and additional services including a convenience store and ATM.',
   latitude: 35.1477,
   longitude: -90.0518
 };
 
-// Station images for different locations
+// Station images for different locations - all using the Shell image
 const stationImages = {
-  shell: '/lovable-uploads/00333baa-ca73-4e51-8f20-49acab199b5b.png',
-  exxon: '/lovable-uploads/049ef9d2-46de-4e78-bee2-10fa706d9425.png',
-  chevron: '/lovable-uploads/8c6a633e-ae68-4424-b2b3-4458a96b7d3b.png',
-  bp: '/lovable-uploads/34aae0f7-f7a9-441b-8d2e-1d8027cf8360.png'
+  shell: '/lovable-uploads/8ed0bc34-d448-42c8-804a-8dda4e3e6840.png',
+  exxon: '/lovable-uploads/8ed0bc34-d448-42c8-804a-8dda4e3e6840.png',
+  chevron: '/lovable-uploads/8ed0bc34-d448-42c8-804a-8dda4e3e6840.png',
+  bp: '/lovable-uploads/8ed0bc34-d448-42c8-804a-8dda4e3e6840.png'
 };
 
 const StationDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [showShareOptions, setShowShareOptions] = React.useState(false);
-  
-  // In a real app, we would fetch the specific station data
-  // For this demo, we'll use the mock data
   
   const handleBuyFuel = () => {
     navigate(`/station/${id}/fuel`);
@@ -47,8 +44,6 @@ const StationDetails: React.FC = () => {
   };
   
   const getDirections = () => {
-    // In a real app, we would use a maps API
-    // For this demo, we'll open Google Maps
     const url = `https://www.google.com/maps/dir/?api=1&destination=${stationData.latitude},${stationData.longitude}&travelmode=driving`;
     window.open(url, '_blank');
     
@@ -72,7 +67,6 @@ const StationDetails: React.FC = () => {
         shareLink = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
         break;
       case 'instagram':
-        // Instagram doesn't have a direct share URL, this would typically open the app
         toast({
           title: "Instagram sharing",
           description: "Instagram sharing requires the app. Copy the link and share manually.",

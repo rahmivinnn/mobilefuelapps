@@ -109,7 +109,7 @@ const OrderHistory: React.FC = () => {
           </div>
           <h1 className="text-xl font-bold">My Orders</h1>
         </div>
-        <button className="h-10 w-10 flex items-center justify-center rounded-full bg-black/80 border border-gray-800">
+        <button className="h-10 w-10 flex items-center justify-center rounded-full bg-black border border-gray-800">
           <Filter className="h-5 w-5" />
         </button>
       </div>

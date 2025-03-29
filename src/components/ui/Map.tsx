@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft } from 'lucide-react';
+import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface MapProps {
@@ -469,15 +468,14 @@ const Map: React.FC<MapProps> = ({
             </div>
           )}
           
-          {/* Delivery info */}
+          {/* Delivery info with updated driver avatar */}
           {showDeliveryInfo && (
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-background/90 backdrop-blur-sm rounded-t-xl">
               <div className="flex items-center mb-2">
-                <img 
-                  src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
-                  alt="Driver" 
-                  className="h-14 w-14 rounded-full object-cover border-2 border-green-500 mr-3"
-                />
+                {/* Replace image with a simple green circle avatar */}
+                <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center border-2 border-green-500 mr-3 text-black">
+                  <User className="h-8 w-8" />
+                </div>
                 <div>
                   <h3 className="font-semibold text-lg">Mike Johnson</h3>
                   <p className="text-muted-foreground">Memphis, TN</p>
@@ -512,14 +510,6 @@ const Map: React.FC<MapProps> = ({
                   </div>
                 </div>
                 <div className="flex-1 mx-2 h-0.5 border-t-2 border-dashed border-green-500"></div>
-                <div className="flex items-center">
-                  <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center">
-                    <svg className="h-3 w-3 text-black" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M18 10a1 1 0 0 1-1-1 1 1 0 0 1 1-1 1 1 0 0 1 1 1 1 1 0 0 1-1 1m-6 0H6V5h6m7.77 2.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11C16.17 7 15.5 7.93 15.5 9a2.5 2.5 0 0 0 2.5 2.5c.36 0 .69-.08 1-.21v7.21a1 1 0 0 1-1 1 1 1 0 0 1-1-1V14a2 2 0 0 0-2-2h-1V5a2 2 0 0 0-2-2H6c-1.11 0-2 .89-2 2v16h10v-7.5h1.5v5a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5V9c0-.69-.28-1.32-.73-1.77M12 10H6V9h6m0-2H6V7h6M6 19v-3h5v3H6m6-4.5V19h-1v-4.5"/>
-                    </svg>
-                  </div>
-                </div>
-                <div className="flex-1 mx-2 h-0.5 border-t-2 border-dashed border-muted-foreground"></div>
                 <div className="flex items-center">
                   <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
                     <svg className="h-3 w-3 text-muted-foreground" viewBox="0 0 24 24">

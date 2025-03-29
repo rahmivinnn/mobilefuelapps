@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { User, CreditCard, Bell, Shield, Wallet, Clock, ChevronRight, LogOut, ChevronLeft, MapPin } from 'lucide-react';
@@ -47,7 +46,6 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
     }
   };
 
-  // Simulate battery draining
   useEffect(() => {
     const timer = setInterval(() => {
       setBatteryLevel(prev => Math.max(10, prev - 1));
@@ -58,9 +56,6 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
 
   return (
     <div className="min-h-screen bg-black text-white pb-20">
-      {/* Status bar removed */}
-      
-      {/* Header */}
       <div className="px-4 py-3 flex items-center">
         <Link to="/">
           <div className="h-10 w-10 flex items-center justify-center rounded-full bg-black border border-gray-800 mr-3">
@@ -70,7 +65,6 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
         <h1 className="text-xl font-semibold">Account & Settings</h1>
       </div>
       
-      {/* Profile section */}
       <div className="px-4 py-3">
         <div className="bg-gray-900 rounded-xl p-4">
           <div className="flex items-center">
@@ -88,7 +82,6 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
         </div>
       </div>
       
-      {/* Settings sections */}
       <div className="px-4 py-3">
         <h3 className="text-lg font-medium mb-3">Account & Preferences</h3>
         
@@ -216,7 +209,6 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
           </div>
         </div>
         
-        {/* Logout button */}
         <button 
           className="w-full py-3 rounded-xl border border-red-500/30 text-red-500 flex items-center justify-center hover:bg-red-500/10 transition-colors"
           onClick={handleLogout}
