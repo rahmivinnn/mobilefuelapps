@@ -56,7 +56,7 @@ const TrackOrder: React.FC = () => {
   const { toast } = useToast();
   
   // Initialize with defaultOrder to avoid undefined issues
-  const [order, setOrder] = useState(defaultOrder);
+  const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
   const [orderComplete, setOrderComplete] = useState(false);
 
   // Status progression logic
