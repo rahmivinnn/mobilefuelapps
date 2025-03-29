@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { ArrowLeft } from 'lucide-react';
 
 interface SignUpProps {
@@ -66,9 +66,23 @@ const SignUp: React.FC<SignUpProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
+      {/* Top green wave */}
+      <div className="absolute top-0 left-0 w-full h-1/4 bg-green-500 rounded-b-[50%] z-0" />
+      
+      {/* Bottom green section with hexagon pattern */}
+      <div className="absolute bottom-0 left-0 w-full h-1/4 bg-green-500 z-0">
+        <div className="absolute bottom-0 left-0 w-full h-full opacity-30">
+          <img 
+            src="/lovable-uploads/0c368b73-df56-4e77-94c3-14691cdc22b7.png" 
+            alt="Hexagon Pattern" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+      
       {/* Header */}
-      <div className="pt-6 px-6">
+      <div className="pt-6 px-6 z-10">
         <Link to="/" className="inline-flex items-center text-green-500 hover:text-green-400">
           <ArrowLeft className="h-5 w-5 mr-1" />
           <span>Back</span>
@@ -76,7 +90,44 @@ const SignUp: React.FC<SignUpProps> = ({ onLogin }) => {
       </div>
       
       {/* Content */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-8">
+      <div className="flex-1 flex flex-col items-center justify-between z-10 px-6 py-8">
+        <div className="w-full pt-6">
+          {/* Logo and brand section */}
+          <motion.div 
+            className="flex flex-col items-center mb-10"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Logo circle */}
+            <motion.div 
+              className="w-24 h-24 rounded-full border-2 border-green-500 flex items-center justify-center mb-4"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.5, type: "spring" }}
+            >
+              <img 
+                src="/lovable-uploads/44c35d38-14ee-46b9-8302-0944a264f34e.png" 
+                alt="FuelFriendly Logo" 
+                className="w-16 h-16"
+              />
+            </motion.div>
+            
+            {/* Brand name */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+            >
+              <img 
+                src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
+                alt="FUELFRIENDLY" 
+                className="h-6"
+              />
+            </motion.div>
+          </motion.div>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
