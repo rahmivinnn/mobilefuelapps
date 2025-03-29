@@ -7,18 +7,18 @@ import { motion } from 'framer-motion';
 const CallScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [driverName, setDriverName] = useState('Driver');
+  const [customerName, setCustomerName] = useState('Customer');
   const [callDuration, setCallDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const [callQuality, setCallQuality] = useState(5); // 1-5 quality
   
   useEffect(() => {
-    // Get driver name from URL query parameters
+    // Get customer name from URL query parameters
     const params = new URLSearchParams(location.search);
-    const name = params.get('driverName');
+    const name = params.get('customerName');
     if (name) {
-      setDriverName(name);
+      setCustomerName(name);
     }
     
     // Random call quality simulator
@@ -56,7 +56,7 @@ const CallScreen = () => {
   };
   
   const handleOpenChat = () => {
-    navigate(`/chat?driverName=${encodeURIComponent(driverName)}`);
+    navigate(`/chat?customerName=${encodeURIComponent(customerName)}`);
   };
   
   return (
@@ -93,7 +93,7 @@ const CallScreen = () => {
           />
         </motion.div>
         
-        <h2 className="text-3xl font-bold mt-6 text-white">{driverName}</h2>
+        <h2 className="text-3xl font-bold mt-6 text-white">{customerName}</h2>
         <p className="text-xl text-gray-400 mt-2">{formatTime(callDuration)}</p>
         <p className="text-green-500 text-sm mt-1">
           {callQuality >= 4 ? "Excellent connection" : callQuality >= 3 ? "Good connection" : "Weak connection"}

@@ -400,7 +400,7 @@ const TrackCustomer: React.FC = () => {
                 onClick={handleTrackFromModal}
                 className="w-full py-4 bg-green-500 rounded-full text-black font-semibold"
               >
-                Track Order
+                Track Customer
               </button>
             </div>
           </div>

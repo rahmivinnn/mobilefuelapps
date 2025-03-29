@@ -105,12 +105,12 @@ const FuelFriendHome: React.FC = () => {
   
   // Function to handle calling customer
   const handleCall = (orderId: string) => {
-    navigate(`/call?orderId=${orderId}`);
+    navigate(`/call?customerId=${orderId}`);
   };
   
   // Function to handle messaging customer
   const handleMessage = (orderId: string) => {
-    navigate(`/chat?orderId=${orderId}`);
+    navigate(`/chat?customerId=${orderId}`);
   };
   
   // Simulating real-time updates
@@ -370,7 +370,7 @@ const FuelFriendHome: React.FC = () => {
               onClick={handleTrackFromModal}
               className="w-full py-4 bg-green-500 rounded-full text-black font-semibold"
             >
-              Track Order
+              Track Customer
             </button>
           </div>
         </div>
