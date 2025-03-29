@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
 import StationCard from '@/components/ui/StationCard';
@@ -10,36 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
-
-const nearbyStations = [
-  {
-    id: '1',
-    name: 'Shell Gas Station',
-    address: '2255 Union Ave, Memphis, TN',
-    distance: '0.8',
-    rating: 4.8,
-    isOpen: true,
-    imageUrl: '/lovable-uploads/00333baa-ca73-4e51-8f20-49acab199b5b.png'
-  },
-  {
-    id: '2',
-    name: 'ExxonMobil',
-    address: '1701 Poplar Ave, Memphis, TN',
-    distance: '1.5',
-    rating: 4.6,
-    isOpen: true,
-    imageUrl: '/lovable-uploads/049ef9d2-46de-4e78-bee2-10fa706d9425.png'
-  },
-  {
-    id: '3',
-    name: 'Chevron',
-    address: '1203 Madison Ave, Memphis, TN',
-    distance: '2.3',
-    rating: 4.3,
-    isOpen: false,
-    imageUrl: '/lovable-uploads/8c6a633e-ae68-4424-b2b3-4458a96b7d3b.png'
-  }
-];
+import { allStations } from "@/data/dummyData";
 
 const trafficConditions = {
   light: ['Union Ave', 'Madison Ave', 'Cooper St'],
@@ -53,13 +24,25 @@ const Index = () => {
   const [showTraffic, setShowTraffic] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [mapVisible, setMapVisible] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const stationListRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   
+  // Filter stations by search query
+  const filteredStations = allStations
+    .filter(station => 
+      station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      station.address.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+    .slice(0, 10);
+
+  // Traffic updates every 15 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setLastUpdated(new Date());
-      // Show random traffic updates every minute
+      // Show random traffic updates every 15 seconds
       const roads = [...trafficConditions.light, ...trafficConditions.moderate, ...trafficConditions.heavy];
       const randomRoad = roads[Math.floor(Math.random() * roads.length)];
       const conditions = ["light", "moderate", "heavy"];
@@ -70,7 +53,7 @@ const Index = () => {
         description: `${randomCondition.charAt(0).toUpperCase() + randomCondition.slice(1)} traffic detected on ${randomRoad}.`,
         duration: 5000,
       });
-    }, 60000);
+    }, 15000); // Changed from 60000 to 15000 (15 seconds)
     
     return () => clearInterval(timer);
   }, [toast]);
@@ -103,6 +86,12 @@ const Index = () => {
       duration: 3000,
     });
   };
+
+  const handleStationScroll = () => {
+    if (stationListRef.current) {
+      setScrollPosition(stationListRef.current.scrollLeft);
+    }
+  };
   
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300 max-w-[420px] mx-auto">
@@ -122,7 +111,7 @@ const Index = () => {
           <img 
             src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
             alt="FUELFRIENDLY" 
-            className="h-1.75 animate-fade-in" // Reduced further from h-2.25 to h-1.75
+            className="h-1.75 animate-fade-in" 
           />
         </div>
         
@@ -162,7 +151,8 @@ const Index = () => {
           <Map 
             className="h-56 w-full rounded-lg overflow-hidden" 
             interactive={true} 
-            showRoute={showTraffic} 
+            showRoute={showTraffic}
+            showBackButton={false}
           />
         </div>
         
@@ -185,15 +175,6 @@ const Index = () => {
             <span className="dark:text-white text-green-800">Heavy</span>
           </div>
         </div>
-        
-        <div className="absolute bottom-4 right-4 flex flex-col space-y-2">
-          <button className="h-8 w-8 rounded-full bg-white/80 text-black flex items-center justify-center shadow-lg hover:bg-white active:scale-95 transition-all">
-            <span className="text-lg font-bold">+</span>
-          </button>
-          <button className="h-8 w-8 rounded-full bg-white/80 text-black flex items-center justify-center shadow-lg hover:bg-white active:scale-95 transition-all">
-            <span className="text-lg font-bold">-</span>
-          </button>
-        </div>
       </div>
       
       <div className="px-4 pt-3 pb-20 flex-1 animate-fade-in" style={{ animationDelay: "0.4s" }}>
@@ -211,16 +192,35 @@ const Index = () => {
           </button>
         </div>
         
-        <div className="space-y-3">
-          {nearbyStations.map((station, index) => (
-            <div 
-              key={station.id} 
-              className="animate-fade-in transform transition-all duration-500 hover:translate-x-1" 
-              style={{ animationDelay: `${0.6 + (index * 0.2)}s` }}
-            >
-              <StationCard {...station} />
+        <div 
+          ref={stationListRef}
+          className="overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide"
+          onScroll={handleStationScroll}
+        >
+          <div className="flex space-x-4" style={{ width: `${filteredStations.length * 280}px` }}>
+            {filteredStations.map((station, index) => (
+              <div 
+                key={station.id} 
+                className="animate-fade-in w-64 flex-shrink-0" 
+                style={{ animationDelay: `${0.6 + (index * 0.1)}s` }}
+              >
+                <StationCard {...station} />
+              </div>
+            ))}
+          </div>
+          
+          {/* Horizontal scroll indicator */}
+          <div className="mt-3 flex justify-center">
+            <div className="h-1 bg-gray-800 rounded-full w-48 relative">
+              <div 
+                className="absolute top-0 left-0 h-1 bg-green-500 rounded-full transition-all duration-300" 
+                style={{ 
+                  width: '30%', 
+                  left: `${Math.min(70, scrollPosition / stationListRef.current?.scrollWidth * 100)}%` 
+                }}
+              ></div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
       

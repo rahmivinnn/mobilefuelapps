@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -19,6 +20,8 @@ const Map: React.FC<MapProps> = ({
   showBackButton = true
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const mapRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(14);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +29,12 @@ const Map: React.FC<MapProps> = ({
   const [trafficIntensity, setTrafficIntensity] = useState("moderate");
   const [showDirections, setShowDirections] = useState(false);
   const [selectedStation, setSelectedStation] = useState(null);
+  const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  
+  // Hide back button on home page
+  const isHomePage = location.pathname === '/';
 
   const handleGoBack = () => {
     navigate(-1);
@@ -83,17 +92,104 @@ const Map: React.FC<MapProps> = ({
       );
     }
     
-    // Simulate traffic changes
+    // Simulate traffic changes - reduced to 15 seconds
     const trafficTimer = setInterval(() => {
       const intensities = ["light", "moderate", "heavy"];
       const randomIntensity = intensities[Math.floor(Math.random() * intensities.length)];
       setTrafficIntensity(randomIntensity);
-    }, 30000);
+      
+      // Generate random traffic update
+      if (typeof window !== 'undefined') {
+        const memphisRoads = [
+          "Poplar Avenue", "Union Avenue", "Sam Cooper Boulevard", "I-240", 
+          "I-40", "Madison Avenue", "E Parkway", "Walnut Grove Road", 
+          "Summer Avenue", "Airways Boulevard", "Third Street", "Winchester Road",
+          "Germantown Parkway", "Shelby Drive", "Riverside Drive", "Front Street",
+          "McLean Boulevard", "Lamar Avenue", "Belvedere Boulevard", "Mississippi Boulevard"
+        ];
+        
+        const trafficConditions = [
+          "slow moving traffic", "accident causing delays", "road work ahead",
+          "congestion building up", "vehicle breakdown", "police activity",
+          "event traffic", "debris on road", "flooding reported"
+        ];
+        
+        const randomRoad = memphisRoads[Math.floor(Math.random() * memphisRoads.length)];
+        const randomCondition = trafficConditions[Math.floor(Math.random() * trafficConditions.length)];
+        
+        // Create traffic update element
+        const trafficUpdate = document.createElement('div');
+        trafficUpdate.className = 'fixed top-16 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded-full text-sm z-50 animate-fade-in';
+        trafficUpdate.innerHTML = `<span class="font-bold">Traffic Alert:</span> ${randomRoad} - ${randomCondition}`;
+        
+        document.body.appendChild(trafficUpdate);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+          trafficUpdate.classList.add('animate-fade-out');
+          setTimeout(() => {
+            document.body.removeChild(trafficUpdate);
+          }, 300);
+        }, 5000);
+      }
+    }, 15000);
     
     return () => {
       clearTimeout(timer);
       clearInterval(trafficTimer);
     };
+  }, [interactive]);
+  
+  // Map dragging functionality
+  const handleMouseDown = (e) => {
+    if (!interactive) return;
+    setIsDragging(true);
+    setStartPos({ x: e.clientX - mapPosition.x, y: e.clientY - mapPosition.y });
+  };
+  
+  const handleTouchStart = (e) => {
+    if (!interactive) return;
+    setIsDragging(true);
+    const touch = e.touches[0];
+    setStartPos({ x: touch.clientX - mapPosition.x, y: touch.clientY - mapPosition.y });
+  };
+  
+  const handleMouseMove = (e) => {
+    if (!isDragging || !interactive) return;
+    setMapPosition({ 
+      x: e.clientX - startPos.x, 
+      y: e.clientY - startPos.y 
+    });
+  };
+  
+  const handleTouchMove = (e) => {
+    if (!isDragging || !interactive) return;
+    const touch = e.touches[0];
+    setMapPosition({ 
+      x: touch.clientX - startPos.x, 
+      y: touch.clientY - startPos.y 
+    });
+    e.preventDefault(); // Prevent scrolling while dragging
+  };
+  
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+  
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+  
+  useEffect(() => {
+    if (interactive) {
+      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchend', handleTouchEnd);
+      
+      return () => {
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('touchend', handleTouchEnd);
+      };
+    }
   }, [interactive]);
   
   const handleZoomIn = () => {
@@ -155,19 +251,34 @@ const Map: React.FC<MapProps> = ({
     }
   };
   
+  const mapStyles = {
+    transform: interactive ? `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${zoom/14})` : `scale(${zoom/14})`,
+    cursor: isDragging ? 'grabbing' : (interactive ? 'grab' : 'default'),
+    transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+  };
+  
   return (
-    <div className={`relative w-full bg-muted/10 overflow-hidden rounded-xl ${className}`} style={{ transform: `scale(${zoom/14})`, transformOrigin: 'center' }}>
+    <div className={`relative w-full bg-muted/10 overflow-hidden rounded-xl ${className}`}>
       {isLoading ? (
         <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
           <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : (
         <>
-          <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+          <div 
+            ref={mapRef}
+            className="absolute inset-0 flex items-center justify-center overflow-hidden"
+            style={mapStyles}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+          >
             <img 
               src="/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png" 
               alt="Memphis Map" 
               className="w-full h-full object-cover"
+              draggable="false"
             />
             
             {/* User location blue dot */}
@@ -332,8 +443,8 @@ const Map: React.FC<MapProps> = ({
             </button>
           </div>
           
-          {/* Back button */}
-          {showBackButton && (
+          {/* Back button - only show on non-home pages */}
+          {showBackButton && !isHomePage && (
             <button 
               className="absolute top-4 left-4 h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all z-30"
               onClick={handleGoBack}

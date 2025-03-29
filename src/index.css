@@ -1,253 +1,114 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
-    --background: 0 0% 97%;
-    --foreground: 0 0% 3%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3%;
-
+    --card-foreground: 222.2 84% 4.9%;
+ 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --primary: 142.1 70.56% 45.1%;
-    --primary-foreground: 0 0% 0%;
-
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 93%;
-    --muted-foreground: 240 5% 44.9%;
-
-    --accent: 142.1 70.56% 45.1%;
-    --accent-foreground: 0 0% 0%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 142.4 71.8% 29.2%;
-
-    --radius: 1rem;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 142.1 76.2% 36.3%;
+ 
+    --radius: 0.5rem;
   }
-
+ 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
-
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 142.1 70.56% 45.1%;
-    --primary-foreground: 0 0% 0%;
-
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 64.9%;
-
-    --accent: 142.1 70.56% 45.1%;
-    --accent-foreground: 0 0% 0%;
-
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 142.1 70.6% 45.3%;
+    --primary-foreground: 144.9 80.4% 10%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
     --ring: 142.4 71.8% 29.2%;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
   }
-  
-  html, body {
-    height: 100%;
-    overflow-x: hidden;
-    touch-action: manipulation;
-  }
-  
   body {
-    @apply bg-background text-foreground antialiased transition-colors duration-300;
-    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
-    display: flex;
-    flex-direction: column;
-  }
-
-  #root {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
-  }
-  
-  h1 {
-    @apply text-3xl;
-  }
-  
-  h2 {
-    @apply text-2xl;
-  }
-  
-  h3 {
-    @apply text-xl;
-  }
-  
-  input, button, a {
-    -webkit-tap-highlight-color: transparent;
+    @apply bg-background text-foreground;
   }
 }
 
 @layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+  
   .glass {
-    @apply backdrop-blur-md bg-white/5 border border-white/10 dark:bg-black/30 dark:border-white/5;
+    @apply dark:bg-black/80 bg-white/90 backdrop-filter backdrop-blur-md;
   }
   
   .card-shadow {
-    @apply shadow-[0_8px_16px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_16px_rgba(0,0,0,0.4)];
+    @apply shadow-md dark:shadow-black/20 shadow-gray-200/50;
   }
   
-  .text-balance {
-    text-wrap: balance;
-  }
-
   .page-container {
-    @apply container mx-auto px-4 pb-20 pt-4 min-h-screen max-w-md;
+    @apply max-w-md mx-auto px-4 py-2 pb-24;
   }
   
-  .page-transition-enter {
-    @apply animate-slide-in;
+  .animate-dash {
+    animation: dash 20s linear infinite;
   }
   
-  .page-transition-exit {
-    @apply animate-slide-out;
-  }
-  
-  .perspective {
-    perspective: 1000px;
-  }
-  
-  .transform-style-preserve-3d {
-    transform-style: preserve-3d;
-  }
-  
-  .backface-hidden {
-    backface-visibility: hidden;
-  }
-  
-  .rotate-y-180 {
-    transform: rotateY(180deg);
-  }
-  
-  .animate-scale-in {
-    animation: scaleIn 0.4s ease-out forwards;
-  }
-  
-  .animate-ping {
-    animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -1000;
+    }
   }
   
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  .animate-dash {
-    stroke-dasharray: 10, 5;
-    animation: dash 1s linear infinite;
-  }
-  
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  .hover-scale {
-    @apply transition-transform duration-300 hover:scale-110;
-  }
-  
-  .hover-rotate {
-    @apply transition-transform duration-300 hover:rotate-6;
-  }
-  
-  .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
-  }
-}
-
-@keyframes scaleIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes ping {
-  75%, 100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes dash {
-  to {
-    stroke-dashoffset: -20;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-/* Add portrait mode enforcement */
-@media (orientation: landscape) {
-  body::before {
-    content: "Please rotate your device to portrait mode for the best experience";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.9);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 2rem;
-    text-align: center;
-    font-size: 1.25rem;
   }
 }
