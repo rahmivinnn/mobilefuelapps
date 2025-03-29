@@ -10,7 +10,42 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
-import { allStations } from "@/data/dummyData";  // Import from dummyData
+
+const nearbyStations = [
+  {
+    id: '1',
+    name: 'Shell Gas Station',
+    address: '2255 Union Ave, Memphis, TN',
+    distance: '0.8',
+    rating: 4.8,
+    isOpen: true,
+    imageUrl: '/lovable-uploads/00333baa-ca73-4e51-8f20-49acab199b5b.png'
+  },
+  {
+    id: '2',
+    name: 'ExxonMobil',
+    address: '1701 Poplar Ave, Memphis, TN',
+    distance: '1.5',
+    rating: 4.6,
+    isOpen: true,
+    imageUrl: '/lovable-uploads/049ef9d2-46de-4e78-bee2-10fa706d9425.png'
+  },
+  {
+    id: '3',
+    name: 'Chevron',
+    address: '1203 Madison Ave, Memphis, TN',
+    distance: '2.3',
+    rating: 4.3,
+    isOpen: false,
+    imageUrl: '/lovable-uploads/8c6a633e-ae68-4424-b2b3-4458a96b7d3b.png'
+  }
+];
+
+const trafficConditions = {
+  light: ['Union Ave', 'Madison Ave', 'Cooper St'],
+  moderate: ['Poplar Ave', 'Central Ave'],
+  heavy: ['I-240', 'I-40', 'Sam Cooper Blvd']
+};
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,21 +56,10 @@ const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Get 10 nearby stations sorted by distance
-  const nearbyStations = allStations
-    .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
-    .slice(0, 10);
-  
   useEffect(() => {
     const timer = setInterval(() => {
       setLastUpdated(new Date());
       // Show random traffic updates every minute
-      const trafficConditions = {
-        light: ['Union Ave', 'Madison Ave', 'Cooper St'],
-        moderate: ['Poplar Ave', 'Central Ave'],
-        heavy: ['I-240', 'I-40', 'Sam Cooper Blvd']
-      };
-      
       const roads = [...trafficConditions.light, ...trafficConditions.moderate, ...trafficConditions.heavy];
       const randomRoad = roads[Math.floor(Math.random() * roads.length)];
       const conditions = ["light", "moderate", "heavy"];
@@ -75,26 +99,9 @@ const Index = () => {
   const handleNotificationClick = () => {
     toast({
       title: "Notifications",
-      description: "You have 3 new notifications",
+      description: "Viewing all notifications",
       duration: 3000,
     });
-    
-    // Show multiple notifications sequentially
-    setTimeout(() => {
-      toast({
-        title: "New Promotion",
-        description: "Get 5% off your next fuel purchase with code FUEL5",
-        duration: 4000,
-      });
-    }, 1000);
-    
-    setTimeout(() => {
-      toast({
-        title: "Order Update",
-        description: "Your last order has been delivered successfully",
-        duration: 4000,
-      });
-    }, 2000);
   };
   
   return (
@@ -111,11 +118,11 @@ const Index = () => {
           </div>
         </div>
         
-        <div className="flex-1 flex justify-center items-center">
+        <div className="flex-1 flex justify-center">
           <img 
             src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
             alt="FUELFRIENDLY" 
-            className="h-1 animate-fade-in" // Further reduced from h-1.25 to h-1
+            className="h-1.75 animate-fade-in" // Reduced further from h-2.25 to h-1.75
           />
         </div>
         
@@ -156,7 +163,6 @@ const Index = () => {
             className="h-56 w-full rounded-lg overflow-hidden" 
             interactive={true} 
             showRoute={showTraffic} 
-            showBackButton={true}
           />
         </div>
         
@@ -205,12 +211,12 @@ const Index = () => {
           </button>
         </div>
         
-        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
+        <div className="space-y-3">
           {nearbyStations.map((station, index) => (
             <div 
               key={station.id} 
               className="animate-fade-in transform transition-all duration-500 hover:translate-x-1" 
-              style={{ animationDelay: `${0.6 + (index * 0.1)}s` }}
+              style={{ animationDelay: `${0.6 + (index * 0.2)}s` }}
             >
               <StationCard {...station} />
             </div>

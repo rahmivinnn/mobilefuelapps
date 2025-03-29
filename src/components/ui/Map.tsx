@@ -1,24 +1,21 @@
 
 import React, { useState, useEffect } from 'react';
-import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface MapProps {
   className?: string;
   showRoute?: boolean;
   showDeliveryInfo?: boolean;
   interactive?: boolean;
-  showBackButton?: boolean;
 }
 
 const Map: React.FC<MapProps> = ({ 
   className, 
   showRoute = false, 
   showDeliveryInfo = false,
-  interactive = false,
-  showBackButton = false
+  interactive = false
 }) => {
-  const navigate = useNavigate();
   const [zoom, setZoom] = useState(14);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,10 +106,6 @@ const Map: React.FC<MapProps> = ({
     setShowDirections(true);
   };
   
-  const handleGoBack = () => {
-    navigate(-1);
-  };
-  
   const shareToSocial = (platform: string) => {
     const shareUrl = window.location.href;
     const shareText = "Check out this gas station on FuelFriendly!";
@@ -163,16 +156,6 @@ const Map: React.FC<MapProps> = ({
         </div>
       ) : (
         <>
-          {/* Back button */}
-          {showBackButton && (
-            <button 
-              onClick={handleGoBack}
-              className="absolute top-4 left-4 z-50 h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-          )}
-          
           <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
             <img 
               src="/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png" 

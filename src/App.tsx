@@ -103,7 +103,7 @@ const App: React.FC = () => {
                 <Route path="/map" element={
                   isAuthenticated ? (
                     <div className="h-screen w-full">
-                      <Map className="h-full w-full" showBackButton={true} interactive={true} showRoute={true} />
+                      <Map className="h-full w-full" />
                     </div>
                   ) : <Navigate to="/sign-in" />
                 } />
