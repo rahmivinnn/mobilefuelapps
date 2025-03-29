@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -8,6 +9,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from "@/hooks/use-toast";
 
 const nearbyStations = [
   {
@@ -52,6 +54,7 @@ const Index = () => {
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [mapVisible, setMapVisible] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -68,6 +71,15 @@ const Index = () => {
     
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    // Show notification toast when component mounts
+    toast({
+      title: "Traffic Update",
+      description: "Heavy traffic detected on I-240. Consider alternative routes.",
+      duration: 5000,
+    });
+  }, [toast]);
   
   const handleSeeAll = () => {
     navigate('/map');
@@ -91,7 +103,7 @@ const Index = () => {
           <img 
             src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
             alt="FUELFRIENDLY" 
-            className="h-4.5 animate-fade-in"
+            className="h-2.25 animate-fade-in" // Reduced by half from h-4.5 to h-2.25
           />
         </div>
         
