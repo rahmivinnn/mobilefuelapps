@@ -5,7 +5,7 @@ import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, M
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { orderHistory } from '@/data/dummyData';
 
 // Memphis-specific data
@@ -101,7 +101,7 @@ const TrackOrder: React.FC = () => {
           title: "Error",
           description: "Could not load order details",
           duration: 3000,
-          className: "bg-black border-gray-800 text-white"
+          variant: "destructive"
         });
       }
     }
@@ -133,20 +133,19 @@ const TrackOrder: React.FC = () => {
         toast({
           title: "Order Update",
           description: statuses[currentStep].statusDetails,
-          duration: 3000,
-          className: "bg-black border-gray-800 text-white"
+          duration: 3000
         });
         
         // Check if this is the final step (delivery complete)
         if (currentStep === statuses.length - 1) {
           setOrderComplete(true);
           
-          // Show delivery completion notification
+          // Show delivery completion toast (now smaller)
           setTimeout(() => {
             toast({
               title: "Delivery Complete!",
               description: "Your order has been successfully delivered.",
-              duration: 5000,
+              duration: 3000,
               className: "bg-green-500 border-green-600 text-white"
             });
             
@@ -163,13 +162,19 @@ const TrackOrder: React.FC = () => {
       }
     }, 5000);
 
-    // Update driver and delivery time every 1 minute
+    // Update driver every 15-30 seconds (faster than before)
     const driverUpdateTimer = setInterval(() => {
       // Choose random Memphis license plate
       const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
       
-      // Choose random delivery person
-      const randomDeliveryPerson = deliveryPeople[Math.floor(Math.random() * deliveryPeople.length)];
+      // Choose random delivery person (different from current)
+      let currentDriverIndex = deliveryPeople.findIndex(driver => driver.name === order.driver?.name);
+      let newDriverIndex;
+      do {
+        newDriverIndex = Math.floor(Math.random() * deliveryPeople.length);
+      } while (newDriverIndex === currentDriverIndex && deliveryPeople.length > 1);
+      
+      const randomDeliveryPerson = deliveryPeople[newDriverIndex];
       
       // Choose random delivery time
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
@@ -185,12 +190,11 @@ const TrackOrder: React.FC = () => {
       if (!orderComplete) {
         toast({
           title: "Driver Update",
-          description: "Your order has been assigned to a new driver",
-          duration: 3000,
-          className: "bg-black border-gray-800 text-white"
+          description: `Your order is now being delivered by ${randomDeliveryPerson.name}`,
+          duration: 3000
         });
       }
-    }, 60000); // 1 minute in milliseconds
+    }, Math.floor(Math.random() * 15000) + 15000); // Random time between 15-30 seconds
     
     // Show random driver messages every 15-30 seconds
     const messageTimer = setInterval(() => {
@@ -201,7 +205,7 @@ const TrackOrder: React.FC = () => {
         toast({
           title: `Message from ${order.driver?.name || 'Driver'}`,
           description: randomMessage,
-          duration: 5000,
+          duration: 3000,
           className: "bg-blue-500 border-blue-600 text-white"
         });
       }
@@ -222,7 +226,7 @@ const TrackOrder: React.FC = () => {
         toast({
           title: "Arrived at Destination",
           description: "Your fuel has been delivered. Enjoy!",
-          duration: 4000,
+          duration: 2000,
           className: "bg-green-500 border-green-600 text-white"
         });
       }, 2000);
