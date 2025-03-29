@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/toast";
+import { toast } from "@/hooks/use-toast";
 import { ChevronRight, Moon, Sun, Bell, Shield, CreditCard, HelpCircle, LogOut } from "lucide-react";
 
 interface SettingsProps {
@@ -74,7 +74,7 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <Header title="Settings" showBackButton={false} />
+      <Header title="Settings" showBack={false} />
       <div className="container max-w-md mx-auto px-4 py-6">
         <motion.div 
           initial={{ opacity: 0 }}
