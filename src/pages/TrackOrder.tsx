@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
@@ -394,11 +393,11 @@ const TrackOrder: React.FC = () => {
         <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
-      {/* Map section with enhanced directions */}
-      <div className="h-[300px] mb-3">
+      {/* Map section with enhanced directions - now between status and driver info */}
+      <div className="h-[250px] mb-4 mt-2">
         <Map 
           showRoute={true}
-          showDeliveryInfo={true}
+          showDeliveryInfo={false}
           driverLocation={driverLocation}
           animate={true}
           driverName={driverName}
@@ -406,9 +405,7 @@ const TrackOrder: React.FC = () => {
       </div>
       
       {/* Driver info and order details */}
-      <div className="px-4 py-2 bg-black rounded-t-3xl -mt-12 relative">
-        <div className="h-1 w-12 bg-gray-700 rounded-full mx-auto mb-4"></div>
-        
+      <div className="px-4 py-2 bg-black relative">
         {/* Driver info */}
         <div className="flex items-center mb-6">
           <div className="mr-3">

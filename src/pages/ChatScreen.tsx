@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Phone, Send, Image, Mic, Paperclip, X, User } from 'lucide-react';
+import { ArrowLeft, Phone, Send, Mic, Paperclip, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ChatScreen = () => {
@@ -93,7 +93,7 @@ const ChatScreen = () => {
         </button>
       </div>
       
-      {/* Messages */}
+      {/* Messages - increased flex-1 to take more space */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((msg) => (
           <motion.div
@@ -115,7 +115,7 @@ const ChatScreen = () => {
                   : 'bg-gray-800 text-white rounded-bl-none'
               }`}
             >
-              <p>{msg.text}</p>
+              <p className="break-words">{msg.text}</p>
               <p className={`text-xs mt-1 ${msg.sender === 'user' ? 'text-green-100' : 'text-gray-400'}`}>
                 {msg.time}
               </p>
@@ -147,8 +147,8 @@ const ChatScreen = () => {
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Message Input */}
-      <div className="p-3 border-t border-gray-800">
+      {/* Message Input - fixed at bottom */}
+      <div className="p-3 border-t border-gray-800 bg-black">
         <div className="flex items-center bg-gray-800 rounded-full px-4 py-1">
           <button className="mr-2 text-gray-400">
             <Paperclip className="h-5 w-5" />
