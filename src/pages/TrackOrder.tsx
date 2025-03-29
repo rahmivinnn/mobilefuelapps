@@ -122,12 +122,16 @@ const TrackOrder: React.FC = () => {
     // Update status every 5 seconds
     const statusTimer = setInterval(() => {
       if (currentStep < statuses.length) {
-        setOrder(prevOrder => ({
-          ...prevOrder,
-          status: statuses[currentStep].status,
-          progress: statuses[currentStep].progress,
-          statusDetails: statuses[currentStep].statusDetails
-        }));
+        setOrder(prevOrder => {
+          if (!prevOrder) return defaultOrder; // Ensure prevOrder is never undefined
+          
+          return {
+            ...prevOrder,
+            status: statuses[currentStep].status,
+            progress: statuses[currentStep].progress,
+            statusDetails: statuses[currentStep].statusDetails
+          };
+        });
         
         // Show toast notification for status changes
         toast({
@@ -140,12 +144,12 @@ const TrackOrder: React.FC = () => {
         if (currentStep === statuses.length - 1) {
           setOrderComplete(true);
           
-          // Show delivery completion toast (now smaller)
+          // Show smaller delivery completion toast when delivered
           setTimeout(() => {
             toast({
               title: "Delivery Complete!",
               description: "Your order has been successfully delivered.",
-              duration: 3000,
+              duration: 2000,
               className: "bg-green-500 border-green-600 text-white"
             });
             
@@ -162,13 +166,17 @@ const TrackOrder: React.FC = () => {
       }
     }, 5000);
 
-    // Update driver every 15-30 seconds (faster than before)
+    // Update driver much more frequently (every 5-10 seconds)
     const driverUpdateTimer = setInterval(() => {
       // Choose random Memphis license plate
       const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
       
       // Choose random delivery person (different from current)
-      let currentDriverIndex = deliveryPeople.findIndex(driver => driver.name === order.driver?.name);
+      let currentDriverIndex = -1;
+      if (order && order.driver) {
+        currentDriverIndex = deliveryPeople.findIndex(driver => driver.name === order.driver?.name);
+      }
+      
       let newDriverIndex;
       do {
         newDriverIndex = Math.floor(Math.random() * deliveryPeople.length);
@@ -179,12 +187,16 @@ const TrackOrder: React.FC = () => {
       // Choose random delivery time
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
       
-      setOrder(prevOrder => ({
-        ...prevOrder,
-        estimatedDelivery: randomDeliveryTime,
-        licensePlate: randomLicensePlate,
-        driver: randomDeliveryPerson
-      }));
+      setOrder(prevOrder => {
+        if (!prevOrder) return defaultOrder; // Ensure prevOrder is never undefined
+        
+        return {
+          ...prevOrder,
+          estimatedDelivery: randomDeliveryTime,
+          licensePlate: randomLicensePlate,
+          driver: randomDeliveryPerson
+        };
+      });
       
       // Only show driver update notification if the order is not complete
       if (!orderComplete) {
@@ -194,16 +206,17 @@ const TrackOrder: React.FC = () => {
           duration: 3000
         });
       }
-    }, Math.floor(Math.random() * 15000) + 15000); // Random time between 15-30 seconds
+    }, Math.floor(Math.random() * 5000) + 5000); // Random time between 5-10 seconds
     
     // Show random driver messages every 15-30 seconds
     const messageTimer = setInterval(() => {
       // Only show messages if the order is in progress
       if (!orderComplete) {
         const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
+        const driverName = order?.driver?.name || 'Driver';
         
         toast({
-          title: `Message from ${order.driver?.name || 'Driver'}`,
+          title: `Message from ${driverName}`,
           description: randomMessage,
           duration: 3000,
           className: "bg-blue-500 border-blue-600 text-white"
@@ -318,13 +331,13 @@ const TrackOrder: React.FC = () => {
         <div className="flex items-center mb-6">
           <img 
             src={order?.driver?.image} 
-            alt={order?.driver?.name} 
+            alt={order?.driver?.name || 'Driver'} 
             className="h-14 w-14 rounded-full object-cover mr-3"
           />
           <div className="flex-1">
-            <h3 className="font-semibold text-lg">{order?.driver?.name}</h3>
-            <p className="text-gray-400">{order?.driver?.location}</p>
-            <p className="text-gray-400 text-xs mt-1">Vehicle License: {order?.licensePlate}</p>
+            <h3 className="font-semibold text-lg">{order?.driver?.name || 'Driver'}</h3>
+            <p className="text-gray-400">{order?.driver?.location || 'Memphis, TN'}</p>
+            <p className="text-gray-400 text-xs mt-1">Vehicle License: {order?.licensePlate || 'TN-XXXXX'}</p>
           </div>
           <div className="flex space-x-2">
             <Button 
@@ -345,7 +358,7 @@ const TrackOrder: React.FC = () => {
         {/* Delivery time */}
         <div className="mb-6">
           <h4 className="text-gray-400 mb-1">Your Delivery Time</h4>
-          <p className="font-semibold text-white text-lg">Estimated {order?.estimatedDelivery}</p>
+          <p className="font-semibold text-white text-lg">Estimated {order?.estimatedDelivery || 'Soon'}</p>
         </div>
         
         {/* Delivery status */}
