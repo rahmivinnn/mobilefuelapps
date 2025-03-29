@@ -7,7 +7,7 @@ import Map from '@/components/ui/Map';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { useTheme } from 'next-themes';
+import { motion } from 'framer-motion';
 
 const nearbyStations = [
   {
@@ -51,7 +51,6 @@ const Index = () => {
   const [showTraffic, setShowTraffic] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [mapVisible, setMapVisible] = useState(false);
-  const { theme } = useTheme();
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -73,12 +72,7 @@ const Index = () => {
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300 max-w-[420px] mx-auto">
       <div className="flex justify-between items-center px-4 py-2">
         <div className="relative group">
-          <Avatar className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 ring-2 ring-green-500/50 hover:ring-green-500 transition-all duration-300 transform hover:scale-110 group-hover:rotate-6">
-            <AvatarImage 
-              src="/lovable-uploads/e409d5d1-afc9-45c9-8b93-c4cb171e833f.png" 
-              alt="Profile" 
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
+          <Avatar className="w-10 h-10 bg-green-500 ring-2 ring-green-500/50 hover:ring-green-500 transition-all duration-300 transform hover:scale-110 group-hover:rotate-6">
             <AvatarFallback className="bg-gradient-to-br from-green-400 to-green-600">
               <User className="h-5 w-5 text-white" />
             </AvatarFallback>
@@ -88,18 +82,10 @@ const Index = () => {
           </div>
         </div>
         
-        <div className="flex flex-col items-center">
-          <img 
-            src="/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png" 
-            alt="FuelFriendly Logo" 
-            className="h-8 object-contain transition-all duration-500 hover:scale-110"
-          />
-          <span 
-            className="text-xs font-bold tracking-wide mt-1" 
-            style={{ fontFamily: 'Impact, Haettenschweiler, Arial Narrow Bold, sans-serif', fontStyle: 'italic' }}
-          >
-            FUELFRIENDLY
-          </span>
+        <div className="flex items-center">
+          <div className="px-4 py-2 bg-green-500/10 rounded-full">
+            <span className="font-bold text-green-500 text-sm">8:45</span>
+          </div>
         </div>
         
         <div className="flex items-center gap-2">

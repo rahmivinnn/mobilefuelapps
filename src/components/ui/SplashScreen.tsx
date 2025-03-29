@@ -26,39 +26,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-green-500 overflow-hidden">
-      {/* Hexagonal pattern at the top */}
-      <div className="absolute top-0 right-0 w-full">
-        <motion.svg 
-          width="100%" 
-          height="300" 
-          viewBox="0 0 400 300" 
-          initial={{ opacity: 0.3, y: -20 }}
-          animate={{ opacity: 0.5, y: 0 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-        >
-          <defs>
-            <pattern id="hexagonPattern" patternUnits="userSpaceOnUse" width="50" height="43.4" patternTransform="scale(2) rotate(0)">
-              <path d="M25,0 L50,14.4 L50,38.6 L25,53 L0,38.6 L0,14.4 Z" fill="rgba(255,255,255,0.1)" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#hexagonPattern)" />
-        </motion.svg>
-      </div>
-      
-      {/* Hexagonal pattern at the bottom */}
-      <div className="absolute bottom-0 left-0 w-full">
-        <motion.svg 
-          width="100%" 
-          height="300" 
-          viewBox="0 0 400 300" 
-          initial={{ opacity: 0.3, y: 20 }}
-          animate={{ opacity: 0.5, y: 0 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-        >
-          <rect width="100%" height="100%" fill="url(#hexagonPattern)" />
-        </motion.svg>
-      </div>
-      
       {/* Logo and Text */}
       <motion.div 
         className="flex flex-col items-center justify-center z-10"
@@ -84,11 +51,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-center"
         >
-          <h1 className="font-bold text-white text-4xl tracking-widest" style={{ fontFamily: 'Impact, Haettenschweiler, Arial Narrow Bold, sans-serif', letterSpacing: '2px', fontStyle: 'italic' }}>
-            FUELFRIENDLY
-          </h1>
+          <img 
+            src="/lovable-uploads/c123a960-63f7-48ab-b0a0-6f29584106f7.png" 
+            alt="FUELFRIENDLY" 
+            className="h-8 object-contain"
+          />
         </motion.div>
       </motion.div>
     </div>

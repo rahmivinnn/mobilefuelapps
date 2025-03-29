@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
-import { User, CreditCard, Bell, Shield, Wallet, Clock, ChevronRight, LogOut } from 'lucide-react';
-import Header from '@/components/layout/Header';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { User, CreditCard, Bell, Shield, Wallet, Clock, ChevronRight, LogOut, ChevronLeft } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
+import { Switch } from '@/components/ui/switch';
 
 interface SettingsProps {
   onLogout?: () => void;
@@ -33,103 +34,201 @@ const paymentHistory = [
 ];
 
 const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
+  const [batteryLevel, setBatteryLevel] = useState(100);
+  const [notifications, setNotifications] = useState(true);
+  const [darkMode, setDarkMode] = useState(true);
+  const [locationServices, setLocationServices] = useState(true);
+  const [savePaymentInfo, setSavePaymentInfo] = useState(true);
+  const [biometricLogin, setBiometricLogin] = useState(false);
+  
   const handleLogout = () => {
     if (onLogout) {
       onLogout();
     }
   };
 
+  // Simulate battery draining
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBatteryLevel(prev => Math.max(10, prev - 1));
+    }, 60000);
+    
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <>
-      <Header showBack title="Account & Settings" />
+    <div className="min-h-screen bg-black text-white pb-20">
+      {/* Status bar */}
+      <div className="px-4 py-1 flex justify-between items-center">
+        <div className="text-sm font-medium">8:45</div>
+        <div className="flex items-center space-x-1">
+          <div className="flex items-center">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+              <path d="M17 20H7C4 20 2 18 2 15V9C2 6 4 4 7 4H17C20 4 22 6 22 9V15C22 18 20 20 17 20Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M12 14V10M12 14C11.2 14 10.5 13.3 10.5 12.5V11.5C10.5 10.7 11.2 10 12 10C12.8 10 13.5 10.7 13.5 11.5V12.5C13.5 13.3 12.8 14 12 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+              <path d="M6.43994 2C4.01994 2 1.98999 4.01995 1.98999 6.43995V17.56C1.98999 19.98 4.01994 22 6.43994 22H17.5599C19.9799 22 21.9999 19.98 21.9999 17.56V6.43995C21.9999 4.01995 19.9799 2 17.5599 2H6.43994Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M11.9999 7V9M11.9999 14.01V14M7.98993 12H15.9999" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <div className="text-sm font-bold">{batteryLevel}%</div>
+        </div>
+      </div>
       
-      <main className="page-container pb-20">
-        {/* Profile section */}
-        <div className="mb-6 glass card-shadow rounded-xl p-4">
+      {/* Header */}
+      <div className="px-4 py-3 flex items-center">
+        <Link to="/">
+          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-800 mr-3">
+            <ChevronLeft className="h-6 w-6" />
+          </div>
+        </Link>
+        <h1 className="text-xl font-semibold">Account & Settings</h1>
+      </div>
+      
+      {/* Profile section */}
+      <div className="px-4 py-3">
+        <div className="bg-gray-900 rounded-xl p-4">
           <div className="flex items-center">
             <div className="h-16 w-16 rounded-full bg-green-500 flex items-center justify-center text-black text-xl font-bold mr-4">
               JD
             </div>
             <div>
               <h2 className="text-xl font-bold">John Doe</h2>
-              <p className="text-muted-foreground">john.doe@example.com</p>
+              <p className="text-gray-400">john.doe@example.com</p>
             </div>
-            <button className="ml-auto bg-muted/50 h-10 w-10 rounded-full flex items-center justify-center">
+            <button className="ml-auto bg-gray-800 h-10 w-10 rounded-full flex items-center justify-center">
               <User className="h-5 w-5" />
             </button>
           </div>
         </div>
+      </div>
+      
+      {/* Settings sections */}
+      <div className="px-4 py-3">
+        <h3 className="text-lg font-medium mb-3">Account & Preferences</h3>
         
-        {/* Account & Preferences section */}
-        <div className="mb-6">
-          <h3 className="text-lg font-medium mb-3">Account & Preferences</h3>
-          <div className="space-y-3">
-            <div className="glass card-shadow p-4 rounded-xl flex items-center">
-              <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center mr-3">
-                <CreditCard className="h-5 w-5 text-green-500" />
-              </div>
-              <div>
-                <h4 className="font-medium">Payment Methods</h4>
-                <p className="text-xs text-muted-foreground">Manage your payment options</p>
-              </div>
-              <ChevronRight className="ml-auto h-5 w-5 text-muted-foreground" />
-            </div>
-            
-            <div className="glass card-shadow p-4 rounded-xl flex items-center">
-              <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center mr-3">
+        <div className="bg-gray-900 rounded-xl overflow-hidden mb-4">
+          <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
                 <Bell className="h-5 w-5 text-green-500" />
               </div>
-              <div>
-                <h4 className="font-medium">Notifications</h4>
-                <p className="text-xs text-muted-foreground">Customize your alerts</p>
-              </div>
-              <ChevronRight className="ml-auto h-5 w-5 text-muted-foreground" />
+              <span>Notifications</span>
             </div>
-            
-            <div className="glass card-shadow p-4 rounded-xl flex items-center">
-              <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center mr-3">
-                <Shield className="h-5 w-5 text-green-500" />
+            <Switch 
+              checked={notifications} 
+              onCheckedChange={setNotifications} 
+              className="data-[state=checked]:bg-green-500"
+            />
+          </div>
+          
+          <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                <svg className="h-5 w-5 text-green-500" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 18.5C15.5899 18.5 18.5 15.5899 18.5 12C18.5 8.41015 15.5899 5.5 12 5.5C8.41015 5.5 5.5 8.41015 5.5 12C5.5 15.5899 8.41015 18.5 12 18.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M19.14 19.14L19.01 19.01M19.01 4.99L19.14 4.86L19.01 4.99ZM4.86 19.14L4.99 19.01L4.86 19.14ZM12 2.08V2V2.08ZM12 22V21.92V22ZM2.08 12H2H2.08ZM22 12H21.92H22ZM4.99 4.99L4.86 4.86L4.99 4.99Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
-              <div>
-                <h4 className="font-medium">Privacy & Security</h4>
-                <p className="text-xs text-muted-foreground">Manage your account security</p>
-              </div>
-              <ChevronRight className="ml-auto h-5 w-5 text-muted-foreground" />
+              <span>Dark Mode</span>
             </div>
+            <Switch 
+              checked={darkMode} 
+              onCheckedChange={setDarkMode} 
+              className="data-[state=checked]:bg-green-500"
+            />
+          </div>
+          
+          <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                <MapPin className="h-5 w-5 text-green-500" />
+              </div>
+              <span>Location Services</span>
+            </div>
+            <Switch 
+              checked={locationServices} 
+              onCheckedChange={setLocationServices} 
+              className="data-[state=checked]:bg-green-500"
+            />
           </div>
         </div>
         
-        {/* Payment History */}
-        <div className="mb-6">
-          <h3 className="text-lg font-medium mb-3">Payment History</h3>
-          <div className="glass card-shadow rounded-xl overflow-hidden">
-            {paymentHistory.map((payment, index) => (
-              <div 
-                key={payment.id}
-                className={`p-4 flex justify-between items-center ${index !== paymentHistory.length - 1 ? 'border-b border-border' : ''}`}
-              >
-                <div className="flex items-center">
-                  <div className="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center mr-3">
-                    <Wallet className="h-5 w-5 text-green-500" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm">{payment.stationName}</h4>
-                    <div className="flex items-center mt-1">
-                      <Clock className="h-3 w-3 text-muted-foreground mr-1" />
-                      <p className="text-xs text-muted-foreground">{payment.date}</p>
-                    </div>
-                  </div>
+        <h3 className="text-lg font-medium mb-3">Payment & Security</h3>
+        
+        <div className="bg-gray-900 rounded-xl overflow-hidden mb-4">
+          <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                <CreditCard className="h-5 w-5 text-green-500" />
+              </div>
+              <div>
+                <p>Payment Methods</p>
+                <p className="text-xs text-gray-400">Visa •••• 4242</p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-gray-400" />
+          </div>
+          
+          <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                <Wallet className="h-5 w-5 text-green-500" />
+              </div>
+              <span>Save Payment Info</span>
+            </div>
+            <Switch 
+              checked={savePaymentInfo} 
+              onCheckedChange={setSavePaymentInfo} 
+              className="data-[state=checked]:bg-green-500"
+            />
+          </div>
+          
+          <div className="p-4 flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                <Shield className="h-5 w-5 text-green-500" />
+              </div>
+              <span>Biometric Login</span>
+            </div>
+            <Switch 
+              checked={biometricLogin} 
+              onCheckedChange={setBiometricLogin} 
+              className="data-[state=checked]:bg-green-500"
+            />
+          </div>
+        </div>
+        
+        <h3 className="text-lg font-medium mb-3">Recent Transactions</h3>
+        
+        <div className="bg-gray-900 rounded-xl overflow-hidden mb-6">
+          {paymentHistory.map((payment, index) => (
+            <div 
+              key={payment.id}
+              className={`p-4 flex justify-between items-center ${index !== paymentHistory.length - 1 ? 'border-b border-gray-800' : ''}`}
+            >
+              <div className="flex items-center">
+                <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                  <Wallet className="h-5 w-5 text-green-500" />
                 </div>
-                <div className="text-right">
-                  <p className="font-medium">${payment.amount.toFixed(2)}</p>
-                  <p className="text-xs text-muted-foreground">{payment.method}</p>
+                <div>
+                  <h4 className="text-sm">{payment.stationName}</h4>
+                  <div className="flex items-center mt-1">
+                    <Clock className="h-3 w-3 text-gray-400 mr-1" />
+                    <p className="text-xs text-gray-400">{payment.date}</p>
+                  </div>
                 </div>
               </div>
-            ))}
-            
-            <div className="p-4 text-center">
-              <button className="text-green-500 text-sm hover:underline">View All Transactions</button>
+              <div className="text-right">
+                <p className="font-medium">${payment.amount.toFixed(2)}</p>
+                <p className="text-xs text-gray-400">{payment.method}</p>
+              </div>
             </div>
+          ))}
+          
+          <div className="p-4 text-center">
+            <button className="text-green-500 text-sm hover:underline">View All Transactions</button>
           </div>
         </div>
         
@@ -141,10 +240,10 @@ const Settings: React.FC<SettingsProps> = ({ onLogout }) => {
           <LogOut className="h-5 w-5 mr-2" />
           Sign Out
         </button>
-      </main>
+      </div>
       
       <BottomNav />
-    </>
+    </div>
   );
 };
 
