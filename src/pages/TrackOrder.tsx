@@ -137,14 +137,16 @@ const TrackOrder: React.FC = () => {
           // Safely update the order with found data
           setOrder(prevOrder => ({
             ...defaultOrder, // Always include default values as fallback
-            ...prevOrder,
+            ...foundOrder,
             id: foundOrder.id || defaultOrder.id,
             status: foundOrder.status || defaultOrder.status,
             estimatedDelivery: randomDeliveryTime,
             items: foundOrder.items || defaultOrder.items,
             total: parseFloat(foundOrder.totalPrice) || defaultOrder.total,
             licensePlate: randomLicensePlate,
-            driver: randomDeliveryPerson
+            driver: randomDeliveryPerson,
+            progress: defaultOrder.progress,
+            statusDetails: defaultOrder.statusDetails
           }));
         }
         
@@ -177,11 +179,12 @@ const TrackOrder: React.FC = () => {
     const updateStatus = () => {
       if (currentStep < statuses.length) {
         setOrder(prevOrder => {
-          // Ensure prevOrder is never undefined by using defaultOrder as fallback
-          const safeOrder = prevOrder || defaultOrder;
+          if (!prevOrder) {
+            return defaultOrder;
+          }
           
           return {
-            ...safeOrder,
+            ...prevOrder,
             status: statuses[currentStep].status,
             progress: statuses[currentStep].progress,
             statusDetails: statuses[currentStep].statusDetails
@@ -439,3 +442,4 @@ const TrackOrder: React.FC = () => {
 };
 
 export default TrackOrder;
+
