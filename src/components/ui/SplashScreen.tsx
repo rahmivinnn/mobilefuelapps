@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { motion } from 'framer-motion';
 
 interface SplashScreenProps {
@@ -7,9 +7,9 @@ interface SplashScreenProps {
 }
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
-  const [showLogo, setShowLogo] = useState(false);
+  const [showLogo, setShowLogo] = React.useState(false);
   
-  useEffect(() => {
+  React.useEffect(() => {
     const timer1 = setTimeout(() => {
       setShowLogo(true);
     }, 500);
