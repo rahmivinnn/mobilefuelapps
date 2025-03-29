@@ -79,16 +79,6 @@ const Welcome: React.FC = () => {
             </Button>
           </Link>
           
-          {/* Sign Up button */}
-          <Link to="/sign-up" className="block w-full">
-            <Button 
-              variant="outline" 
-              className="w-full h-12 rounded-full border-2 border-green-500 bg-transparent text-green-500 hover:bg-green-500/10 font-medium text-base"
-            >
-              Sign up
-            </Button>
-          </Link>
-          
           {/* Or divider */}
           <div className="flex items-center justify-center my-2">
             <span className="text-gray-400 text-sm">Or</span>

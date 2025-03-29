@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -18,7 +17,6 @@ import Map from "./components/ui/Map";
 import SplashScreen from "./components/ui/SplashScreen";
 import Welcome from "./pages/auth/Welcome";
 import SignIn from "./pages/auth/SignIn";
-import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyOtp from "./pages/auth/VerifyOtp";
 import ResetPassword from "./pages/auth/ResetPassword";
@@ -77,7 +75,7 @@ const App: React.FC = () => {
                 />
                 <Route 
                   path="/sign-up" 
-                  element={isAuthenticated ? <Navigate to="/home" /> : <SignUp onLogin={handleLogin} />} 
+                  element={<Navigate to="/sign-in" />} 
                 />
                 <Route 
                   path="/forgot-password" 
