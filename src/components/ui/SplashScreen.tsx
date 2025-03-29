@@ -36,7 +36,7 @@ const Logo = () => {
         </motion.div>
       </motion.div>
       
-      {/* Increased FUELFRIENDLY text size */}
+      {/* FUELFRIENDLY text */}
       <motion.div 
         className="text-white"
         initial={{ opacity: 0, y: 20 }}
@@ -44,7 +44,7 @@ const Logo = () => {
         transition={{ delay: 1, duration: 0.5, type: "spring" }}
       >
         <h1 
-          className="text-xl font-bold text-white tracking-wider" 
+          className="text-3xl font-bold text-white tracking-wider" 
           style={{ fontFamily: 'Impact, Haettenschweiler, Arial Narrow Bold, sans-serif', letterSpacing: '2px', fontStyle: 'italic' }}
         >
           FUELFRIENDLY
