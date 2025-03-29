@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -8,6 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const nearbyStations = [
   {
@@ -51,6 +51,7 @@ const Index = () => {
   const [showTraffic, setShowTraffic] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [mapVisible, setMapVisible] = useState(false);
+  const navigate = useNavigate();
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -68,17 +69,12 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, []);
   
+  const handleSeeAll = () => {
+    navigate('/map');
+  };
+  
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300 max-w-[420px] mx-auto">
-      {/* Add FUELFRIENDLY image at the top */}
-      <div className="flex justify-center py-2 animate-fade-in">
-        <img 
-          src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
-          alt="FUELFRIENDLY" 
-          className="h-6" 
-        />
-      </div>
-      
       <div className="flex justify-between items-center px-4 py-2">
         <div className="relative group">
           <Avatar className="w-10 h-10 bg-green-500 ring-2 ring-green-500/50 hover:ring-green-500 transition-all duration-300 transform hover:scale-110 group-hover:rotate-6">
@@ -91,8 +87,12 @@ const Index = () => {
           </div>
         </div>
         
-        <div className="flex items-center">
-          {/* Time display removed */}
+        <div className="flex-1 flex justify-center">
+          <img 
+            src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
+            alt="FUELFRIENDLY" 
+            className="h-4.5 animate-fade-in"
+          />
         </div>
         
         <div className="flex items-center gap-2">
@@ -155,7 +155,10 @@ const Index = () => {
             <span className="transition-all duration-300 dark:text-white text-green-800 group-hover:text-green-500">Fuel Stations nearby</span>
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 transition-all duration-500 group-hover:w-full"></span>
           </h2>
-          <button className="text-sm text-green-500 hover:text-green-400 transition-colors relative overflow-hidden group">
+          <button 
+            onClick={handleSeeAll}
+            className="text-sm text-green-500 hover:text-green-400 transition-colors relative overflow-hidden group cursor-pointer"
+          >
             <span className="relative z-10 group-hover:tracking-wider transition-all duration-300">See all</span>
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-green-500/30 transition-all duration-300 group-hover:w-full"></span>
           </button>

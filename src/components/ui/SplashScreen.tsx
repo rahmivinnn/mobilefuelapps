@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { motion } from 'framer-motion';
 
@@ -36,7 +35,7 @@ const Logo = () => {
         </motion.div>
       </motion.div>
       
-      {/* FUELFRIENDLY text - increased size by 0.5x (from h-3 to h-4.5) */}
+      {/* FUELFRIENDLY text - reduced to 3/4 size (from h-4.5 to h-3.375) */}
       <motion.div 
         className="text-white"
         initial={{ opacity: 0, y: 20 }}
@@ -46,7 +45,7 @@ const Logo = () => {
         <img 
           src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
           alt="FUELFRIENDLY" 
-          className="h-4.5" // Increased from h-3 to h-4.5 (0.5x larger)
+          className="h-3.375" // Reduced from h-4.5 to h-3.375 (3/4 of previous size)
         />
       </motion.div>
     </motion.div>
