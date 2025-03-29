@@ -142,7 +142,7 @@ const TrackOrder: React.FC = () => {
       }
     }, 5000);
 
-    // Update driver and delivery time every 2 minutes as requested
+    // Update driver and delivery time every 1 minute (changed from 2 minutes)
     const driverUpdateTimer = setInterval(() => {
       // Choose random Memphis license plate
       const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
@@ -170,7 +170,7 @@ const TrackOrder: React.FC = () => {
         duration: 3000,
         className: "bg-black border-gray-800 text-white"
       });
-    }, 120000); // 2 minutes in milliseconds
+    }, 60000); // 1 minute in milliseconds (changed from 120000)
     
     return () => {
       clearInterval(statusTimer);

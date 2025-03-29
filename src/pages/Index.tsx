@@ -28,6 +28,8 @@ const Index = () => {
   const stationListRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [startX, setStartX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   
   // Filter stations by search query
   const filteredStations = allStations
@@ -91,6 +93,51 @@ const Index = () => {
     if (stationListRef.current) {
       setScrollPosition(stationListRef.current.scrollLeft);
     }
+  };
+  
+  // Touch handlers for swipe functionality
+  const handleTouchStart = (e) => {
+    setStartX(e.touches[0].clientX);
+    setIsDragging(true);
+  };
+  
+  const handleTouchMove = (e) => {
+    if (!isDragging || !stationListRef.current) return;
+    
+    const currentX = e.touches[0].clientX;
+    const diff = startX - currentX;
+    stationListRef.current.scrollLeft += diff;
+    setStartX(currentX);
+  };
+  
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+  
+  // Mouse handlers for drag scrolling (desktop)
+  const handleMouseDown = (e) => {
+    setStartX(e.clientX);
+    setIsDragging(true);
+  };
+  
+  const handleMouseMove = (e) => {
+    if (!isDragging || !stationListRef.current) return;
+    
+    const currentX = e.clientX;
+    const diff = startX - currentX;
+    stationListRef.current.scrollLeft += diff;
+    setStartX(currentX);
+    
+    // Prevent text selection during drag
+    e.preventDefault();
+  };
+  
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+  
+  const handleMouseLeave = () => {
+    setIsDragging(false);
   };
   
   return (
@@ -194,8 +241,16 @@ const Index = () => {
         
         <div 
           ref={stationListRef}
-          className="overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide"
+          className="overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide cursor-grab"
           onScroll={handleStationScroll}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
           <div className="flex space-x-4" style={{ width: `${filteredStations.length * 280}px` }}>
             {filteredStations.map((station, index) => (
@@ -216,11 +271,18 @@ const Index = () => {
                 className="absolute top-0 left-0 h-1 bg-green-500 rounded-full transition-all duration-300" 
                 style={{ 
                   width: '30%', 
-                  left: `${Math.min(70, scrollPosition / stationListRef.current?.scrollWidth * 100)}%` 
+                  left: `${Math.min(70, scrollPosition / (stationListRef.current?.scrollWidth || 1) * 100)}%` 
                 }}
               ></div>
             </div>
           </div>
+        </div>
+        
+        {/* Swipe indicator */}
+        <div className="mt-2 text-center">
+          <p className="text-xs text-gray-500 animate-pulse">
+            ← Swipe to see more stations →
+          </p>
         </div>
       </div>
       
