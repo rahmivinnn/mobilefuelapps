@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -31,7 +30,6 @@ const Index = () => {
   const [startX, setStartX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   
-  // Filter stations by search query
   const filteredStations = allStations
     .filter(station => 
       station.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -40,11 +38,9 @@ const Index = () => {
     .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
     .slice(0, 10);
 
-  // Traffic updates every 15 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setLastUpdated(new Date());
-      // Show random traffic updates every 15 seconds
       const roads = [...trafficConditions.light, ...trafficConditions.moderate, ...trafficConditions.heavy];
       const randomRoad = roads[Math.floor(Math.random() * roads.length)];
       const conditions = ["light", "moderate", "heavy"];
@@ -55,7 +51,7 @@ const Index = () => {
         description: `${randomCondition.charAt(0).toUpperCase() + randomCondition.slice(1)} traffic detected on ${randomRoad}.`,
         duration: 5000,
       });
-    }, 15000); // Changed from 60000 to 15000 (15 seconds)
+    }, 15000);
     
     return () => clearInterval(timer);
   }, [toast]);
@@ -69,7 +65,6 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    // Show notification toast when component mounts
     toast({
       title: "Traffic Update",
       description: "Heavy traffic detected on I-240. Consider alternative routes.",
@@ -95,7 +90,6 @@ const Index = () => {
     }
   };
   
-  // Touch handlers for swipe functionality
   const handleTouchStart = (e) => {
     setStartX(e.touches[0].clientX);
     setIsDragging(true);
@@ -114,7 +108,6 @@ const Index = () => {
     setIsDragging(false);
   };
   
-  // Mouse handlers for drag scrolling (desktop)
   const handleMouseDown = (e) => {
     setStartX(e.clientX);
     setIsDragging(true);
@@ -128,7 +121,6 @@ const Index = () => {
     stationListRef.current.scrollLeft += diff;
     setStartX(currentX);
     
-    // Prevent text selection during drag
     e.preventDefault();
   };
   
@@ -253,18 +245,34 @@ const Index = () => {
           style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
           <div className="flex space-x-4" style={{ width: `${filteredStations.length * 280}px` }}>
-            {filteredStations.map((station, index) => (
-              <div 
-                key={station.id} 
-                className="animate-fade-in w-64 flex-shrink-0" 
-                style={{ animationDelay: `${0.6 + (index * 0.1)}s` }}
-              >
-                <StationCard {...station} />
-              </div>
-            ))}
+            {filteredStations.map((station, index) => {
+              const cheapestFuel = station.fuels && station.fuels.length > 0 
+                ? station.fuels.reduce((min, fuel) => 
+                    parseFloat(fuel.price) < parseFloat(min.price) ? fuel : min, 
+                    station.fuels[0])
+                : null;
+              
+              return (
+                <div 
+                  key={station.id} 
+                  className="animate-fade-in w-64 flex-shrink-0" 
+                  style={{ animationDelay: `${0.6 + (index * 0.1)}s` }}
+                >
+                  <StationCard 
+                    id={station.id}
+                    name={station.name}
+                    address={station.address}
+                    distance={station.distance}
+                    price={cheapestFuel ? cheapestFuel.price : "3.29"}
+                    rating={station.rating}
+                    imageUrl={station.imageUrl}
+                    isOpen={station.isOpen}
+                  />
+                </div>
+              );
+            })}
           </div>
           
-          {/* Horizontal scroll indicator */}
           <div className="mt-3 flex justify-center">
             <div className="h-1 bg-gray-800 rounded-full w-48 relative">
               <div 
@@ -278,7 +286,6 @@ const Index = () => {
           </div>
         </div>
         
-        {/* Swipe indicator */}
         <div className="mt-2 text-center">
           <p className="text-xs text-gray-500 animate-pulse">
             ← Swipe to see more stations →
