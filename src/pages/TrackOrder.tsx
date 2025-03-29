@@ -510,8 +510,8 @@ const TrackOrder: React.FC = () => {
         <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
-      {/* Map section - Using the custom Google style map with mobile enhancements */}
-      <div className={`h-[${isMobile ? '350px' : '300px'}] mb-4 mt-2 relative`}>
+      {/* Map section - Fixed height issue for mobile and desktop */}
+      <div className={`${isMobile ? 'h-[350px]' : 'h-[300px]'} mb-4 mt-2 relative`}>
         <GoogleStyleMap />
       </div>
       
