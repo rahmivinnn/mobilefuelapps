@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings } from 'lucide-react';
@@ -39,6 +40,16 @@ const defaultOrder = {
   statusDetails: 'Order received'
 };
 
+// Sample driver messages
+const driverMessages = [
+  "I'm on my way to your location!",
+  "I'll be there in about 5 minutes.",
+  "I'm nearby, please prepare for arrival.",
+  "I've arrived at your location.",
+  "Is there a specific place you'd like me to meet you?",
+  "Thank you for using our service!"
+];
+
 const TrackOrder: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,6 +57,7 @@ const TrackOrder: React.FC = () => {
   
   // Initialize with defaultOrder to avoid undefined issues
   const [order, setOrder] = useState(defaultOrder);
+  const [orderComplete, setOrderComplete] = useState(false);
 
   // Status progression logic
   useEffect(() => {
@@ -125,13 +137,33 @@ const TrackOrder: React.FC = () => {
           className: "bg-black border-gray-800 text-white"
         });
         
+        // Check if this is the final step (delivery complete)
+        if (currentStep === statuses.length - 1) {
+          setOrderComplete(true);
+          
+          // Show delivery completion notification
+          setTimeout(() => {
+            toast({
+              title: "Delivery Complete!",
+              description: "Your order has been successfully delivered.",
+              duration: 5000,
+              className: "bg-green-500 border-green-600 text-white"
+            });
+            
+            // Navigate back to home after a delay
+            setTimeout(() => {
+              navigate('/');
+            }, 3000);
+          }, 1000);
+        }
+        
         currentStep++;
       } else {
         clearInterval(statusTimer);
       }
     }, 5000);
 
-    // Update driver and delivery time every 1 minute (changed from 2 minutes)
+    // Update driver and delivery time every 1 minute
     const driverUpdateTimer = setInterval(() => {
       // Choose random Memphis license plate
       const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
@@ -149,19 +181,55 @@ const TrackOrder: React.FC = () => {
         driver: randomDeliveryPerson
       }));
       
-      toast({
-        title: "Driver Update",
-        description: "Your order has been assigned to a new driver",
-        duration: 3000,
-        className: "bg-black border-gray-800 text-white"
-      });
-    }, 60000); // 1 minute in milliseconds (changed from 120000)
+      // Only show driver update notification if the order is not complete
+      if (!orderComplete) {
+        toast({
+          title: "Driver Update",
+          description: "Your order has been assigned to a new driver",
+          duration: 3000,
+          className: "bg-black border-gray-800 text-white"
+        });
+      }
+    }, 60000); // 1 minute in milliseconds
+    
+    // Show random driver messages every 15-30 seconds
+    const messageTimer = setInterval(() => {
+      // Only show messages if the order is in progress
+      if (!orderComplete) {
+        const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
+        
+        toast({
+          title: `Message from ${order.driver?.name || 'Driver'}`,
+          description: randomMessage,
+          duration: 5000,
+          className: "bg-blue-500 border-blue-600 text-white"
+        });
+      }
+    }, Math.floor(Math.random() * 15000) + 15000); // Random time between 15-30 seconds
     
     return () => {
       clearInterval(statusTimer);
       clearInterval(driverUpdateTimer);
+      clearInterval(messageTimer);
     };
-  }, [location.search, toast]);
+  }, [location.search, toast, navigate, orderComplete, order.driver?.name]);
+
+  // Effect to watch for order completion and show additional notifications
+  useEffect(() => {
+    if (orderComplete) {
+      // Show arrival notification after the order is complete
+      const arrivalTimer = setTimeout(() => {
+        toast({
+          title: "Arrived at Destination",
+          description: "Your fuel has been delivered. Enjoy!",
+          duration: 4000,
+          className: "bg-green-500 border-green-600 text-white"
+        });
+      }, 2000);
+      
+      return () => clearTimeout(arrivalTimer);
+    }
+  }, [orderComplete, toast]);
 
   const handleCall = () => {
     navigate('/call');
@@ -232,7 +300,10 @@ const TrackOrder: React.FC = () => {
       
       {/* Map section */}
       <div className="h-[300px] mb-3">
-        <Map showRoute showDeliveryInfo />
+        <Map 
+          showRoute 
+          showDeliveryInfo 
+        />
       </div>
       
       {/* Driver info and order details */}
@@ -242,13 +313,13 @@ const TrackOrder: React.FC = () => {
         {/* Driver info */}
         <div className="flex items-center mb-6">
           <img 
-            src={order.driver.image} 
-            alt={order.driver.name} 
+            src={order.driver?.image} 
+            alt={order.driver?.name} 
             className="h-14 w-14 rounded-full object-cover mr-3"
           />
           <div className="flex-1">
-            <h3 className="font-semibold text-lg">{order.driver.name}</h3>
-            <p className="text-gray-400">{order.driver.location}</p>
+            <h3 className="font-semibold text-lg">{order.driver?.name}</h3>
+            <p className="text-gray-400">{order.driver?.location}</p>
             <p className="text-gray-400 text-xs mt-1">Vehicle License: {order.licensePlate}</p>
           </div>
           <div className="flex space-x-2">
