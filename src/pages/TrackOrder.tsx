@@ -1,42 +1,95 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Home, ShoppingBag, MapPin, Settings } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Home, ShoppingBag, MapPin, Settings, Phone, MessageSquare, Share2 } from 'lucide-react';
 import Map from '@/components/ui/Map';
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import BottomNav from '@/components/layout/BottomNav';
 
 const TrackOrder: React.FC = () => {
+  const location = useLocation();
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [batteryLevel, setBatteryLevel] = useState(100);
+  const [order, setOrder] = useState({
+    id: 'ORD-1234',
+    status: 'in-transit',
+    estimatedDelivery: '8:30 - 9:15 PM',
+    items: [
+      { name: 'Regular Unleaded', quantity: '5 Gallons', price: 18.95 },
+      { name: 'Snickers bars', quantity: '2x', price: 3.50 }
+    ],
+    total: 22.45,
+    driver: {
+      name: 'Mike Johnson',
+      location: 'Memphis, TN',
+      image: '/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png',
+      rating: 4.8,
+      phone: '+1 (555) 123-4567'
+    }
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    
+    const batteryDrainInterval = setInterval(() => {
+      setBatteryLevel(prev => Math.max(10, prev - 1));
+    }, 300000); // every 5 minutes
+    
+    // Get orderId from URL query params
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get('orderId');
+    if (orderId) {
+      // In a real app, you would fetch order details here
+      console.log(`Fetching order details for ${orderId}`);
+    }
+    
+    return () => {
+      clearInterval(interval);
+      clearInterval(batteryDrainInterval);
+    };
+  }, [location.search]);
+
+  const handleCall = () => {
+    if (order.driver.phone) {
+      window.location.href = `tel:${order.driver.phone}`;
+    }
+  };
+
+  const handleMessage = () => {
+    alert('Messaging feature would be implemented here');
+  };
+
   return (
-    <div className="relative min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 max-w-md mx-auto">
       {/* Status bar */}
       <div className="px-4 py-2 flex justify-between items-center">
-        <div className="text-sm">8:45</div>
-        <div className="flex items-center space-x-1">
-          <div className="w-4 h-4">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16.72 7.72C16.1 7.1 15.38 6.65 14.6 6.4C13.81 6.15 12.98 6.11 12.16 6.28C11.35 6.45 10.59 6.82 9.93998 7.36C9.28998 7.9 8.77001 8.6 8.42001 9.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M13.48 14.08C13.28 14.33 13.03 14.53 12.76 14.68C12.49 14.83 12.2 14.92 11.89 14.96C11.59 14.99 11.29 14.96 11 14.88C10.71 14.8 10.44 14.66 10.2 14.48C9.95999 14.29 9.75999 14.05 9.60999 13.77C9.46 13.5 9.37001 13.2 9.33001 12.9C9.30001 12.59 9.32 12.29 9.4 12C9.48 11.71 9.62999 11.44 9.81999 11.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M15.9 9.4C16.37 10.85 16.16 12.43 15.32 13.71" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M19.07 5.55C20.47 7.46 21.26 9.77 21.33 12.16C21.4 14.54 20.75 16.9 19.47 18.89C18.18 20.88 16.33 22.39 14.14 23.25C11.96 24.11 9.55 24.26 7.28 23.69C5.01 23.11 2.99 21.84 1.51 20.05C0.0300003 18.26 -0.38 16.06 0.28 13.97C0.950001 11.88 2.26 10.03 4.07 8.71C5.88 7.38 8.09 6.67 10.36 6.69" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <div className="text-sm">{currentTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+        <div className="flex items-center space-x-2">
+          <span className="h-4 w-4 flex items-center justify-center">●●●</span>
+          <span className="h-4 w-4 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 12H7M7 12C7 13.6569 8.34315 15 10 15H14C15.6569 15 17 13.6569 17 12M7 12C7 10.3431 8.34315 9 10 9H14C15.6569 9 17 10.3431 17 12M17 12H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </div>
-          <div className="w-4 h-4">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10.67 18H3C2.46957 18 1.96086 17.7893 1.58579 17.4142C1.21071 17.0391 1 16.5304 1 16V6.5C1 4.01 3.01 2 5.5 2H18.5C20.99 2 23 4.01 23 6.5V11.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M8 10C8 10.5304 7.78929 11.0391 7.41422 11.4142C7.03914 11.7893 6.53043 12 6 12C5.46957 12 4.96086 11.7893 4.58579 11.4142C4.21071 11.0391 4 10.5304 4 10C4 9.46957 4.21071 8.96086 4.58579 8.58579C4.96086 8.21071 5.46957 8 6 8C6.53043 8 7.03914 8.21071 7.41422 8.58579C7.78929 8.96086 8 9.46957 8 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M13 2V9L15.5 7.5L18 9V2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M15 15V18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M18 15V18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M21 15V18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M21 21H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </span>
+          <span className="h-4 w-5 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-5" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 10V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M7 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M11 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M15 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M19 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
-          </div>
-          <div className="font-bold">100</div>
+          </span>
+          <span className="font-bold">{batteryLevel}</span>
         </div>
       </div>
       
       {/* Header */}
       <div className="relative px-4 py-3 flex items-center justify-center">
-        <Link to="/" className="absolute left-4">
+        <Link to="/orders" className="absolute left-4">
           <div className="h-10 w-10 flex items-center justify-center rounded-full bg-background border border-border">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -44,40 +97,114 @@ const TrackOrder: React.FC = () => {
           </div>
         </Link>
         <h1 className="text-xl font-semibold">Track Your Order</h1>
+        <button className="absolute right-4 h-10 w-10 flex items-center justify-center rounded-full bg-background border border-border">
+          <Share2 className="h-5 w-5" />
+        </button>
       </div>
       
       {/* Map section */}
-      <div className="h-[360px]">
+      <div className="h-[300px] mb-3">
         <Map showRoute showDeliveryInfo />
       </div>
       
-      {/* Bottom navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-2">
-        <div className="container mx-auto px-4 max-w-md">
-          <div className="flex justify-between items-center">
-            <Link to="/" className="flex flex-col items-center text-muted-foreground">
-              <Home className="h-6 w-6 mb-1" />
-              <span className="text-xs">Home</span>
-            </Link>
+      {/* Driver info */}
+      <div className="px-4 py-2">
+        <div className="bg-card rounded-xl p-4 border border-border">
+          <div className="flex items-center mb-4">
+            <img 
+              src={order.driver.image} 
+              alt={order.driver.name} 
+              className="h-14 w-14 rounded-full object-cover border-2 border-green-500 mr-3"
+            />
+            <div className="flex-1">
+              <h3 className="font-semibold text-lg">{order.driver.name}</h3>
+              <div className="flex items-center">
+                <p className="text-muted-foreground text-sm">{order.driver.location}</p>
+                <div className="ml-2 flex items-center">
+                  <svg className="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <span className="text-sm font-medium ml-1">{order.driver.rating}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex space-x-2">
+              <Button 
+                onClick={handleMessage}
+                className="h-12 w-12 p-0 rounded-full bg-green-500 hover:bg-green-600"
+              >
+                <MessageSquare className="h-6 w-6 text-white" />
+              </Button>
+              <Button 
+                onClick={handleCall}
+                className="h-12 w-12 p-0 rounded-full bg-green-500 hover:bg-green-600"
+              >
+                <Phone className="h-6 w-6 text-white" />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="mb-4">
+            <h4 className="text-muted-foreground text-sm mb-1">Your Delivery Time</h4>
+            <p className="font-semibold">Estimated {order.estimatedDelivery}</p>
+          </div>
+          
+          <div className="mb-4 relative">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 z-10">
+                <MapPin className="h-3 w-3 text-white" />
+              </div>
+              <div className="flex-1 mx-2">
+                <div className="h-0.5 border-t-2 border-dashed border-green-500"></div>
+              </div>
+              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 z-10">
+                <svg className="h-3 w-3 text-white" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5m1.5-9H17V12h4.46L19.5 9.5M6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3M3 6v9h.76c.55-.61 1.35-1 2.24-1 .89 0 1.69.39 2.24 1H15V6H3z"/>
+                </svg>
+              </div>
+              <div className="flex-1 mx-2">
+                <div className="h-0.5 border-t-2 border-dashed border-green-500"></div>
+              </div>
+              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 z-10">
+                <svg className="h-3 w-3 text-white" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M18 10a1 1 0 0 1-1-1 1 1 0 0 1 1-1 1 1 0 0 1 1 1 1 1 0 0 1-1 1m-6 0H6V5h6m7.77 2.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11C16.17 7 15.5 7.93 15.5 9a2.5 2.5 0 0 0 2.5 2.5c.36 0 .69-.08 1-.21v7.21a1 1 0 0 1-1 1 1 1 0 0 1-1-1V14a2 2 0 0 0-2-2h-1V5a2 2 0 0 0-2-2H6c-1.11 0-2 .89-2 2v16h10v-7.5h1.5v5a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5V9c0-.69-.28-1.32-.73-1.77M12 10H6V9h6m0-2H6V7h6M6 19v-3h5v3H6m6-4.5V19h-1v-4.5"/>
+                </svg>
+              </div>
+              <div className="flex-1 mx-2">
+                <div className="h-0.5 border-t-2 border-dashed border-muted-foreground"></div>
+              </div>
+              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted z-10">
+                <svg className="h-3 w-3 text-muted-foreground" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+              </div>
+            </div>
             
-            <Link to="/orders" className="flex flex-col items-center text-muted-foreground">
-              <ShoppingBag className="h-6 w-6 mb-1" />
-              <span className="text-xs">My Orders</span>
-            </Link>
-            
-            <Link to="/track" className="flex flex-col items-center text-green-500">
-              <MapPin className="h-6 w-6 mb-1" />
-              <span className="text-xs">Track Order</span>
-              <div className="w-10 h-1 bg-green-500 rounded-full mt-1"></div>
-            </Link>
-            
-            <Link to="/settings" className="flex flex-col items-center text-muted-foreground">
-              <Settings className="h-6 w-6 mb-1" />
-              <span className="text-xs">Settings</span>
-            </Link>
+            <div className="flex justify-between mt-1 text-xs">
+              <span className="text-left pl-1">Pickup</span>
+              <span className="text-center">In Transit</span>
+              <span className="text-center">Arriving</span>
+              <span className="text-right pr-1 text-muted-foreground">Delivered</span>
+            </div>
+          </div>
+          
+          <div className="pt-2 border-t border-border">
+            <h4 className="text-sm font-medium mb-2">Order</h4>
+            {order.items.map((item, i) => (
+              <div key={i} className="flex justify-between mb-1">
+                <span className="text-muted-foreground text-sm">{item.name}</span>
+                <span className="font-medium">${item.price.toFixed(2)}</span>
+              </div>
+            ))}
+            <div className="flex justify-between mt-2 pt-2 border-t border-border">
+              <span className="font-semibold">Total</span>
+              <span className="font-semibold">${order.total.toFixed(2)}</span>
+            </div>
           </div>
         </div>
       </div>
+      
+      <BottomNav />
     </div>
   );
 };

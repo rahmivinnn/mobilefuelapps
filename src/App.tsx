@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import StationDetails from "./pages/StationDetails";
@@ -16,14 +16,59 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Map from "./components/ui/Map";
 import SplashScreen from "./components/ui/SplashScreen";
+import SignIn from "./pages/auth/SignIn";
+import SignUp from "./pages/auth/SignUp";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import VerifyOtp from "./pages/auth/VerifyOtp";
+import ResetPassword from "./pages/auth/ResetPassword";
+import OrderHistory from "./pages/OrderHistory";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [splashVisible, setSplashVisible] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [batteryLevel, setBatteryLevel] = useState(100);
 
   const handleSplashFinish = () => {
     setSplashVisible(false);
+  };
+
+  useEffect(() => {
+    // Update time every minute
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+
+    // Simulate battery drain
+    const batteryInterval = setInterval(() => {
+      setBatteryLevel(prev => {
+        // Don't let battery go below 10%
+        return prev > 10 ? prev - 1 : prev;
+      });
+    }, 300000); // every 5 minutes
+
+    // Check if user is authenticated
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+
+    return () => {
+      clearInterval(timeInterval);
+      clearInterval(batteryInterval);
+    };
+  }, []);
+
+  const login = (token: string) => {
+    localStorage.setItem('authToken', token);
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('authToken');
+    setIsAuthenticated(false);
   };
 
   return (
@@ -37,17 +82,48 @@ const App = () => {
           ) : (
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/station/:id" element={<StationDetails />} />
-                <Route path="/station/:id/fuel" element={<FuelSelection />} />
-                <Route path="/station/:id/payment" element={<Payment />} />
-                <Route path="/confirmation" element={<Confirmation />} />
-                <Route path="/track" element={<TrackOrder />} />
-                <Route path="/settings" element={<Settings />} />
+                {/* Auth Routes */}
+                <Route path="/sign-in" element={
+                  isAuthenticated ? <Navigate to="/" /> : <SignIn onLogin={login} />
+                } />
+                <Route path="/sign-up" element={
+                  isAuthenticated ? <Navigate to="/" /> : <SignUp onLogin={login} />
+                } />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/verify-otp" element={<VerifyOtp />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+
+                {/* Protected Routes */}
+                <Route path="/" element={
+                  isAuthenticated ? <Index currentTime={currentTime} batteryLevel={batteryLevel} /> : <Navigate to="/sign-in" />
+                } />
+                <Route path="/station/:id" element={
+                  isAuthenticated ? <StationDetails /> : <Navigate to="/sign-in" />
+                } />
+                <Route path="/station/:id/fuel" element={
+                  isAuthenticated ? <FuelSelection /> : <Navigate to="/sign-in" />
+                } />
+                <Route path="/station/:id/payment" element={
+                  isAuthenticated ? <Payment /> : <Navigate to="/sign-in" />
+                } />
+                <Route path="/confirmation" element={
+                  isAuthenticated ? <Confirmation /> : <Navigate to="/sign-in" />
+                } />
+                <Route path="/track" element={
+                  isAuthenticated ? <TrackOrder /> : <Navigate to="/sign-in" />
+                } />
+                <Route path="/settings" element={
+                  isAuthenticated ? <Settings onLogout={logout} /> : <Navigate to="/sign-in" />
+                } />
+                <Route path="/orders" element={
+                  isAuthenticated ? <OrderHistory /> : <Navigate to="/sign-in" />
+                } />
                 <Route path="/map" element={
-                  <div className="h-screen w-full">
-                    <Map className="h-full w-full" />
-                  </div>
+                  isAuthenticated ? (
+                    <div className="h-screen w-full">
+                      <Map className="h-full w-full" />
+                    </div>
+                  ) : <Navigate to="/sign-in" />
                 } />
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -9,6 +9,11 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useTheme } from 'next-themes';
 
+interface IndexProps {
+  currentTime?: Date;
+  batteryLevel?: number;
+}
+
 const nearbyStations = [
   {
     id: '1',
@@ -45,21 +50,26 @@ const trafficConditions = {
   heavy: ['I-240', 'I-40', 'Sam Cooper Blvd']
 };
 
-const Index: React.FC = () => {
+const Index: React.FC<IndexProps> = ({ currentTime: propTime, batteryLevel: propBattery }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const isMobile = useIsMobile();
   const [showTraffic, setShowTraffic] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [mapVisible, setMapVisible] = useState(false);
+  const [currentTime, setCurrentTime] = useState(propTime || new Date());
+  const [batteryLevel, setBatteryLevel] = useState(propBattery || 100);
   const { theme } = useTheme();
   
   useEffect(() => {
     const timer = setInterval(() => {
       setLastUpdated(new Date());
+      if (!propTime) {
+        setCurrentTime(new Date());
+      }
     }, 60000);
     
     return () => clearInterval(timer);
-  }, []);
+  }, [propTime]);
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -72,11 +82,24 @@ const Index: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300 max-w-[420px] mx-auto">
       <div className="flex justify-between items-center p-2 text-xs">
-        <div className="animate-pulse-slow">{lastUpdated.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-        <div className="flex items-center space-x-1">
-          <span>●●●</span>
-          <span>📶</span>
-          <span>🔋</span>
+        <div className="animate-pulse-slow">{currentTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+        <div className="flex items-center space-x-2">
+          <span className="h-4 w-4 flex items-center justify-center">●●●</span>
+          <span className="h-4 w-4 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 12H7M7 12C7 13.6569 8.34315 15 10 15H14C15.6569 15 17 13.6569 17 12M7 12C7 10.3431 8.34315 9 10 9H14C15.6569 9 17 10.3431 17 12M17 12H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </span>
+          <span className="h-4 w-5 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-5" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 10V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M7 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M11 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M15 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M19 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </span>
+          <span className="font-bold">{batteryLevel}</span>
         </div>
       </div>
       
@@ -97,12 +120,13 @@ const Index: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex-1 flex justify-center">
+        <div className="flex flex-col items-center">
           <img 
-            src="/lovable-uploads/c3b29f6b-a689-4ac3-a338-4194cbee5e0c.png" 
+            src="/lovable-uploads/f01d03f8-3174-4828-bdcd-196b636f0b6f.png" 
             alt="FuelFriendly Logo" 
             className={`h-8 object-contain transition-all duration-500 hover:scale-110 ${theme === 'light' ? 'filter brightness-0' : ''}`}
           />
+          <span className="text-xs font-bold tracking-wide mt-1">FUELFRIENDLY</span>
         </div>
         
         <div className="flex items-center gap-2">
