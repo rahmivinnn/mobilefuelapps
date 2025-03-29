@@ -59,12 +59,15 @@ const TopHexagonGrid = () => {
   return (
     <motion.div
       className="absolute top-0 left-0 w-full h-2/5"
-      initial={{ opacity: 0, y: -50 }}
+      // Start from the top edge
+      initial={{ opacity: 0, y: -100 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1.2, delay: 0.2 }}
     >
       <motion.div
         className="w-full h-full relative overflow-hidden"
+        // Start with a static position then animate
+        initial={{ scale: 0.5, rotate: 0 }}
         animate={{
           rotate: [0, 3, -3, 0],
           scale: [0.5, 0.525, 0.49, 0.5] // Reduced size by 0.5x
@@ -72,13 +75,17 @@ const TopHexagonGrid = () => {
         transition={{
           duration: 8,
           repeat: Infinity,
-          repeatType: "reverse"
+          repeatType: "reverse",
+          // Add delay to ensure it starts from the edge first
+          delay: 1.2
         }}
       >
         <motion.img 
           src="/lovable-uploads/b9b9af0d-f75b-4949-89ca-178f3f449be9.png" 
           alt="Hexagon Pattern" 
           className="w-full h-full object-cover opacity-30"
+          // Start with no movement then animate
+          initial={{ x: 0, y: 0 }}
           animate={{
             x: [0, 15, -15, 0],
             y: [0, -10, 5, 0]
@@ -86,7 +93,9 @@ const TopHexagonGrid = () => {
           transition={{
             duration: 12,
             repeat: Infinity,
-            repeatType: "reverse"
+            repeatType: "reverse",
+            // Add delay to ensure the position animation starts after entry
+            delay: 1.2
           }}
         />
       </motion.div>
@@ -98,12 +107,15 @@ const BottomHexagonGrid = () => {
   return (
     <motion.div
       className="absolute bottom-0 left-0 w-full h-2/5"
-      initial={{ opacity: 0, y: 50 }}
+      // Start from the bottom edge
+      initial={{ opacity: 0, y: 100 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1.2, delay: 0.2 }}
     >
       <motion.div
         className="w-full h-full relative overflow-hidden"
+        // Start with a static position then animate
+        initial={{ scale: 0.5, rotate: 0 }}
         animate={{
           rotate: [0, -3, 3, 0],
           scale: [0.5, 0.49, 0.525, 0.5] // Reduced size by 0.5x
@@ -112,13 +124,15 @@ const BottomHexagonGrid = () => {
           duration: 8,
           repeat: Infinity,
           repeatType: "reverse", 
-          delay: 0.5
+          delay: 1.2
         }}
       >
         <motion.img 
           src="/lovable-uploads/0c368b73-df56-4e77-94c3-14691cdc22b7.png" 
           alt="Hexagon Pattern" 
           className="w-full h-full object-cover opacity-30"
+          // Start with no movement then animate
+          initial={{ x: 0, y: 0 }}
           animate={{
             x: [0, -15, 15, 0],
             y: [0, 10, -5, 0]
@@ -127,7 +141,7 @@ const BottomHexagonGrid = () => {
             duration: 12,
             repeat: Infinity,
             repeatType: "reverse",
-            delay: 0.5
+            delay: 1.2
           }}
         />
       </motion.div>
