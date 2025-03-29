@@ -83,9 +83,7 @@ const Index = () => {
         </div>
         
         <div className="flex items-center">
-          <div className="px-4 py-2 bg-green-500/10 rounded-full">
-            <span className="font-bold text-green-500 text-sm">8:45</span>
-          </div>
+          {/* Time display removed */}
         </div>
         
         <div className="flex items-center gap-2">

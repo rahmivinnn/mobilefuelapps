@@ -65,7 +65,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
     
     const timer2 = setTimeout(() => {
       onFinish();
-    }, 4500); // Extended slightly for animation to be noticed
+    }, 4500);
     
     return () => {
       clearTimeout(timer1);
@@ -123,63 +123,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           duration={hex.duration}
         />
       ))}
-      
-      {/* Fuel icons */}
-      <motion.div
-        className="absolute z-10"
-        style={{ top: '15%', left: '25%' }}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 0.7, scale: 1 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-      >
-        <img 
-          src="/lovable-uploads/8a188651-80ec-4a90-8d5c-de0df713b6c7.png" 
-          alt="Fuel Icon" 
-          className="w-12 h-12 opacity-80"
-        />
-      </motion.div>
-      
-      <motion.div
-        className="absolute z-10"
-        style={{ top: '65%', left: '70%' }}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 0.8, scale: 1 }}
-        transition={{ delay: 1, duration: 0.8 }}
-      >
-        <img 
-          src="/lovable-uploads/5143c2f2-409d-4968-8813-f389803502f0.png" 
-          alt="Fuel Icon" 
-          className="w-14 h-14 opacity-80"
-        />
-      </motion.div>
-      
-      <motion.div
-        className="absolute z-10"
-        style={{ top: '40%', left: '75%' }}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 0.7, scale: 1 }}
-        transition={{ delay: 0.8, duration: 0.8 }}
-      >
-        <img 
-          src="/lovable-uploads/6abeb06f-cf36-464b-8ffd-aaa9ece48e3f.png" 
-          alt="Fuel Icon" 
-          className="w-12 h-12 opacity-70"
-        />
-      </motion.div>
-      
-      <motion.div
-        className="absolute z-10"
-        style={{ top: '70%', left: '15%' }}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 0.6, scale: 1 }}
-        transition={{ delay: 1.5, duration: 0.8 }}
-      >
-        <img 
-          src="/lovable-uploads/aafa9060-dd0c-4f89-9725-afe221ab74ba.png" 
-          alt="Fuel Icon" 
-          className="w-10 h-10 opacity-80"
-        />
-      </motion.div>
       
       {/* Logo and Text */}
       <motion.div 
