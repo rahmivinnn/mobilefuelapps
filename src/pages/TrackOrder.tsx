@@ -8,6 +8,22 @@ import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
 import { orderHistory } from '@/data/dummyData';
 
+// Memphis-specific data
+const memphisLicensePlates = [
+  "TN-56A782", "TN-23B471", "TN-78C912", "TN-34D654", "TN-91E349"
+];
+
+const deliveryPeople = [
+  { name: "Cristopert Dastin", location: "Memphis, TN", image: "/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png", rating: 4.8, phone: "+1 (901) 555-3478" },
+  { name: "Sarah Johnson", location: "Memphis, TN", image: "/lovable-uploads/c3b29f6b-a689-4ac3-a338-4194cbee5e0c.png", rating: 4.7, phone: "+1 (901) 555-9872" },
+  { name: "Michael Davis", location: "Memphis, TN", image: "/lovable-uploads/8a188651-80ec-4a90-8d5c-de0df713b6c7.png", rating: 4.9, phone: "+1 (901) 555-2341" },
+  { name: "Emily Wilson", location: "Memphis, TN", image: "/lovable-uploads/1bc06a60-0463-4f47-abde-502bc408852e.png", rating: 4.6, phone: "+1 (901) 555-7653" }
+];
+
+const deliveryTimes = [
+  "7:15 - 7:45 PM", "8:30 - 9:15 PM", "6:45 - 7:30 PM", "9:00 - 9:45 PM", "7:30 - 8:15 PM"
+];
+
 const TrackOrder: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -23,12 +39,13 @@ const TrackOrder: React.FC = () => {
       { name: 'Chocolate cookies', quantity: '2x', price: 3.50 }
     ],
     total: 10.84,
+    licensePlate: memphisLicensePlates[0],
     driver: {
       name: 'Cristopert Dastin',
-      location: 'Tennessee',
+      location: 'Memphis, TN',
       image: '/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png',
       rating: 4.8,
-      phone: '+1 (555) 123-4567'
+      phone: '+1 (901) 555-3478'
     },
     progress: 0,
     statusDetails: 'Order received'
@@ -45,15 +62,30 @@ const TrackOrder: React.FC = () => {
         // Find the order in orderHistory
         const foundOrder = orderHistory.find(o => o.id === orderId);
         if (foundOrder) {
+          // Choose random Memphis license plate
+          const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
+          
+          // Choose random delivery person
+          const randomDeliveryPerson = deliveryPeople[Math.floor(Math.random() * deliveryPeople.length)];
+          
+          // Choose random delivery time
+          const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
+          
           // Map the order data to match our required format
-          setOrder(prevOrder => ({
-            ...prevOrder,
-            id: foundOrder.id,
-            status: foundOrder.status || 'processing',
-            items: foundOrder.items || prevOrder.items,
-            total: parseFloat(foundOrder.totalPrice) || prevOrder.total,
-            driver: foundOrder.driver || prevOrder.driver
-          }));
+          setOrder(prevOrder => {
+            if (!prevOrder) return prevOrder; // Safety check
+            
+            return {
+              ...prevOrder,
+              id: foundOrder.id,
+              status: foundOrder.status || 'processing',
+              estimatedDelivery: randomDeliveryTime,
+              items: foundOrder.items || prevOrder.items,
+              total: parseFloat(foundOrder.totalPrice) || prevOrder.total,
+              licensePlate: randomLicensePlate,
+              driver: randomDeliveryPerson
+            };
+          });
         }
         
         console.log(`Fetching order details for ${orderId}`, foundOrder);
@@ -64,11 +96,13 @@ const TrackOrder: React.FC = () => {
           title: "Error",
           description: "Could not load order details",
           duration: 3000,
+          className: "bg-black border-gray-800 text-white"
         });
       }
     }
     
-    // Status update every 5 seconds
+    // Status update every 5 seconds for demonstration purposes
+    // In reality, this would be connected to a backend with real updates
     const statuses = [
       { status: 'processing', progress: 0, statusDetails: 'Order received' },
       { status: 'processing', progress: 20, statusDetails: 'Processing your order' },
@@ -80,6 +114,7 @@ const TrackOrder: React.FC = () => {
     
     let currentStep = 0;
     
+    // Update status every 5 seconds
     const statusTimer = setInterval(() => {
       if (currentStep < statuses.length) {
         setOrder(prevOrder => {
@@ -98,6 +133,7 @@ const TrackOrder: React.FC = () => {
           title: "Order Update",
           description: statuses[currentStep].statusDetails,
           duration: 3000,
+          className: "bg-black border-gray-800 text-white"
         });
         
         currentStep++;
@@ -105,8 +141,41 @@ const TrackOrder: React.FC = () => {
         clearInterval(statusTimer);
       }
     }, 5000);
+
+    // Update driver and delivery time every 2 minutes as requested
+    const driverUpdateTimer = setInterval(() => {
+      // Choose random Memphis license plate
+      const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
+      
+      // Choose random delivery person
+      const randomDeliveryPerson = deliveryPeople[Math.floor(Math.random() * deliveryPeople.length)];
+      
+      // Choose random delivery time
+      const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
+      
+      setOrder(prevOrder => {
+        if (!prevOrder) return prevOrder; // Safety check
+        
+        return {
+          ...prevOrder,
+          estimatedDelivery: randomDeliveryTime,
+          licensePlate: randomLicensePlate,
+          driver: randomDeliveryPerson
+        };
+      });
+      
+      toast({
+        title: "Driver Update",
+        description: "Your order has been assigned to a new driver",
+        duration: 3000,
+        className: "bg-black border-gray-800 text-white"
+      });
+    }, 120000); // 2 minutes in milliseconds
     
-    return () => clearInterval(statusTimer);
+    return () => {
+      clearInterval(statusTimer);
+      clearInterval(driverUpdateTimer);
+    };
   }, [location.search, toast]);
 
   const handleCall = () => {
@@ -203,6 +272,7 @@ const TrackOrder: React.FC = () => {
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{order.driver.name}</h3>
             <p className="text-gray-400">{order.driver.location}</p>
+            <p className="text-gray-400 text-xs mt-1">Vehicle License: {order.licensePlate}</p>
           </div>
           <div className="flex space-x-2">
             <Button 
