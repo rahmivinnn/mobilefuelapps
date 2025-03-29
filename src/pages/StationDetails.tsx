@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Star, MapPin, Clock, Navigation, Share2, Facebook, Twitter, Instagram, Mail } from 'lucide-react';
@@ -7,7 +6,7 @@ import BottomNav from '@/components/layout/BottomNav';
 import Map from '@/components/ui/Map';
 import { toast } from '@/components/ui/use-toast';
 
-// Mock data for the station
+// Mock data for the station with updated image URL
 const stationData = {
   id: '1',
   name: 'Shell Gas Station',
@@ -17,10 +16,18 @@ const stationData = {
   reviews: 234,
   isOpen: true,
   hours: '24 Hours',
-  imageUrl: 'https://images.unsplash.com/photo-1560005262-823d9d53e891?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+  imageUrl: '/lovable-uploads/00333baa-ca73-4e51-8f20-49acab199b5b.png',
   description: 'One of the premier Shell gas stations in Memphis, offering a wide variety of fuel types and additional services including a convenience store and ATM.',
   latitude: 35.1477,
   longitude: -90.0518
+};
+
+// Station images for different locations
+const stationImages = {
+  shell: '/lovable-uploads/00333baa-ca73-4e51-8f20-49acab199b5b.png',
+  exxon: '/lovable-uploads/049ef9d2-46de-4e78-bee2-10fa706d9425.png',
+  chevron: '/lovable-uploads/8c6a633e-ae68-4424-b2b3-4458a96b7d3b.png',
+  bp: '/lovable-uploads/34aae0f7-f7a9-441b-8d2e-1d8027cf8360.png'
 };
 
 const StationDetails: React.FC = () => {

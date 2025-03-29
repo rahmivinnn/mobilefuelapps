@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -17,7 +16,7 @@ const nearbyStations = [
     distance: '0.8',
     rating: 4.8,
     isOpen: true,
-    imageUrl: 'https://images.unsplash.com/photo-1527018601619-a508a2be00cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+    imageUrl: '/lovable-uploads/00333baa-ca73-4e51-8f20-49acab199b5b.png'
   },
   {
     id: '2',
@@ -26,7 +25,7 @@ const nearbyStations = [
     distance: '1.5',
     rating: 4.6,
     isOpen: true,
-    imageUrl: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+    imageUrl: '/lovable-uploads/049ef9d2-46de-4e78-bee2-10fa706d9425.png'
   },
   {
     id: '3',
@@ -35,7 +34,7 @@ const nearbyStations = [
     distance: '2.3',
     rating: 4.3,
     isOpen: false,
-    imageUrl: 'https://images.unsplash.com/photo-1527018601619-a508a2be00cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+    imageUrl: '/lovable-uploads/8c6a633e-ae68-4424-b2b3-4458a96b7d3b.png'
   }
 ];
 

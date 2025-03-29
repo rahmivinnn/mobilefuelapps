@@ -26,10 +26,10 @@ const Hexagon = ({
         clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
         zIndex: 1,
       }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: opacity }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: opacity, scale: 1 }}
       transition={{ 
-        duration: 1,
+        duration: 1.2,
         delay: delay,
         ease: "easeOut"
       }}
@@ -46,7 +46,7 @@ const Logo = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
     >
-      {/* Circle with flame icon */}
+      {/* Circle with new flame icon */}
       <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
         <motion.div 
           className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center"
@@ -59,9 +59,10 @@ const Logo = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1, duration: 0.5, ease: "easeOut" }}
           >
-            <svg width="40" height="60" viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Updated Fuel logo SVG */}
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path 
-                d="M20 0C20 0 31.875 14.85 31.875 27C31.875 33.75 26.25 39.375 20 39.375C13.75 39.375 8.125 33.75 8.125 27C8.125 14.85 20 0 20 0ZM6.25 48.75C6.25 48.75 0 52.5 0 57.5C0 61.875 8.125 62.5 20 62.5C31.875 62.5 40 61.875 40 57.5C40 52.5 33.75 48.75 33.75 48.75C33.75 48.75 26.25 52.5 20 52.5C13.75 52.5 6.25 48.75 6.25 48.75Z" 
+                d="M30 1.25V5H25V7.5H30V13.75C30 15.125 31.125 16.25 32.5 16.25C33.875 16.25 35 15.125 35 13.75V5C35 2.925 33.325 1.25 31.25 1.25H30ZM10 11.25C7.925 11.25 6.25 12.925 6.25 15V36.25C6.25 38.325 7.925 40 10 40H25C27.075 40 28.75 38.325 28.75 36.25V15C28.75 12.925 27.075 11.25 25 11.25H23.75V5C23.75 2.925 22.075 1.25 20 1.25H15C12.925 1.25 11.25 2.925 11.25 5V11.25H10ZM15 5H20V11.25H15V5ZM17.5 18.75H21.25C22.625 18.75 23.75 19.875 23.75 21.25V28.75C23.75 30.125 22.625 31.25 21.25 31.25H17.5V18.75Z" 
                 fill="white" 
               />
             </svg>
@@ -69,9 +70,10 @@ const Logo = () => {
         </motion.div>
       </div>
       
-      {/* FUELFRIENDLY text */}
+      {/* FUELFRIENDLY text with italic and bold styling */}
       <motion.div 
-        className="text-white text-3xl font-bold tracking-wider"
+        className="text-white text-3xl font-bold tracking-wider italic"
+        style={{ fontStyle: 'italic', fontWeight: 'bold' }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.5 }}
@@ -94,10 +96,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
     };
   }, [onFinish]);
 
-  // Define hexagon patterns for top and bottom
+  // Define hexagon patterns for top and bottom with portrait animation
   const topHexagons = React.useMemo(() => {
     return [
-      // Top pattern matching the image
+      // Top hexagon pattern
       { id: 1, size: 80, x: 70, y: 5, opacity: 0.15, delay: 0.2 },
       { id: 2, size: 80, x: 60, y: 8, opacity: 0.15, delay: 0.3 },
       { id: 3, size: 80, x: 50, y: 5, opacity: 0.15, delay: 0.4 },
@@ -123,7 +125,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   
   const bottomHexagons = React.useMemo(() => {
     return [
-      // Bottom pattern matching the image
+      // Bottom hexagon pattern
       { id: 1, size: 80, x: 10, y: 75, opacity: 0.15, delay: 0.2 },
       { id: 2, size: 80, x: 20, y: 78, opacity: 0.15, delay: 0.3 },
       { id: 3, size: 80, x: 30, y: 75, opacity: 0.15, delay: 0.4 },
@@ -149,31 +151,39 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-green-500 overflow-hidden">
-      {/* Top hexagon pattern */}
-      {topHexagons.map((hex) => (
-        <Hexagon
-          key={`top-${hex.id}`}
-          size={hex.size}
-          x={hex.x}
-          y={hex.y}
-          opacity={hex.opacity}
-          delay={hex.delay}
-        />
-      ))}
+      {/* Add simple portrait animation to the hexagons */}
+      <motion.div
+        className="absolute inset-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        {/* Top hexagon pattern */}
+        {topHexagons.map((hex) => (
+          <Hexagon
+            key={`top-${hex.id}`}
+            size={hex.size}
+            x={hex.x}
+            y={hex.y}
+            opacity={hex.opacity}
+            delay={hex.delay}
+          />
+        ))}
+        
+        {/* Bottom hexagon pattern */}
+        {bottomHexagons.map((hex) => (
+          <Hexagon
+            key={`bottom-${hex.id}`}
+            size={hex.size}
+            x={hex.x}
+            y={hex.y}
+            opacity={hex.opacity}
+            delay={hex.delay}
+          />
+        ))}
+      </motion.div>
       
-      {/* Bottom hexagon pattern */}
-      {bottomHexagons.map((hex) => (
-        <Hexagon
-          key={`bottom-${hex.id}`}
-          size={hex.size}
-          x={hex.x}
-          y={hex.y}
-          opacity={hex.opacity}
-          delay={hex.delay}
-        />
-      ))}
-      
-      {/* Centered logo */}
+      {/* Centered logo with updated styling */}
       <div className="z-10 flex items-center justify-center">
         <Logo />
       </div>
