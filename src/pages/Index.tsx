@@ -190,7 +190,7 @@ const Index = () => {
           <Map 
             className="h-56 w-full rounded-lg overflow-hidden" 
             interactive={true} 
-            showRoute={showTraffic}
+            showRoute={false}
             showBackButton={false}
           />
         </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft, User } from 'lucide-react';
@@ -38,12 +39,13 @@ const Map: React.FC<MapProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   
-  // Driver location animation
+  // Driver location animation - only active when showRoute is true (TrackOrder page)
   const [driverPosition, setDriverPosition] = useState({ x: 200, y: 400 });
   const [routeProgress, setRouteProgress] = useState(0);
   
   // Hide back button on home page
   const isHomePage = location.pathname === '/';
+  const isTrackOrderPage = location.pathname === '/track';
 
   const handleGoBack = () => {
     navigate(-1);
@@ -157,11 +159,12 @@ const Map: React.FC<MapProps> = ({
       }
     }, 20000); // Traffic updates every 20 seconds
     
-    // Driver movement animation
+    // Driver movement animation - ONLY FOR TRACK ORDER PAGE
     let currentPointIndex = 0;
+    let driverTimer;
     
-    const moveDriver = () => {
-      if (showRoute) {
+    if (showRoute) {
+      const moveDriver = () => {
         if (currentPointIndex < routePoints.length - 1) {
           const startPoint = routePoints[currentPointIndex];
           const endPoint = routePoints[currentPointIndex + 1];
@@ -196,15 +199,17 @@ const Map: React.FC<MapProps> = ({
           currentPointIndex = 0;
           setRouteProgress(0);
         }
-      }
-    };
+      };
+      
+      // Driver movement update interval - only for tracking page
+      driverTimer = setInterval(moveDriver, 100);
+    }
     
-    // Driver movement update interval
-    const driverTimer = setInterval(moveDriver, 100);
+    // Driver status updates - ONLY FOR TRACK ORDER PAGE
+    let driverUpdateTimer;
     
-    // Driver status updates
-    const driverUpdateTimer = setInterval(() => {
-      if (showRoute) {
+    if (showRoute) {
+      driverUpdateTimer = setInterval(() => {
         // Random message for driver update
         let message = deliveryMessages[Math.floor(Math.random() * deliveryMessages.length)];
         
@@ -238,14 +243,14 @@ const Map: React.FC<MapProps> = ({
             }
           }, 300);
         }, 4000);
-      }
-    }, 10000); // Driver updates every 10 seconds
+      }, 10000); // Driver updates every 10 seconds
+    }
     
     return () => {
       clearTimeout(timer);
       clearInterval(trafficTimer);
-      clearInterval(driverTimer);
-      clearInterval(driverUpdateTimer);
+      if (driverTimer) clearInterval(driverTimer);
+      if (driverUpdateTimer) clearInterval(driverUpdateTimer);
     };
   }, [interactive, showRoute, driverInfo]);
   
@@ -358,7 +363,7 @@ const Map: React.FC<MapProps> = ({
               draggable="false"
             />
             
-            {/* Driver Position - Animated */}
+            {/* Driver Position - Animated - ONLY ON TRACK ORDER PAGE */}
             {showRoute && (
               <div 
                 className="absolute z-20 transition-all duration-100" 
@@ -381,7 +386,7 @@ const Map: React.FC<MapProps> = ({
               </div>
             </div>
             
-            {/* Route path - Animated Green Line */}
+            {/* Route path - Animated Green Line - ONLY ON TRACK ORDER PAGE */}
             {showRoute && (
               <svg className="absolute inset-0 z-0 pointer-events-none" width="100%" height="100%">
                 <path
@@ -443,7 +448,7 @@ const Map: React.FC<MapProps> = ({
             </div>
           )}
           
-          {/* Delivery info with driver avatar */}
+          {/* Delivery info with driver avatar - ONLY ON TRACK ORDER PAGE */}
           {showDeliveryInfo && driverInfo && (
             <div className="absolute bottom-0 left-0 right-0 bg-black/95 backdrop-blur p-3 rounded-t-xl">
               <div className="flex items-center">
