@@ -73,7 +73,7 @@ const TrackOrder: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Initialize with defaultOrder - FIX: Always initialize with a default value
+  // Explicitly initialize with defaultOrder as a safety measure
   const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
   const [orderComplete, setOrderComplete] = useState(false);
   const [driverLocation, setDriverLocation] = useState({ lat: 35.149, lng: -90.048 });
@@ -129,16 +129,16 @@ const TrackOrder: React.FC = () => {
             statusDetails: defaultOrder.statusDetails
           });
         } else {
-          // If order not found, use default order
+          // If order not found, explicitly use default order
           console.log(`Order ${orderId} not found, using default`);
-          setOrder(defaultOrder);
+          setOrder({...defaultOrder});
         }
         
         console.log(`Fetching order details for ${orderId}`, foundOrder);
       } catch (error) {
         console.error("Error processing order data:", error);
-        // If there's an error, use default order
-        setOrder(defaultOrder);
+        // If there's an error, explicitly use default order
+        setOrder({...defaultOrder});
         // Toast to inform user
         toast({
           title: "Error",
@@ -148,8 +148,8 @@ const TrackOrder: React.FC = () => {
         });
       }
     } else {
-      // No orderId in URL, use default order
-      setOrder(defaultOrder);
+      // No orderId in URL, explicitly use default order
+      setOrder({...defaultOrder});
     }
     
     // Status update every 5 seconds for demonstration purposes
@@ -169,8 +169,8 @@ const TrackOrder: React.FC = () => {
     const statusTimer = setInterval(() => {
       if (currentStep < statuses.length) {
         setOrder(prevOrder => {
-          // FIX: Added null/undefined check with fallback to defaultOrder
-          const safeOrder = prevOrder || defaultOrder;
+          // Make a deep copy of defaultOrder as fallback
+          const safeOrder = prevOrder ? {...prevOrder} : {...defaultOrder};
           
           return {
             ...safeOrder,
@@ -230,10 +230,10 @@ const TrackOrder: React.FC = () => {
       // Choose random delivery person (different from current)
       let currentDriverIndex = -1;
       
-      // FIX: Get current order safely with null check
-      const currentOrder = order || defaultOrder;
+      // Get current order safely with explicit fallback
+      const currentOrder = order || {...defaultOrder};
       
-      // FIX: Safely get current driver index with proper null check
+      // Safely get current driver index with proper null check
       const currentDriverName = currentOrder?.driver?.name;
       if (currentDriverName) {
         currentDriverIndex = deliveryPeople.findIndex(driver => driver.name === currentDriverName);
@@ -250,8 +250,8 @@ const TrackOrder: React.FC = () => {
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
       
       setOrder(prevOrder => {
-        // FIX: Added proper null/undefined check
-        const safeOrder = prevOrder || defaultOrder;
+        // Deep copy of defaultOrder as fallback
+        const safeOrder = prevOrder ? {...prevOrder} : {...defaultOrder};
         
         return {
           ...safeOrder,
@@ -276,8 +276,8 @@ const TrackOrder: React.FC = () => {
       // Only show messages if the order is in progress
       if (!orderComplete) {
         const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
-        // FIX: Get current order safely with null check
-        const currentOrder = order || defaultOrder;
+        // Get current order safely with explicit fallback
+        const currentOrder = order || {...defaultOrder};
         const driverName = currentOrder?.driver?.name || 'Driver';
         
         toast({
@@ -306,10 +306,9 @@ const TrackOrder: React.FC = () => {
       };
       setDriverLocation(newDriverLocation);
       
-      // Also update the order object with the new location
+      // Also update the order object with the new location - with fallback to avoid undefined
       setOrder(prev => {
-        // FIX: Ensure prev is not undefined
-        const safeOrder = prev || defaultOrder;
+        const safeOrder = prev ? {...prev} : {...defaultOrder};
         return {
           ...safeOrder,
           driverLocation: newDriverLocation
@@ -338,13 +337,13 @@ const TrackOrder: React.FC = () => {
   }, [orderComplete, toast]);
 
   const handleCall = () => {
-    // FIX: Make sure to safely access driverName with fallback
+    // Make sure to safely access driverName with fallback
     const driverName = order?.driver?.name || 'Driver';
     navigate(`/call?driverName=${encodeURIComponent(driverName)}`);
   };
 
   const handleMessage = () => {
-    // FIX: Make sure to safely access driverName with fallback
+    // Make sure to safely access driverName with fallback
     const driverName = order?.driver?.name || 'Driver';
     navigate(`/chat?driverName=${encodeURIComponent(driverName)}`);
   };
