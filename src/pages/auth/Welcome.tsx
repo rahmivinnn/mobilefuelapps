@@ -23,15 +23,15 @@ const Welcome: React.FC = () => {
         >
           {/* Logo circle */}
           <motion.div 
-            className="w-24 h-24 rounded-full border-2 border-green-500 flex items-center justify-center mb-4"
+            className="w-24 h-24 rounded-full flex items-center justify-center mb-4"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5, type: "spring" }}
           >
             <img 
-              src="/lovable-uploads/44c35d38-14ee-46b9-8302-0944a264f34e.png" 
+              src="/lovable-uploads/9a88ef60-f4d0-4cc6-9714-c32a44453aea.png" 
               alt="FuelFriendly Logo" 
-              className="w-16 h-16 filter invert sepia-0 saturate-[7500%] hue-rotate-[75deg]"
+              className="w-20 h-20"
             />
           </motion.div>
           
@@ -40,9 +40,13 @@ const Welcome: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="text-green-500 font-bold text-xl tracking-widest"
+            className="mt-2"
           >
-            FUELFRIENDLY
+            <img 
+              src="/lovable-uploads/63b42fc8-62eb-4bdb-84c2-73e747d69d45.png" 
+              alt="FUELFRIENDLY" 
+              className="h-8"
+            />
           </motion.div>
         </motion.div>
         
