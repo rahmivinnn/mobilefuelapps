@@ -67,7 +67,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           transition={{ delay: 0.4, duration: 0.5, type: "spring" }}
         >
           <img 
-            src="/lovable-uploads/169374be-fcb3-48c3-96f6-c5bcd5b645b8.png" 
+            src="/lovable-uploads/44c35d38-14ee-46b9-8302-0944a264f34e.png" 
             alt="FuelFriendly Logo" 
             className="w-16 h-16"
           />
