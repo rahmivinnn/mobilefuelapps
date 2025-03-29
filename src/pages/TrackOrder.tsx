@@ -135,7 +135,7 @@ const TrackOrder: React.FC = () => {
           const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
           
           // Safely update the order with found data
-          setOrder(prevOrder => ({
+          setOrder({
             ...defaultOrder, // Always include default values as fallback
             ...foundOrder,
             id: foundOrder.id || defaultOrder.id,
@@ -147,7 +147,7 @@ const TrackOrder: React.FC = () => {
             driver: randomDeliveryPerson,
             progress: defaultOrder.progress,
             statusDetails: defaultOrder.statusDetails
-          }));
+          });
         }
         
         console.log(`Fetching order details for ${orderId}`, foundOrder);
@@ -178,18 +178,13 @@ const TrackOrder: React.FC = () => {
     // Update status at varying intervals for more natural progression
     const updateStatus = () => {
       if (currentStep < statuses.length) {
-        setOrder(prevOrder => {
-          if (!prevOrder) {
-            return defaultOrder;
-          }
-          
-          return {
-            ...prevOrder,
-            status: statuses[currentStep].status,
-            progress: statuses[currentStep].progress,
-            statusDetails: statuses[currentStep].statusDetails
-          };
-        });
+        // Using a function style update to ensure we always have the latest state
+        setOrder(prevOrder => ({
+          ...(prevOrder || defaultOrder), // Ensure we have a valid object
+          status: statuses[currentStep].status,
+          progress: statuses[currentStep].progress,
+          statusDetails: statuses[currentStep].statusDetails
+        }));
         
         // Get a status update message and replace placeholders
         let statusMessage = deliveryStatusUpdates[Math.min(currentStep, deliveryStatusUpdates.length - 1)];
@@ -254,6 +249,7 @@ const TrackOrder: React.FC = () => {
           randomMessage = randomMessage.replace("{street}", randomStreet);
         }
         
+        // Get driver name safely with a default value
         const driverName = order?.driver?.name || 'Driver';
         
         toast({
@@ -442,4 +438,3 @@ const TrackOrder: React.FC = () => {
 };
 
 export default TrackOrder;
-
