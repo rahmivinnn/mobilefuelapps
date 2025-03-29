@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
@@ -76,6 +77,7 @@ const TrackOrder: React.FC = () => {
   const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
   const [orderComplete, setOrderComplete] = useState(false);
   const [driverLocation, setDriverLocation] = useState({ lat: 35.149, lng: -90.048 });
+  const [showDirections, setShowDirections] = useState(true); // Show directions by default
 
   // Status progression logic
   useEffect(() => {
@@ -313,6 +315,10 @@ const TrackOrder: React.FC = () => {
     navigate(`/chat?driverName=${encodeURIComponent(driverName)}`);
   };
 
+  const toggleDirections = () => {
+    setShowDirections(!showDirections);
+  };
+
   // Helper function to determine status color with default value for safety
   const getStatusColor = (status: string | undefined) => {
     if (!status) return 'bg-gray-500'; // Default fallback
@@ -388,7 +394,7 @@ const TrackOrder: React.FC = () => {
         <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
-      {/* Map section - IMPORTANT: keep this above the driver info section */}
+      {/* Map section with enhanced directions */}
       <div className="h-[300px] mb-3">
         <Map 
           showRoute={true}

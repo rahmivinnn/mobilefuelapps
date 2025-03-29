@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft, User } from 'lucide-react';
@@ -38,6 +39,8 @@ const Map: React.FC<MapProps> = ({
   const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [animatedRoute, setAnimatedRoute] = useState(false);
+  const [routeProgress, setRouteProgress] = useState(0);
   
   // Hide back button on home page
   const isHomePage = location.pathname === '/';
@@ -60,6 +63,26 @@ const Map: React.FC<MapProps> = ({
       return () => clearInterval(interval);
     }
   }, [animate]);
+
+  // Animate route progress
+  useEffect(() => {
+    if (showRoute || showDirections) {
+      setAnimatedRoute(true);
+      const routeAnimation = setInterval(() => {
+        setRouteProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(routeAnimation);
+            return 100;
+          }
+          return prev + 1;
+        });
+      }, 50);
+      
+      return () => clearInterval(routeAnimation);
+    } else {
+      setRouteProgress(0);
+    }
+  }, [showRoute, showDirections]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -232,6 +255,7 @@ const Map: React.FC<MapProps> = ({
   const handleShowDirections = (stationId) => {
     setSelectedStation(stationId);
     setShowDirections(true);
+    setRouteProgress(0); // Reset route progress to animate from beginning
   };
   
   const shareToSocial = (platform: string) => {
@@ -377,43 +401,117 @@ const Map: React.FC<MapProps> = ({
               );
             })}
             
-            {/* Route path if enabled */}
+            {/* Route path if enabled - ENHANCED WITH ANIMATION */}
             {(showRoute || showDirections) && (
               <div className="absolute inset-0 pointer-events-none">
                 <svg width="100%" height="100%" className="absolute">
+                  {/* Animated route path with dasharray animation and progress */}
                   <path
                     d={`M${50 + (currentDriverLocation.lng - userLocation.lng) * 5000}%,${50 - (currentDriverLocation.lat - userLocation.lat) * 5000}% C550,320 480,340 420,330 C360,320 320,280 250,300`}
                     stroke={getTrafficColor()}
                     strokeWidth="6"
                     fill="none"
                     strokeLinecap="round"
-                    strokeDasharray="1,0"
+                    strokeDasharray="10,10"
                     className="animate-dash"
+                    style={{
+                      strokeDashoffset: 100 - routeProgress,
+                      opacity: animatedRoute ? 1 : 0,
+                      transition: "opacity 0.5s ease-in"
+                    }}
                   />
-                  {/* Direction arrows along the path */}
-                  <circle cx="550" cy="315" r="4" fill={getTrafficColor()} />
-                  <polygon points="480,335 490,325 470,325" fill={getTrafficColor()} />
-                  <circle cx="360" cy="320" r="4" fill={getTrafficColor()} />
-                  <polygon points="250,300 260,290 260,310" fill={getTrafficColor()} />
+                  
+                  {/* Direction arrows along the path - appear progressively */}
+                  {routeProgress > 25 && (
+                    <circle 
+                      cx="550" cy="315" r="4" 
+                      fill={getTrafficColor()} 
+                      style={{animation: "fade-in 0.5s ease-out"}}
+                    />
+                  )}
+                  {routeProgress > 50 && (
+                    <polygon 
+                      points="480,335 490,325 470,325" 
+                      fill={getTrafficColor()} 
+                      style={{animation: "fade-in 0.5s ease-out"}}
+                    />
+                  )}
+                  {routeProgress > 75 && (
+                    <circle 
+                      cx="360" cy="320" r="4" 
+                      fill={getTrafficColor()} 
+                      style={{animation: "fade-in 0.5s ease-out"}}
+                    />
+                  )}
+                  {routeProgress > 90 && (
+                    <polygon 
+                      points="250,300 260,290 260,310" 
+                      fill={getTrafficColor()} 
+                      style={{animation: "fade-in 0.5s ease-out"}}
+                    />
+                  )}
+                  
+                  {/* Animated driver position along the path */}
+                  {animatedRoute && (
+                    <circle
+                      cx="550" 
+                      cy="315"
+                      r="6"
+                      fill="#ffffff"
+                      stroke="#22c55e"
+                      strokeWidth="3"
+                      style={{
+                        transform: `translate(${(100 - routeProgress) * -3}px, ${(100 - routeProgress) * 0.15}px)`,
+                        transition: "transform 0.5s linear",
+                        display: routeProgress > 0 ? "block" : "none"
+                      }}
+                    />
+                  )}
                 </svg>
                 
-                {/* Direction instructions */}
+                {/* Direction instructions - now with animated appearance */}
                 {showDirections && (
-                  <div className="absolute bottom-4 left-4 right-4 bg-black/80 text-white text-sm p-3 rounded-lg animate-fade-in">
+                  <div 
+                    className="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-sm text-white text-sm p-3 rounded-lg"
+                    style={{
+                      animation: "slide-in-right 0.5s ease-out",
+                      transform: routeProgress > 0 ? "translateY(0)" : "translateY(100%)",
+                      opacity: routeProgress > 0 ? 1 : 0,
+                      transition: "transform 0.5s ease-out, opacity 0.5s ease-out"
+                    }}
+                  >
                     <div className="flex items-center mb-2">
                       <Navigation className="h-4 w-4 mr-2 text-green-500" />
                       <span>Head south on Main St for 0.5 miles</span>
                     </div>
-                    <div className="flex items-center mb-2">
+                    <div 
+                      className="flex items-center mb-2"
+                      style={{
+                        opacity: routeProgress > 30 ? 1 : 0.5,
+                        transition: "opacity 0.5s ease-out"
+                      }}
+                    >
                       <ArrowDownRight className="h-4 w-4 mr-2 text-green-500" />
                       <span>Turn right onto Popular Ave for 0.3 miles</span>
                     </div>
-                    <div className="flex items-center">
+                    <div 
+                      className="flex items-center"
+                      style={{
+                        opacity: routeProgress > 60 ? 1 : 0.5,
+                        transition: "opacity 0.5s ease-out"
+                      }}
+                    >
                       <MapPin className="h-4 w-4 mr-2 text-red-500" />
                       <span>Arrive at destination on right</span>
                     </div>
-                    <div className="mt-2 text-xs">
-                      ETA: 8 min (0.8 miles)
+                    <div className="mt-2 text-xs flex items-center justify-between">
+                      <span>ETA: 8 min (0.8 miles)</span>
+                      <div className="w-20 bg-gray-700 h-1 rounded-full overflow-hidden">
+                        <div 
+                          className="bg-green-500 h-full rounded-full"
+                          style={{ width: `${routeProgress}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 )}
