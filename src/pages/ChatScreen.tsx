@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Phone, Send, Mic, Paperclip, User } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const ChatScreen = () => {
   const navigate = useNavigate();
@@ -76,9 +77,11 @@ const ChatScreen = () => {
             <ArrowLeft className="h-6 w-6" />
           </button>
           <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full overflow-hidden mr-3 bg-green-500 flex items-center justify-center">
-              <User className="h-6 w-6 text-black" />
-            </div>
+            <Avatar className="h-10 w-10 mr-3">
+              <AvatarFallback className="bg-green-500 text-black">
+                <User className="h-6 w-6" />
+              </AvatarFallback>
+            </Avatar>
             <div>
               <h2 className="font-semibold">{customerName}</h2>
               <p className="text-xs text-gray-400">Customer • Online</p>
@@ -104,9 +107,11 @@ const ChatScreen = () => {
             className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.sender === 'customer' && (
-              <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center mr-2 flex-shrink-0 self-end mb-1">
-                <User className="h-4 w-4 text-black" />
-              </div>
+              <Avatar className="h-8 w-8 mr-2 self-end mb-1">
+                <AvatarFallback className="bg-green-500 flex items-center justify-center text-black">
+                  <User className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
             )}
             <div 
               className={`max-w-[75%] rounded-2xl px-4 py-2 ${
@@ -130,9 +135,11 @@ const ChatScreen = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex justify-start"
           >
-            <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center mr-2 flex-shrink-0 self-end mb-1">
-              <User className="h-4 w-4 text-black" />
-            </div>
+            <Avatar className="h-8 w-8 mr-2 self-end mb-1">
+              <AvatarFallback className="bg-green-500 flex items-center justify-center text-black">
+                <User className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
             <div className="bg-gray-800 rounded-2xl px-4 py-3 rounded-bl-none">
               <div className="flex space-x-1">
                 <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
