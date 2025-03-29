@@ -7,6 +7,7 @@ import Map from '@/components/ui/Map';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useTheme } from 'next-themes';
 
 const nearbyStations = [
   {
@@ -50,6 +51,7 @@ const Index: React.FC = () => {
   const [showTraffic, setShowTraffic] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [mapVisible, setMapVisible] = useState(false);
+  const { theme } = useTheme();
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -68,7 +70,7 @@ const Index: React.FC = () => {
   }, []);
   
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300 max-w-[420px] mx-auto">
       <div className="flex justify-between items-center p-2 text-xs">
         <div className="animate-pulse-slow">{lastUpdated.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
         <div className="flex items-center space-x-1">
@@ -97,9 +99,9 @@ const Index: React.FC = () => {
         
         <div className="flex-1 flex justify-center">
           <img 
-            src="/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png" 
+            src="/lovable-uploads/c3b29f6b-a689-4ac3-a338-4194cbee5e0c.png" 
             alt="FuelFriendly Logo" 
-            className="h-4 object-contain animate-pulse-slow hover:scale-110 transition-transform duration-300"
+            className={`h-8 object-contain transition-all duration-500 hover:scale-110 ${theme === 'light' ? 'filter brightness-0' : ''}`}
           />
         </div>
         
@@ -121,7 +123,7 @@ const Index: React.FC = () => {
           <input
             type="text"
             placeholder="Search for fuel and gr..."
-            className="h-12 w-full rounded-full dark:bg-gray-900/80 light:bg-white/80 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 hover:ring-1 hover:ring-green-500/30 focus:scale-[1.02] transform"
+            className="h-12 w-full rounded-full dark:bg-gray-900/80 bg-white/80 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 hover:ring-1 hover:ring-green-500/30 focus:scale-[1.02] transform"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -136,23 +138,23 @@ const Index: React.FC = () => {
           <Map className="h-56 w-full rounded-lg overflow-hidden" interactive showRoute={showTraffic} />
         </div>
         
-        <div className="absolute bottom-4 left-8 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs flex items-center space-x-2 animate-fade-in hover:bg-green-500/20 transition-all duration-300 hover:pl-5 hover:pr-7">
+        <div className="absolute bottom-4 left-8 dark:bg-black/70 bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs flex items-center space-x-2 animate-fade-in hover:bg-green-500/20 transition-all duration-300 hover:pl-5 hover:pr-7">
           <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-          <span className="dark:text-white light:text-green-800 whitespace-nowrap">Live traffic</span>
+          <span className="dark:text-white text-green-800 whitespace-nowrap">Live traffic</span>
         </div>
         
         <div className="absolute top-6 right-6 flex flex-col space-y-1 z-10">
-          <div className="flex items-center space-x-1 px-2 py-1 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-green-400/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.2s' }}>
+          <div className="flex items-center space-x-1 px-2 py-1 dark:bg-black/70 bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-green-400/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.2s' }}>
             <div className="h-2 w-2 rounded-full bg-green-400"></div>
-            <span className="dark:text-white light:text-green-800">Light</span>
+            <span className="dark:text-white text-green-800">Light</span>
           </div>
-          <div className="flex items-center space-x-1 px-2 py-1 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-yellow-400/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.4s' }}>
+          <div className="flex items-center space-x-1 px-2 py-1 dark:bg-black/70 bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-yellow-400/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.4s' }}>
             <div className="h-2 w-2 rounded-full bg-yellow-400"></div>
-            <span className="dark:text-white light:text-green-800">Moderate</span>
+            <span className="dark:text-white text-green-800">Moderate</span>
           </div>
-          <div className="flex items-center space-x-1 px-2 py-1 dark:bg-black/70 light:bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-red-500/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.6s' }}>
+          <div className="flex items-center space-x-1 px-2 py-1 dark:bg-black/70 bg-white/70 backdrop-blur-sm rounded-full text-xs animate-fade-in hover:bg-red-500/20 transition-all duration-300 hover:pl-4 hover:pr-6" style={{ animationDelay: '0.6s' }}>
             <div className="h-2 w-2 rounded-full bg-red-500"></div>
-            <span className="dark:text-white light:text-green-800">Heavy</span>
+            <span className="dark:text-white text-green-800">Heavy</span>
           </div>
         </div>
       </div>
@@ -160,7 +162,7 @@ const Index: React.FC = () => {
       <div className="px-4 pt-3 pb-20 flex-1 animate-fade-in" style={{ animationDelay: "0.4s" }}>
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-xl font-bold relative group">
-            <span className="transition-all duration-300 dark:text-white light:text-green-800 group-hover:text-green-500">Fuel Stations nearby</span>
+            <span className="transition-all duration-300 dark:text-white text-green-800 group-hover:text-green-500">Fuel Stations nearby</span>
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 transition-all duration-500 group-hover:w-full"></span>
           </h2>
           <button className="text-sm text-green-500 hover:text-green-400 transition-colors relative overflow-hidden group">
