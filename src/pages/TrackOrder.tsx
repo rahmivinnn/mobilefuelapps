@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, Phone, MessageSquare, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings } from 'lucide-react';
+import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings } from 'lucide-react';
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -14,47 +14,14 @@ const memphisLicensePlates = [
 ];
 
 const deliveryPeople = [
-  { 
-    name: "Cristopert Dastin", 
-    location: "Memphis, TN", 
-    image: "/lovable-uploads/cb5a3b54-642b-4e6d-aa2c-2e489e9956dc.png", 
-    rating: 4.8, 
-    phone: "+1 (901) 555-3478" 
-  },
-  { 
-    name: "Sarah Johnson", 
-    location: "Memphis, TN", 
-    image: "/lovable-uploads/c3b29f6b-a689-4ac3-a338-4194cbee5e0c.png", 
-    rating: 4.7, 
-    phone: "+1 (901) 555-9872" 
-  },
-  { 
-    name: "Michael Davis", 
-    location: "Memphis, TN", 
-    image: "/lovable-uploads/8a188651-80ec-4a90-8d5c-de0df713b6c7.png", 
-    rating: 4.9, 
-    phone: "+1 (901) 555-2341" 
-  },
-  { 
-    name: "Emily Wilson", 
-    location: "Memphis, TN", 
-    image: "/lovable-uploads/1bc06a60-0463-4f47-abde-502bc408852e.png", 
-    rating: 4.6, 
-    phone: "+1 (901) 555-7653" 
-  }
+  { name: "Cristopert Dastin", location: "Memphis, TN", image: "/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png", rating: 4.8, phone: "+1 (901) 555-3478" },
+  { name: "Sarah Johnson", location: "Memphis, TN", image: "/lovable-uploads/c3b29f6b-a689-4ac3-a338-4194cbee5e0c.png", rating: 4.7, phone: "+1 (901) 555-9872" },
+  { name: "Michael Davis", location: "Memphis, TN", image: "/lovable-uploads/8a188651-80ec-4a90-8d5c-de0df713b6c7.png", rating: 4.9, phone: "+1 (901) 555-2341" },
+  { name: "Emily Wilson", location: "Memphis, TN", image: "/lovable-uploads/1bc06a60-0463-4f47-abde-502bc408852e.png", rating: 4.6, phone: "+1 (901) 555-7653" }
 ];
 
 const deliveryTimes = [
   "7:15 - 7:45 PM", "8:30 - 9:15 PM", "6:45 - 7:30 PM", "9:00 - 9:45 PM", "7:30 - 8:15 PM"
-];
-
-// Memphis street names for more realistic updates
-const memphisStreets = [
-  "Poplar Avenue", "Union Avenue", "Madison Avenue", "Beale Street", 
-  "Front Street", "Main Street", "Second Street", "Third Street",
-  "Elvis Presley Boulevard", "Winchester Road", "Summer Avenue",
-  "Walnut Grove Road", "Sam Cooper Boulevard", "Airways Boulevard",
-  "Lamar Avenue", "Germantown Parkway", "MLK Jr Avenue", "Riverside Drive"
 ];
 
 // Default order data to ensure we always have valid initial state
@@ -73,35 +40,14 @@ const defaultOrder = {
   statusDetails: 'Order received'
 };
 
-// Real-time driver update messages
-const driverUpdateMessages = [
-  "I'm heading to pick up your fuel now",
-  "Just arrived at the station to pick up your order",
-  "Your fuel is being loaded now, will be on my way shortly",
+// Sample driver messages
+const driverMessages = [
   "I'm on my way to your location!",
-  "Taking {street} to avoid traffic",
-  "I'll be there in about 10 minutes",
-  "I'm about 5 minutes away from your location",
-  "I'm nearby, please prepare for arrival",
-  "I've arrived at your location",
+  "I'll be there in about 5 minutes.",
+  "I'm nearby, please prepare for arrival.",
+  "I've arrived at your location.",
   "Is there a specific place you'd like me to meet you?",
-  "I'm at the front entrance, let me know if you need me to come to a different spot",
   "Thank you for using our service!"
-];
-
-// Delivery status updates
-const deliveryStatusUpdates = [
-  "Order received and processing",
-  "Driver has been assigned to your order",
-  "Driver is on the way to the gas station",
-  "Driver has arrived at the gas station",
-  "Your fuel is being prepared",
-  "Fuel loaded and ready for delivery",
-  "Driver is now on the way to your location",
-  "Driver is navigating through {street}",
-  "Driver is getting close to your location",
-  "Driver is arriving at your location",
-  "Delivery completed successfully"
 ];
 
 const TrackOrder: React.FC = () => {
@@ -135,19 +81,17 @@ const TrackOrder: React.FC = () => {
           const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
           
           // Safely update the order with found data
-          setOrder({
+          setOrder(prevOrder => ({
             ...defaultOrder, // Always include default values as fallback
-            ...foundOrder,
+            ...prevOrder,
             id: foundOrder.id || defaultOrder.id,
             status: foundOrder.status || defaultOrder.status,
             estimatedDelivery: randomDeliveryTime,
             items: foundOrder.items || defaultOrder.items,
             total: parseFloat(foundOrder.totalPrice) || defaultOrder.total,
             licensePlate: randomLicensePlate,
-            driver: randomDeliveryPerson,
-            progress: defaultOrder.progress,
-            statusDetails: defaultOrder.statusDetails
-          });
+            driver: randomDeliveryPerson
+          }));
         }
         
         console.log(`Fetching order details for ${orderId}`, foundOrder);
@@ -163,7 +107,8 @@ const TrackOrder: React.FC = () => {
       }
     }
     
-    // Status update every 8-12 seconds for realistic progression
+    // Status update every 5 seconds for demonstration purposes
+    // In reality, this would be connected to a backend with real updates
     const statuses = [
       { status: 'processing', progress: 0, statusDetails: 'Order received' },
       { status: 'processing', progress: 20, statusDetails: 'Processing your order' },
@@ -175,38 +120,33 @@ const TrackOrder: React.FC = () => {
     
     let currentStep = 0;
     
-    // Update status at varying intervals for more natural progression
-    const updateStatus = () => {
+    // Update status every 5 seconds
+    const statusTimer = setInterval(() => {
       if (currentStep < statuses.length) {
-        // Using a function style update to ensure we always have the latest state
-        setOrder(prevOrder => ({
-          ...(prevOrder || defaultOrder), // Ensure we have a valid object
-          status: statuses[currentStep].status,
-          progress: statuses[currentStep].progress,
-          statusDetails: statuses[currentStep].statusDetails
-        }));
-        
-        // Get a status update message and replace placeholders
-        let statusMessage = deliveryStatusUpdates[Math.min(currentStep, deliveryStatusUpdates.length - 1)];
-        
-        if (statusMessage.includes("{street}")) {
-          const randomStreet = memphisStreets[Math.floor(Math.random() * memphisStreets.length)];
-          statusMessage = statusMessage.replace("{street}", randomStreet);
-        }
+        setOrder(prevOrder => {
+          // Ensure prevOrder is never undefined by using defaultOrder as fallback
+          const safeOrder = prevOrder || defaultOrder;
+          
+          return {
+            ...safeOrder,
+            status: statuses[currentStep].status,
+            progress: statuses[currentStep].progress,
+            statusDetails: statuses[currentStep].statusDetails
+          };
+        });
         
         // Show toast notification for status changes
         toast({
-          title: `Order Update: ${statuses[currentStep].status.toUpperCase()}`,
-          description: statusMessage,
-          duration: 3000,
-          className: "bg-black border-gray-800 text-white"
+          title: "Order Update",
+          description: statuses[currentStep].statusDetails,
+          duration: 3000
         });
         
         // Check if this is the final step (delivery complete)
         if (currentStep === statuses.length - 1) {
           setOrderComplete(true);
           
-          // Show delivery completion toast when delivered
+          // Show smaller delivery completion toast when delivered
           setTimeout(() => {
             toast({
               title: "Delivery Complete!",
@@ -218,54 +158,101 @@ const TrackOrder: React.FC = () => {
             // Navigate back to home after a delay
             setTimeout(() => {
               navigate('/');
-            }, 5000);
+            }, 3000);
           }, 1000);
         }
         
         currentStep++;
-        
-        // Schedule next update with random delay for more natural progression
-        if (currentStep < statuses.length) {
-          const randomDelay = Math.floor(Math.random() * 4000) + 8000; // 8-12 seconds
-          setTimeout(updateStatus, randomDelay);
-        }
+      } else {
+        clearInterval(statusTimer);
       }
-    };
-    
-    // Start status updates
-    const initialDelay = Math.floor(Math.random() * 2000) + 3000; // 3-5 seconds initial delay
-    const statusTimer = setTimeout(updateStatus, initialDelay);
+    }, 5000);
 
-    // Driver message updates at random intervals (5-15 seconds)
-    const driverMessageTimer = setInterval(() => {
+    // Update driver much more frequently (every 5-10 seconds)
+    const driverUpdateTimer = setInterval(() => {
+      // Choose random Memphis license plate
+      const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
+      
+      // Choose random delivery person (different from current)
+      let currentDriverIndex = -1;
+      
+      // Safely get current driver index with null check
+      const currentDriverName = order?.driver?.name;
+      if (currentDriverName) {
+        currentDriverIndex = deliveryPeople.findIndex(driver => driver.name === currentDriverName);
+      }
+      
+      let newDriverIndex;
+      do {
+        newDriverIndex = Math.floor(Math.random() * deliveryPeople.length);
+      } while (newDriverIndex === currentDriverIndex && deliveryPeople.length > 1);
+      
+      const randomDeliveryPerson = deliveryPeople[newDriverIndex];
+      
+      // Choose random delivery time
+      const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
+      
+      setOrder(prevOrder => {
+        // Ensure prevOrder is never undefined by using defaultOrder as fallback
+        const safeOrder = prevOrder || defaultOrder;
+        
+        return {
+          ...safeOrder,
+          estimatedDelivery: randomDeliveryTime,
+          licensePlate: randomLicensePlate,
+          driver: randomDeliveryPerson
+        };
+      });
+      
+      // Only show driver update notification if the order is not complete
+      if (!orderComplete) {
+        toast({
+          title: "Driver Update",
+          description: `Your order is now being delivered by ${randomDeliveryPerson.name}`,
+          duration: 3000
+        });
+      }
+    }, Math.floor(Math.random() * 5000) + 5000); // Random time between 5-10 seconds
+    
+    // Show random driver messages every 15-30 seconds
+    const messageTimer = setInterval(() => {
       // Only show messages if the order is in progress
       if (!orderComplete) {
-        // Choose a random message
-        let randomMessage = driverUpdateMessages[Math.floor(Math.random() * driverUpdateMessages.length)];
-        
-        // Replace street placeholder if present
-        if (randomMessage.includes("{street}")) {
-          const randomStreet = memphisStreets[Math.floor(Math.random() * memphisStreets.length)];
-          randomMessage = randomMessage.replace("{street}", randomStreet);
-        }
-        
-        // Get driver name safely with a default value
+        const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
         const driverName = order?.driver?.name || 'Driver';
         
         toast({
           title: `Message from ${driverName}`,
           description: randomMessage,
           duration: 3000,
-          className: "bg-green-500 border-green-600 text-black"
+          className: "bg-blue-500 border-blue-600 text-white"
         });
       }
-    }, Math.floor(Math.random() * 10000) + 5000);
+    }, Math.floor(Math.random() * 15000) + 15000); // Random time between 15-30 seconds
     
     return () => {
-      clearTimeout(statusTimer);
-      clearInterval(driverMessageTimer);
+      clearInterval(statusTimer);
+      clearInterval(driverUpdateTimer);
+      clearInterval(messageTimer);
     };
   }, [location.search, toast, navigate, orderComplete]);
+
+  // Effect to watch for order completion and show additional notifications
+  useEffect(() => {
+    if (orderComplete) {
+      // Show arrival notification after the order is complete
+      const arrivalTimer = setTimeout(() => {
+        toast({
+          title: "Arrived at Destination",
+          description: "Your fuel has been delivered. Enjoy!",
+          duration: 2000,
+          className: "bg-green-500 border-green-600 text-white"
+        });
+      }, 2000);
+      
+      return () => clearTimeout(arrivalTimer);
+    }
+  }, [orderComplete, toast]);
 
   const handleCall = () => {
     navigate('/call');
@@ -305,7 +292,7 @@ const TrackOrder: React.FC = () => {
   const statusDetails = order?.statusDetails || 'Processing your order';
   const driverName = order?.driver?.name || 'Driver';
   const driverLocation = order?.driver?.location || 'Memphis, TN';
-  const driverImage = order?.driver?.image || '/lovable-uploads/cb5a3b54-642b-4e6d-aa2c-2e489e9956dc.png';
+  const driverImage = order?.driver?.image || '/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png';
   const licensePlate = order?.licensePlate || 'TN-XXXXX';
   const estimatedDelivery = order?.estimatedDelivery || 'Soon';
   const orderItems = order?.items || [];
@@ -314,7 +301,7 @@ const TrackOrder: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Header - matches reference image */}
+      {/* Header */}
       <div className="relative px-4 py-3 flex items-center justify-center">
         <Link to="/orders" className="absolute left-4">
           <div className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-800">
@@ -346,28 +333,37 @@ const TrackOrder: React.FC = () => {
         <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
-      {/* Map section - Updated to show the animated map */}
-      <div className="h-[440px] mb-3">
+      {/* Map section */}
+      <div className="h-[300px] mb-3">
         <Map 
-          showRoute={true}
-          showDeliveryInfo={true}
-          driverInfo={order?.driver}
+          showRoute 
+          showDeliveryInfo 
         />
       </div>
       
-      {/* Driver info card - matches reference image */}
-      <div className="mx-4 p-3 bg-black border border-gray-800 rounded-xl -mt-20 mb-4 relative">
-        <div className="flex items-center">
+      {/* Driver info and order details */}
+      <div className="px-4 py-2 bg-black rounded-t-3xl -mt-12 relative">
+        <div className="h-1 w-12 bg-gray-700 rounded-full mx-auto mb-4"></div>
+        
+        {/* Driver info */}
+        <div className="flex items-center mb-6">
           <img 
             src={driverImage} 
             alt={driverName} 
-            className="h-14 w-14 rounded-full object-cover mr-3 border-2 border-green-500"
+            className="h-14 w-14 rounded-full object-cover mr-3"
           />
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{driverName}</h3>
             <p className="text-gray-400">{driverLocation}</p>
+            <p className="text-gray-400 text-xs mt-1">Vehicle License: {licensePlate}</p>
           </div>
           <div className="flex space-x-2">
+            <Button 
+              onClick={handleMessage}
+              className="h-12 w-12 p-0 rounded-full bg-green-500 hover:bg-green-600"
+            >
+              <MessageSquare className="h-6 w-6 text-black" />
+            </Button>
             <Button 
               onClick={handleCall}
               className="h-12 w-12 p-0 rounded-full bg-green-500 hover:bg-green-600"
@@ -376,14 +372,56 @@ const TrackOrder: React.FC = () => {
             </Button>
           </div>
         </div>
-      </div>
-      
-      {/* Order details */}
-      <div className="px-4 py-2">
+        
         {/* Delivery time */}
-        <div className="mb-4">
+        <div className="mb-6">
           <h4 className="text-gray-400 mb-1">Your Delivery Time</h4>
           <p className="font-semibold text-white text-lg">Estimated {estimatedDelivery}</p>
+        </div>
+        
+        {/* Delivery status */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 ${progress >= 20 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
+                <MapPin className={`h-4 w-4 ${progress >= 20 ? 'text-black' : 'text-gray-400'}`} />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Pickup</p>
+            </div>
+            <div className="flex-1 mx-1 h-0.5">
+              <div className={`h-0.5 w-full border-t-2 border-dashed ${progress >= 40 ? 'border-green-500' : 'border-gray-700'}`}></div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 ${progress >= 40 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
+                <svg className={`h-4 w-4 ${progress >= 40 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5m1.5-9H17V12h4.46L19.5 9.5M6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3M3 6v9h.76c.55-.61 1.35-1 2.24-1 .89 0 1.69.39 2.24 1H15V6H3z"/>
+                </svg>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Transit</p>
+            </div>
+            <div className="flex-1 mx-1 h-0.5">
+              <div className={`h-0.5 w-full border-t-2 border-dashed ${progress >= 80 ? 'border-green-500' : 'border-gray-700'}`}></div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 ${progress >= 80 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
+                <svg className={`h-4 w-4 ${progress >= 80 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M18 10a1 1 0 0 1-1-1 1 1 0 0 1 1-1 1 1 0 0 1 1 1 1 1 0 0 1-1 1m-6 0H6V5h6m7.77 2.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11C16.17 7 15.5 7.93 15.5 9a2.5 2.5 0 0 0 2.5 2.5c.36 0 .69-.08 1-.21v7.21a1 1 0 0 1-1 1 1 1 0 0 1-1-1V14a2 2 0 0 0-2-2h-1V5a2 2 0 0 0-2-2H6c-1.11 0-2 .89-2 2v16h10v-7.5h1.5v5a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5V9c0-.69-.28-1.32-.73-1.77M12 10H6V9h6m0-2H6V7h6M6 19v-3h5v3H6m6-4.5V19h-1v-4.5"/>
+                </svg>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Arriving</p>
+            </div>
+            <div className="flex-1 mx-1 h-0.5">
+              <div className={`h-0.5 w-full border-t-2 border-dashed ${progress >= 100 ? 'border-green-500' : 'border-gray-700'}`}></div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 ${progress >= 100 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
+                <svg className={`h-4 w-4 ${progress >= 100 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Delivered</p>
+            </div>
+          </div>
         </div>
         
         {/* Order items */}
