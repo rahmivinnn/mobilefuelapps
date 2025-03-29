@@ -212,7 +212,7 @@ const TrackOrder: React.FC = () => {
       clearInterval(driverUpdateTimer);
       clearInterval(messageTimer);
     };
-  }, [location.search, toast, navigate, orderComplete, order.driver?.name]);
+  }, [location.search, toast, navigate, orderComplete]);
 
   // Effect to watch for order completion and show additional notifications
   useEffect(() => {
@@ -240,7 +240,7 @@ const TrackOrder: React.FC = () => {
   };
 
   // Helper function to determine status color
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string | undefined) => {
     if (!status) return 'bg-gray-500'; // Default fallback
     
     switch(status) {
@@ -252,7 +252,7 @@ const TrackOrder: React.FC = () => {
   };
 
   // Helper function to get status name
-  const getStatusName = (status) => {
+  const getStatusName = (status: string | undefined) => {
     if (!status) return 'Unknown'; // Default fallback
     
     switch(status) {
@@ -280,22 +280,22 @@ const TrackOrder: React.FC = () => {
       <div className="px-4 py-2">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full ${getStatusColor(order.status)} mr-2`}></div>
-            <span className="font-medium">{getStatusName(order.status)}</span>
+            <div className={`w-3 h-3 rounded-full ${getStatusColor(order?.status)} mr-2`}></div>
+            <span className="font-medium">{getStatusName(order?.status)}</span>
           </div>
-          <span className="text-sm text-gray-400">{order.id}</span>
+          <span className="text-sm text-gray-400">{order?.id}</span>
         </div>
         
         {/* Progress bar */}
         <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
           <motion.div 
-            className={`h-2 rounded-full ${getStatusColor(order.status)}`}
+            className={`h-2 rounded-full ${getStatusColor(order?.status)}`}
             initial={{ width: 0 }}
-            animate={{ width: `${order.progress}%` }}
+            animate={{ width: `${order?.progress || 0}%` }}
             transition={{ duration: 0.5 }}
           />
         </div>
-        <p className="text-gray-400 text-sm">{order.statusDetails}</p>
+        <p className="text-gray-400 text-sm">{order?.statusDetails}</p>
       </div>
       
       {/* Map section */}
@@ -313,14 +313,14 @@ const TrackOrder: React.FC = () => {
         {/* Driver info */}
         <div className="flex items-center mb-6">
           <img 
-            src={order.driver?.image} 
-            alt={order.driver?.name} 
+            src={order?.driver?.image} 
+            alt={order?.driver?.name} 
             className="h-14 w-14 rounded-full object-cover mr-3"
           />
           <div className="flex-1">
-            <h3 className="font-semibold text-lg">{order.driver?.name}</h3>
-            <p className="text-gray-400">{order.driver?.location}</p>
-            <p className="text-gray-400 text-xs mt-1">Vehicle License: {order.licensePlate}</p>
+            <h3 className="font-semibold text-lg">{order?.driver?.name}</h3>
+            <p className="text-gray-400">{order?.driver?.location}</p>
+            <p className="text-gray-400 text-xs mt-1">Vehicle License: {order?.licensePlate}</p>
           </div>
           <div className="flex space-x-2">
             <Button 
@@ -341,46 +341,46 @@ const TrackOrder: React.FC = () => {
         {/* Delivery time */}
         <div className="mb-6">
           <h4 className="text-gray-400 mb-1">Your Delivery Time</h4>
-          <p className="font-semibold text-white text-lg">Estimated {order.estimatedDelivery}</p>
+          <p className="font-semibold text-white text-lg">Estimated {order?.estimatedDelivery}</p>
         </div>
         
         {/* Delivery status */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 ${order.progress >= 20 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
-                <MapPin className={`h-4 w-4 ${order.progress >= 20 ? 'text-black' : 'text-gray-400'}`} />
+              <div className={`w-8 h-8 ${(order?.progress || 0) >= 20 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
+                <MapPin className={`h-4 w-4 ${(order?.progress || 0) >= 20 ? 'text-black' : 'text-gray-400'}`} />
               </div>
               <p className="text-xs text-gray-400 mt-1">Pickup</p>
             </div>
             <div className="flex-1 mx-1 h-0.5">
-              <div className={`h-0.5 w-full border-t-2 border-dashed ${order.progress >= 40 ? 'border-green-500' : 'border-gray-700'}`}></div>
+              <div className={`h-0.5 w-full border-t-2 border-dashed ${(order?.progress || 0) >= 40 ? 'border-green-500' : 'border-gray-700'}`}></div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 ${order.progress >= 40 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
-                <svg className={`h-4 w-4 ${order.progress >= 40 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
+              <div className={`w-8 h-8 ${(order?.progress || 0) >= 40 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
+                <svg className={`h-4 w-4 ${(order?.progress || 0) >= 40 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
                   <path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5m1.5-9H17V12h4.46L19.5 9.5M6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3M3 6v9h.76c.55-.61 1.35-1 2.24-1 .89 0 1.69.39 2.24 1H15V6H3z"/>
                 </svg>
               </div>
               <p className="text-xs text-gray-400 mt-1">Transit</p>
             </div>
             <div className="flex-1 mx-1 h-0.5">
-              <div className={`h-0.5 w-full border-t-2 border-dashed ${order.progress >= 80 ? 'border-green-500' : 'border-gray-700'}`}></div>
+              <div className={`h-0.5 w-full border-t-2 border-dashed ${(order?.progress || 0) >= 80 ? 'border-green-500' : 'border-gray-700'}`}></div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 ${order.progress >= 80 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
-                <svg className={`h-4 w-4 ${order.progress >= 80 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
+              <div className={`w-8 h-8 ${(order?.progress || 0) >= 80 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
+                <svg className={`h-4 w-4 ${(order?.progress || 0) >= 80 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
                   <path fill="currentColor" d="M18 10a1 1 0 0 1-1-1 1 1 0 0 1 1-1 1 1 0 0 1 1 1 1 1 0 0 1-1 1m-6 0H6V5h6m7.77 2.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11C16.17 7 15.5 7.93 15.5 9a2.5 2.5 0 0 0 2.5 2.5c.36 0 .69-.08 1-.21v7.21a1 1 0 0 1-1 1 1 1 0 0 1-1-1V14a2 2 0 0 0-2-2h-1V5a2 2 0 0 0-2-2H6c-1.11 0-2 .89-2 2v16h10v-7.5h1.5v5a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5V9c0-.69-.28-1.32-.73-1.77M12 10H6V9h6m0-2H6V7h6M6 19v-3h5v3H6m6-4.5V19h-1v-4.5"/>
                 </svg>
               </div>
               <p className="text-xs text-gray-400 mt-1">Arriving</p>
             </div>
             <div className="flex-1 mx-1 h-0.5">
-              <div className={`h-0.5 w-full border-t-2 border-dashed ${order.progress >= 100 ? 'border-green-500' : 'border-gray-700'}`}></div>
+              <div className={`h-0.5 w-full border-t-2 border-dashed ${(order?.progress || 0) >= 100 ? 'border-green-500' : 'border-gray-700'}`}></div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 ${order.progress >= 100 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
-                <svg className={`h-4 w-4 ${order.progress >= 100 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
+              <div className={`w-8 h-8 ${(order?.progress || 0) >= 100 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
+                <svg className={`h-4 w-4 ${(order?.progress || 0) >= 100 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
                   <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                 </svg>
               </div>
@@ -392,7 +392,7 @@ const TrackOrder: React.FC = () => {
         {/* Order items */}
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-3">Order</h3>
-          {order.items && order.items.map((item, i) => (
+          {order?.items && order.items.map((item, i) => (
             <div key={i} className="flex justify-between mb-2">
               <p className="text-gray-300">{item.name}</p>
               <p className="font-medium">${item.price.toFixed(2)}</p>
@@ -401,7 +401,7 @@ const TrackOrder: React.FC = () => {
           <div className="border-t border-gray-800 mt-3 pt-3">
             <div className="flex justify-between">
               <p className="font-medium">Total</p>
-              <p className="font-bold">${order.total.toFixed(2)}</p>
+              <p className="font-bold">${order?.total.toFixed(2)}</p>
             </div>
           </div>
         </div>
