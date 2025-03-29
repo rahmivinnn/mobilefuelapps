@@ -11,35 +11,48 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 
-const nearbyStations = [
-  {
-    id: '1',
-    name: 'Shell Gas Station',
-    address: '2255 Union Ave, Memphis, TN',
-    distance: '0.8',
-    rating: 4.8,
-    isOpen: true,
-    imageUrl: '/lovable-uploads/00333baa-ca73-4e51-8f20-49acab199b5b.png'
-  },
-  {
-    id: '2',
-    name: 'ExxonMobil',
-    address: '1701 Poplar Ave, Memphis, TN',
-    distance: '1.5',
-    rating: 4.6,
-    isOpen: true,
-    imageUrl: '/lovable-uploads/049ef9d2-46de-4e78-bee2-10fa706d9425.png'
-  },
-  {
-    id: '3',
-    name: 'Chevron',
-    address: '1203 Madison Ave, Memphis, TN',
-    distance: '2.3',
-    rating: 4.3,
-    isOpen: false,
-    imageUrl: '/lovable-uploads/8c6a633e-ae68-4424-b2b3-4458a96b7d3b.png'
+// Generate 100 dummy order data for stations across Memphis
+const generateDummyStations = () => {
+  const stationBrands = [
+    { brand: 'Shell', imageUrl: '/lovable-uploads/00333baa-ca73-4e51-8f20-49acab199b5b.png' },
+    { brand: 'ExxonMobil', imageUrl: '/lovable-uploads/049ef9d2-46de-4e78-bee2-10fa706d9425.png' },
+    { brand: 'Chevron', imageUrl: '/lovable-uploads/8c6a633e-ae68-4424-b2b3-4458a96b7d3b.png' },
+    { brand: 'BP', imageUrl: '/lovable-uploads/34aae0f7-f7a9-441b-8d2e-1d8027cf8360.png' }
+  ];
+  
+  const streets = [
+    'Union Ave', 'Poplar Ave', 'Madison Ave', 'Cooper St', 'Highland St',
+    'Central Ave', 'Southern Ave', 'Jackson Ave', 'Summer Ave', 'Walnut Grove Rd'
+  ];
+  
+  const dummyStations = [];
+  
+  for (let i = 1; i <= 100; i++) {
+    const randomBrand = stationBrands[Math.floor(Math.random() * stationBrands.length)];
+    const randomStreet = streets[Math.floor(Math.random() * streets.length)];
+    const randomStreetNumber = Math.floor(Math.random() * 4000) + 1000;
+    const randomDistance = (Math.random() * 9.9 + 0.1).toFixed(1);
+    const randomRating = (Math.random() * 2 + 3).toFixed(1);
+    
+    dummyStations.push({
+      id: `${i}`,
+      name: `${randomBrand.brand} Gas Station`,
+      address: `${randomStreetNumber} ${randomStreet}, Memphis, TN`,
+      distance: randomDistance,
+      rating: parseFloat(randomRating),
+      isOpen: Math.random() > 0.2, // 80% chance to be open
+      imageUrl: randomBrand.imageUrl
+    });
   }
-];
+  
+  return dummyStations;
+};
+
+// Get all dummy stations
+const allStations = generateDummyStations();
+
+// Get 3 random stations for the home page
+const nearbyStations = allStations.slice(0, 3);
 
 const trafficConditions = {
   light: ['Union Ave', 'Madison Ave', 'Cooper St'],
@@ -99,9 +112,26 @@ const Index = () => {
   const handleNotificationClick = () => {
     toast({
       title: "Notifications",
-      description: "Viewing all notifications",
+      description: "You have 3 new notifications",
       duration: 3000,
     });
+    
+    // Show multiple notifications sequentially
+    setTimeout(() => {
+      toast({
+        title: "New Promotion",
+        description: "Get 5% off your next fuel purchase with code FUEL5",
+        duration: 4000,
+      });
+    }, 1000);
+    
+    setTimeout(() => {
+      toast({
+        title: "Order Update",
+        description: "Your last order has been delivered successfully",
+        duration: 4000,
+      });
+    }, 2000);
   };
   
   return (
@@ -118,11 +148,11 @@ const Index = () => {
           </div>
         </div>
         
-        <div className="flex-1 flex justify-center">
+        <div className="flex-1 flex justify-center items-center">
           <img 
             src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
             alt="FUELFRIENDLY" 
-            className="h-1.75 animate-fade-in" // Reduced further from h-2.25 to h-1.75
+            className="h-1.25 animate-fade-in" // Reduced further from h-1.75 to h-1.25
           />
         </div>
         
