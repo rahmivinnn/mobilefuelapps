@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Bell, User } from 'lucide-react';
 import BottomNav from '@/components/layout/BottomNav';
@@ -69,6 +70,15 @@ const Index = () => {
   
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300 max-w-[420px] mx-auto">
+      {/* Add FUELFRIENDLY image at the top */}
+      <div className="flex justify-center py-2 animate-fade-in">
+        <img 
+          src="/lovable-uploads/57aff490-f08a-4205-9ae9-496a32e810e6.png" 
+          alt="FUELFRIENDLY" 
+          className="h-6" 
+        />
+      </div>
+      
       <div className="flex justify-between items-center px-4 py-2">
         <div className="relative group">
           <Avatar className="w-10 h-10 bg-green-500 ring-2 ring-green-500/50 hover:ring-green-500 transition-all duration-300 transform hover:scale-110 group-hover:rotate-6">

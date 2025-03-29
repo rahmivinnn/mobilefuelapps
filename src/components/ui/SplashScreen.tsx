@@ -36,7 +36,7 @@ const Logo = () => {
         </motion.div>
       </motion.div>
       
-      {/* Much smaller FUELFRIENDLY text (about half the previous size) */}
+      {/* FUELFRIENDLY text - increased size by 0.5x (from h-3 to h-4.5) */}
       <motion.div 
         className="text-white"
         initial={{ opacity: 0, y: 20 }}
@@ -46,7 +46,7 @@ const Logo = () => {
         <img 
           src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
           alt="FUELFRIENDLY" 
-          className="h-3" // Further reduced from h-6 to h-3 (half the size)
+          className="h-4.5" // Increased from h-3 to h-4.5 (0.5x larger)
         />
       </motion.div>
     </motion.div>
@@ -99,7 +99,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
     // Handle splash screen timing
     const timer = setTimeout(() => {
       onFinish();
-    }, 4000); // Keep the 4 second duration
+    }, 2500); // Reduced from 4000ms to 2500ms to go to home screen faster
     
     return () => {
       clearTimeout(timer);
