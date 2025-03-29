@@ -31,7 +31,7 @@ const Welcome: React.FC = () => {
             <img 
               src="/lovable-uploads/44c35d38-14ee-46b9-8302-0944a264f34e.png" 
               alt="FuelFriendly Logo" 
-              className="w-16 h-16"
+              className="w-16 h-16 filter invert sepia-0 saturate-[7500%] hue-rotate-[75deg]"
             />
           </motion.div>
           
@@ -40,12 +40,9 @@ const Welcome: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
+            className="text-green-500 font-bold text-xl tracking-widest"
           >
-            <img 
-              src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
-              alt="FUELFRIENDLY" 
-              className="h-6"
-            />
+            FUELFRIENDLY
           </motion.div>
         </motion.div>
         
