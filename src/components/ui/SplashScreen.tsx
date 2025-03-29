@@ -1,13 +1,14 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
+import { Hexagon } from 'lucide-react';
 
 interface SplashScreenProps {
   onFinish: () => void;
 }
 
 // Hexagon component for creating the hexagonal pattern
-const Hexagon = ({ 
+const HexagonPattern = ({ 
   size, 
   x, 
   y,
@@ -46,7 +47,7 @@ const Logo = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
     >
-      {/* Circle with new flame icon */}
+      {/* Circle with gas pump icon */}
       <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
         <motion.div 
           className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center"
@@ -59,11 +60,13 @@ const Logo = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1, duration: 0.5, ease: "easeOut" }}
           >
-            {/* Updated Fuel logo SVG */}
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Updated Fuel logo SVG that matches the provided image */}
+            <svg width="40" height="40" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path 
-                d="M30 1.25V5H25V7.5H30V13.75C30 15.125 31.125 16.25 32.5 16.25C33.875 16.25 35 15.125 35 13.75V5C35 2.925 33.325 1.25 31.25 1.25H30ZM10 11.25C7.925 11.25 6.25 12.925 6.25 15V36.25C6.25 38.325 7.925 40 10 40H25C27.075 40 28.75 38.325 28.75 36.25V15C28.75 12.925 27.075 11.25 25 11.25H23.75V5C23.75 2.925 22.075 1.25 20 1.25H15C12.925 1.25 11.25 2.925 11.25 5V11.25H10ZM15 5H20V11.25H15V5ZM17.5 18.75H21.25C22.625 18.75 23.75 19.875 23.75 21.25V28.75C23.75 30.125 22.625 31.25 21.25 31.25H17.5V18.75Z" 
+                d="M60 2.5V15H43.75V22.5H60V32.5C60 35.25 62.25 37.5 65 37.5C67.75 37.5 70 35.25 70 32.5V15C70 8.1 64.4 2.5 57.5 2.5H45C41.55 2.5 38.75 5.3 38.75 8.75V22.5H30V8.75C30 5.3 27.2 2.5 23.75 2.5H20C13.1 2.5 7.5 8.1 7.5 15V72.5C7.5 79.4 13.1 85 20 85H60C66.9 85 72.5 79.4 72.5 72.5V45C72.5 42.25 70.25 40 67.5 40C64.75 40 62.5 42.25 62.5 45V72.5C62.5 75.95 59.7 78.75 56.25 78.75H23.75C20.3 78.75 17.5 75.95 17.5 72.5V15C17.5 11.55 20.3 8.75 23.75 8.75H45V15H30" 
                 fill="white" 
+                stroke="white"
+                strokeWidth="1"
               />
             </svg>
           </motion.div>
@@ -72,7 +75,7 @@ const Logo = () => {
       
       {/* FUELFRIENDLY text with italic and bold styling */}
       <motion.div 
-        className="text-white text-3xl font-bold tracking-wider italic"
+        className="text-white text-3xl font-bold tracking-wider"
         style={{ fontStyle: 'italic', fontWeight: 'bold' }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -100,58 +103,50 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   const topHexagons = React.useMemo(() => {
     return [
       // Top hexagon pattern
-      { id: 1, size: 80, x: 70, y: 5, opacity: 0.15, delay: 0.2 },
-      { id: 2, size: 80, x: 60, y: 8, opacity: 0.15, delay: 0.3 },
-      { id: 3, size: 80, x: 50, y: 5, opacity: 0.15, delay: 0.4 },
-      { id: 4, size: 80, x: 40, y: 8, opacity: 0.15, delay: 0.5 },
-      { id: 5, size: 80, x: 30, y: 5, opacity: 0.15, delay: 0.6 },
-      { id: 6, size: 80, x: 20, y: 8, opacity: 0.15, delay: 0.7 },
-      { id: 7, size: 80, x: 10, y: 5, opacity: 0.15, delay: 0.8 },
+      { id: 1, size: 100, x: 80, y: 5, opacity: 0.15, delay: 0.2 },
+      { id: 2, size: 100, x: 60, y: 8, opacity: 0.15, delay: 0.3 },
+      { id: 3, size: 100, x: 40, y: 5, opacity: 0.15, delay: 0.4 },
+      { id: 4, size: 100, x: 20, y: 8, opacity: 0.15, delay: 0.5 },
+      { id: 5, size: 100, x: 0, y: 5, opacity: 0.15, delay: 0.6 },
       
-      { id: 8, size: 80, x: 65, y: 12, opacity: 0.15, delay: 0.3 },
-      { id: 9, size: 80, x: 55, y: 15, opacity: 0.15, delay: 0.4 },
-      { id: 10, size: 80, x: 45, y: 12, opacity: 0.15, delay: 0.5 },
-      { id: 11, size: 80, x: 35, y: 15, opacity: 0.15, delay: 0.6 },
-      { id: 12, size: 80, x: 25, y: 12, opacity: 0.15, delay: 0.7 },
-      { id: 13, size: 80, x: 15, y: 15, opacity: 0.15, delay: 0.8 },
+      { id: 6, size: 100, x: 70, y: 12, opacity: 0.15, delay: 0.3 },
+      { id: 7, size: 100, x: 50, y: 15, opacity: 0.15, delay: 0.4 },
+      { id: 8, size: 100, x: 30, y: 12, opacity: 0.15, delay: 0.5 },
+      { id: 9, size: 100, x: 10, y: 15, opacity: 0.15, delay: 0.6 },
       
-      { id: 14, size: 80, x: 60, y: 19, opacity: 0.15, delay: 0.4 },
-      { id: 15, size: 80, x: 50, y: 22, opacity: 0.15, delay: 0.5 },
-      { id: 16, size: 80, x: 40, y: 19, opacity: 0.15, delay: 0.6 },
-      { id: 17, size: 80, x: 30, y: 22, opacity: 0.15, delay: 0.7 },
-      { id: 18, size: 80, x: 20, y: 19, opacity: 0.15, delay: 0.8 },
+      { id: 10, size: 100, x: 80, y: 19, opacity: 0.15, delay: 0.4 },
+      { id: 11, size: 100, x: 60, y: 22, opacity: 0.15, delay: 0.5 },
+      { id: 12, size: 100, x: 40, y: 19, opacity: 0.15, delay: 0.6 },
+      { id: 13, size: 100, x: 20, y: 22, opacity: 0.15, delay: 0.7 },
+      { id: 14, size: 100, x: 0, y: 19, opacity: 0.15, delay: 0.8 },
     ];
   }, []);
   
   const bottomHexagons = React.useMemo(() => {
     return [
       // Bottom hexagon pattern
-      { id: 1, size: 80, x: 10, y: 75, opacity: 0.15, delay: 0.2 },
-      { id: 2, size: 80, x: 20, y: 78, opacity: 0.15, delay: 0.3 },
-      { id: 3, size: 80, x: 30, y: 75, opacity: 0.15, delay: 0.4 },
-      { id: 4, size: 80, x: 40, y: 78, opacity: 0.15, delay: 0.5 },
-      { id: 5, size: 80, x: 50, y: 75, opacity: 0.15, delay: 0.6 },
-      { id: 6, size: 80, x: 60, y: 78, opacity: 0.15, delay: 0.7 },
-      { id: 7, size: 80, x: 70, y: 75, opacity: 0.15, delay: 0.8 },
+      { id: 1, size: 100, x: 0, y: 70, opacity: 0.15, delay: 0.2 },
+      { id: 2, size: 100, x: 20, y: 73, opacity: 0.15, delay: 0.3 },
+      { id: 3, size: 100, x: 40, y: 70, opacity: 0.15, delay: 0.4 },
+      { id: 4, size: 100, x: 60, y: 73, opacity: 0.15, delay: 0.5 },
+      { id: 5, size: 100, x: 80, y: 70, opacity: 0.15, delay: 0.6 },
       
-      { id: 8, size: 80, x: 15, y: 82, opacity: 0.15, delay: 0.3 },
-      { id: 9, size: 80, x: 25, y: 85, opacity: 0.15, delay: 0.4 },
-      { id: 10, size: 80, x: 35, y: 82, opacity: 0.15, delay: 0.5 },
-      { id: 11, size: 80, x: 45, y: 85, opacity: 0.15, delay: 0.6 },
-      { id: 12, size: 80, x: 55, y: 82, opacity: 0.15, delay: 0.7 },
-      { id: 13, size: 80, x: 65, y: 85, opacity: 0.15, delay: 0.8 },
+      { id: 6, size: 100, x: 10, y: 77, opacity: 0.15, delay: 0.3 },
+      { id: 7, size: 100, x: 30, y: 80, opacity: 0.15, delay: 0.4 },
+      { id: 8, size: 100, x: 50, y: 77, opacity: 0.15, delay: 0.5 },
+      { id: 9, size: 100, x: 70, y: 80, opacity: 0.15, delay: 0.6 },
       
-      { id: 14, size: 80, x: 20, y: 89, opacity: 0.15, delay: 0.4 },
-      { id: 15, size: 80, x: 30, y: 92, opacity: 0.15, delay: 0.5 },
-      { id: 16, size: 80, x: 40, y: 89, opacity: 0.15, delay: 0.6 },
-      { id: 17, size: 80, x: 50, y: 92, opacity: 0.15, delay: 0.7 },
-      { id: 18, size: 80, x: 60, y: 89, opacity: 0.15, delay: 0.8 },
+      { id: 10, size: 100, x: 0, y: 84, opacity: 0.15, delay: 0.4 },
+      { id: 11, size: 100, x: 20, y: 87, opacity: 0.15, delay: 0.5 },
+      { id: 12, size: 100, x: 40, y: 84, opacity: 0.15, delay: 0.6 },
+      { id: 13, size: 100, x: 60, y: 87, opacity: 0.15, delay: 0.7 },
+      { id: 14, size: 100, x: 80, y: 84, opacity: 0.15, delay: 0.8 },
     ];
   }, []);
   
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-green-500 overflow-hidden">
-      {/* Add simple portrait animation to the hexagons */}
+      {/* Add hexagonal patterns with portrait orientation animation */}
       <motion.div
         className="absolute inset-0"
         initial={{ opacity: 0 }}
@@ -160,7 +155,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
       >
         {/* Top hexagon pattern */}
         {topHexagons.map((hex) => (
-          <Hexagon
+          <HexagonPattern
             key={`top-${hex.id}`}
             size={hex.size}
             x={hex.x}
@@ -172,7 +167,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         
         {/* Bottom hexagon pattern */}
         {bottomHexagons.map((hex) => (
-          <Hexagon
+          <HexagonPattern
             key={`bottom-${hex.id}`}
             size={hex.size}
             x={hex.x}
