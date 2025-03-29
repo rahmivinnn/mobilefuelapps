@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, ShoppingBag, MapPin, Settings, Phone, MessageSquare, Share2 } from 'lucide-react';
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
@@ -9,8 +9,7 @@ import BottomNav from '@/components/layout/BottomNav';
 
 const TrackOrder: React.FC = () => {
   const location = useLocation();
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [batteryLevel, setBatteryLevel] = useState(100);
+  const navigate = useNavigate();
   const [order, setOrder] = useState({
     id: 'ORD-1234',
     status: 'in-transit',
@@ -21,7 +20,7 @@ const TrackOrder: React.FC = () => {
     ],
     total: 22.45,
     driver: {
-      name: 'Mike Johnson',
+      name: 'Robin Sharma',
       location: 'Memphis, TN',
       image: '/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png',
       rating: 4.8,
@@ -30,14 +29,6 @@ const TrackOrder: React.FC = () => {
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    
-    const batteryDrainInterval = setInterval(() => {
-      setBatteryLevel(prev => Math.max(10, prev - 1));
-    }, 300000); // every 5 minutes
-    
     // Get orderId from URL query params
     const params = new URLSearchParams(location.search);
     const orderId = params.get('orderId');
@@ -45,48 +36,18 @@ const TrackOrder: React.FC = () => {
       // In a real app, you would fetch order details here
       console.log(`Fetching order details for ${orderId}`);
     }
-    
-    return () => {
-      clearInterval(interval);
-      clearInterval(batteryDrainInterval);
-    };
   }, [location.search]);
 
   const handleCall = () => {
-    if (order.driver.phone) {
-      window.location.href = `tel:${order.driver.phone}`;
-    }
+    navigate('/call');
   };
 
   const handleMessage = () => {
-    alert('Messaging feature would be implemented here');
+    navigate('/chat');
   };
 
   return (
     <div className="min-h-screen bg-background pb-20 max-w-md mx-auto">
-      {/* Status bar */}
-      <div className="px-4 py-2 flex justify-between items-center">
-        <div className="text-sm">{currentTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-        <div className="flex items-center space-x-2">
-          <span className="h-4 w-4 flex items-center justify-center">●●●</span>
-          <span className="h-4 w-4 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 12H7M7 12C7 13.6569 8.34315 15 10 15H14C15.6569 15 17 13.6569 17 12M7 12C7 10.3431 8.34315 9 10 9H14C15.6569 9 17 10.3431 17 12M17 12H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </span>
-          <span className="h-4 w-5 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-5" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 10V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M7 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M11 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M15 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M19 10V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </span>
-          <span className="font-bold">{batteryLevel}</span>
-        </div>
-      </div>
-      
       {/* Header */}
       <div className="relative px-4 py-3 flex items-center justify-center">
         <Link to="/orders" className="absolute left-4">

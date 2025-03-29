@@ -22,43 +22,25 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyOtp from "./pages/auth/VerifyOtp";
 import ResetPassword from "./pages/auth/ResetPassword";
 import OrderHistory from "./pages/OrderHistory";
+import CallScreen from "./pages/CallScreen";
+import ChatScreen from "./pages/ChatScreen";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [splashVisible, setSplashVisible] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [batteryLevel, setBatteryLevel] = useState(100);
-
+  
   const handleSplashFinish = () => {
     setSplashVisible(false);
   };
 
   useEffect(() => {
-    // Update time every minute
-    const timeInterval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
-
-    // Simulate battery drain
-    const batteryInterval = setInterval(() => {
-      setBatteryLevel(prev => {
-        // Don't let battery go below 10%
-        return prev > 10 ? prev - 1 : prev;
-      });
-    }, 300000); // every 5 minutes
-
     // Check if user is authenticated
     const token = localStorage.getItem('authToken');
     if (token) {
       setIsAuthenticated(true);
     }
-
-    return () => {
-      clearInterval(timeInterval);
-      clearInterval(batteryInterval);
-    };
   }, []);
 
   const login = (token: string) => {
@@ -95,7 +77,7 @@ const App = () => {
 
                 {/* Protected Routes */}
                 <Route path="/" element={
-                  isAuthenticated ? <Index currentTime={currentTime} batteryLevel={batteryLevel} /> : <Navigate to="/sign-in" />
+                  isAuthenticated ? <Index /> : <Navigate to="/sign-in" />
                 } />
                 <Route path="/station/:id" element={
                   isAuthenticated ? <StationDetails /> : <Navigate to="/sign-in" />
@@ -124,6 +106,12 @@ const App = () => {
                       <Map className="h-full w-full" />
                     </div>
                   ) : <Navigate to="/sign-in" />
+                } />
+                <Route path="/call" element={
+                  isAuthenticated ? <CallScreen /> : <Navigate to="/sign-in" />
+                } />
+                <Route path="/chat" element={
+                  isAuthenticated ? <ChatScreen /> : <Navigate to="/sign-in" />
                 } />
                 <Route path="*" element={<NotFound />} />
               </Routes>
