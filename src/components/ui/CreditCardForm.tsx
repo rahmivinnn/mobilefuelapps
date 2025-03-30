@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { CreditCard, Calendar, User } from 'lucide-react';
-import OtpVerification from './OtpVerification';
 
 import {
   Form,
@@ -32,7 +31,7 @@ interface CreditCardFormProps {
 
 const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
   const [flipped, setFlipped] = useState(false);
-  const [showOtp, setShowOtp] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -86,21 +85,17 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
   };
 
   const handleFormSubmit = (values: FormValues) => {
-    setShowOtp(true);
-  };
-  
-  const handleOtpVerify = () => {
-    const values = form.getValues();
-    setShowOtp(false);
-    onSubmit(values);
-    toast({
-      title: "Payment Verified",
-      description: "Your card payment has been verified successfully.",
-    });
-  };
-  
-  const handleOtpCancel = () => {
-    setShowOtp(false);
+    setIsSubmitting(true);
+    
+    // Simulate processing payment
+    setTimeout(() => {
+      setIsSubmitting(false);
+      toast({
+        title: "Payment Successful",
+        description: "Your payment has been processed successfully.",
+      });
+      onSubmit(values);
+    }, 1500);
   };
 
   return (
@@ -249,16 +244,20 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
           
           <button 
             type="submit"
-            className="w-full py-3 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.99] transition-all duration-200"
+            className="w-full py-3 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.99] transition-all duration-200 flex items-center justify-center"
+            disabled={isSubmitting}
           >
-            Verify Card
+            {isSubmitting ? (
+              <>
+                <div className="mr-2 h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                Processing...
+              </>
+            ) : (
+              'Pay Now'
+            )}
           </button>
         </form>
       </Form>
-      
-      {showOtp && (
-        <OtpVerification onVerify={handleOtpVerify} onCancel={handleOtpCancel} />
-      )}
     </div>
   );
 };

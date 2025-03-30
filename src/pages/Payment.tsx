@@ -63,24 +63,6 @@ const Payment: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-black text-white pb-8">
-      {/* Status bar */}
-      <div className="px-4 py-1 flex justify-between items-center">
-        <div className="text-sm font-medium">8:45</div>
-        <div className="flex items-center space-x-1">
-          <div className="flex items-center">
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-              <path d="M17 20H7C4 20 2 18 2 15V9C2 6 4 4 7 4H17C20 4 22 6 22 9V15C22 18 20 20 17 20Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              <path d="M12 14V10M12 14C11.2 14 10.5 13.3 10.5 12.5V11.5C10.5 10.7 11.2 10 12 10C12.8 10 13.5 10.7 13.5 11.5V12.5C13.5 13.3 12.8 14 12 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-              <path d="M6.43994 2C4.01994 2 1.98999 4.01995 1.98999 6.43995V17.56C1.98999 19.98 4.01994 22 6.43994 22H17.5599C19.9799 22 21.9999 19.98 21.9999 17.56V6.43995C21.9999 4.01995 19.9799 2 17.5599 2H6.43994Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M11.9999 7V9M11.9999 14.01V14M7.98993 12H15.9999" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <div className="text-sm font-bold">100%</div>
-        </div>
-      </div>
-      
       {/* Header */}
       <div className="relative px-4 py-3 flex items-center justify-center">
         <Link to={`/station/${id}/fuel`} className="absolute left-4">

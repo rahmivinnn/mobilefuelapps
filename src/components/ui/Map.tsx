@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft, User } from 'lucide-react';
+import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft, User, Car, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface MapProps {
@@ -41,6 +41,14 @@ const Map: React.FC<MapProps> = ({
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [animatedRoute, setAnimatedRoute] = useState(false);
   const [routeProgress, setRouteProgress] = useState(0);
+  const [showMapLayers, setShowMapLayers] = useState(false);
+  const [activeLayer, setActiveLayer] = useState("standard");
+  const [showNearbyFuelStations, setShowNearbyFuelStations] = useState(true);
+  const [showRestaurants, setShowRestaurants] = useState(false);
+  const [showATMs, setShowATMs] = useState(false);
+  const [is3DMode, setIs3DMode] = useState(false);
+  const [viewMode, setViewMode] = useState("map"); // "map", "satellite", "terrain"
+  const [nightMode, setNightMode] = useState(false);
   
   // Hide back button on home page
   const isHomePage = location.pathname === '/';
@@ -58,7 +66,7 @@ const Map: React.FC<MapProps> = ({
             lng: prev.lng + lngDelta
           };
         });
-      }, 2000);
+      }, 1500);
       
       return () => clearInterval(interval);
     }
@@ -88,6 +96,22 @@ const Map: React.FC<MapProps> = ({
     navigate(-1);
   };
   
+  // Toggle 3D mode
+  const toggle3DMode = () => {
+    setIs3DMode(!is3DMode);
+  };
+  
+  // Toggle night mode
+  const toggleNightMode = () => {
+    setNightMode(!nightMode);
+  };
+  
+  // Change view mode
+  const changeViewMode = (mode) => {
+    setViewMode(mode);
+    setShowMapLayers(false);
+  };
+  
   // Gas station data for Memphis
   const gasStations = [
     { 
@@ -95,28 +119,64 @@ const Map: React.FC<MapProps> = ({
       name: 'Shell', 
       position: { lat: 35.1477, lng: -90.0518 }, 
       price: 3.67, 
-      distance: '0.8' 
+      distance: '0.8',
+      type: 'gas'
     },
     { 
       id: '2', 
       name: 'ExxonMobil', 
       position: { lat: 35.1513, lng: -90.0425 }, 
       price: 3.72, 
-      distance: '1.5' 
+      distance: '1.5',
+      type: 'gas'
     },
     { 
       id: '3', 
       name: 'Chevron', 
       position: { lat: 35.1448, lng: -90.0561 }, 
       price: 3.65, 
-      distance: '2.3' 
+      distance: '2.3',
+      type: 'gas'
     },
     { 
       id: '4', 
       name: 'BP', 
       position: { lat: 35.1532, lng: -90.0389 }, 
       price: 3.69, 
-      distance: '2.7' 
+      distance: '2.7',
+      type: 'gas' 
+    },
+  ];
+  
+  // Restaurant data
+  const restaurants = [
+    { 
+      id: 'r1', 
+      name: 'Gus\'s Fried Chicken', 
+      position: { lat: 35.1458, lng: -90.0508 },
+      type: 'restaurant'
+    },
+    { 
+      id: 'r2', 
+      name: 'Central BBQ', 
+      position: { lat: 35.1502, lng: -90.0415 },
+      type: 'restaurant'
+    },
+  ];
+  
+  // ATM data
+  const atms = [
+    { 
+      id: 'a1', 
+      name: 'Bank of America ATM', 
+      position: { lat: 35.1467, lng: -90.0498 },
+      type: 'atm'
+    },
+    { 
+      id: 'a2', 
+      name: 'Wells Fargo ATM', 
+      position: { lat: 35.1522, lng: -90.0435 },
+      type: 'atm'
     },
   ];
   
@@ -140,26 +200,22 @@ const Map: React.FC<MapProps> = ({
       );
     }
     
-    // Simulate traffic changes - reduced to 15 seconds
+    // Simulate traffic changes - reduced to 10 seconds
     const trafficTimer = setInterval(() => {
       const intensities = ["light", "moderate", "heavy"];
       const randomIntensity = intensities[Math.floor(Math.random() * intensities.length)];
       setTrafficIntensity(randomIntensity);
       
       // Generate random traffic update
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && interactive) {
         const memphisRoads = [
           "Poplar Avenue", "Union Avenue", "Sam Cooper Boulevard", "I-240", 
-          "I-40", "Madison Avenue", "E Parkway", "Walnut Grove Road", 
-          "Summer Avenue", "Airways Boulevard", "Third Street", "Winchester Road",
-          "Germantown Parkway", "Shelby Drive", "Riverside Drive", "Front Street",
-          "McLean Boulevard", "Lamar Avenue", "Belvedere Boulevard", "Mississippi Boulevard"
+          "I-40", "Madison Avenue", "E Parkway", "Walnut Grove Road"
         ];
         
         const trafficConditions = [
           "slow moving traffic", "accident causing delays", "road work ahead",
-          "congestion building up", "vehicle breakdown", "police activity",
-          "event traffic", "debris on road", "flooding reported"
+          "congestion building up"
         ];
         
         const randomRoad = memphisRoads[Math.floor(Math.random() * memphisRoads.length)];
@@ -172,15 +228,15 @@ const Map: React.FC<MapProps> = ({
         
         document.body.appendChild(trafficUpdate);
         
-        // Remove after 5 seconds
+        // Remove after 4 seconds
         setTimeout(() => {
           trafficUpdate.classList.add('animate-fade-out');
           setTimeout(() => {
             document.body.removeChild(trafficUpdate);
           }, 300);
-        }, 5000);
+        }, 4000);
       }
-    }, 15000);
+    }, 10000);
     
     return () => {
       clearTimeout(timer);
@@ -300,10 +356,81 @@ const Map: React.FC<MapProps> = ({
     }
   };
   
+  // Get map image based on view mode and night mode
+  const getMapImage = () => {
+    if (viewMode === "satellite") {
+      return "/lovable-uploads/8baf7fa9-2b5c-4335-b69b-eefef9610e3a.png"; // Satellite view
+    } else if (viewMode === "terrain") {
+      return "/lovable-uploads/a3df03b1-a154-407f-b8fe-e5dd6f0bade3.png"; // Terrain view
+    } else {
+      // Standard view
+      return nightMode 
+        ? "/lovable-uploads/63b42fc8-62eb-4bdb-84c2-73e747d69d45.png" // Night mode
+        : "/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png"; // Day mode
+    }
+  };
+  
   const mapStyles = {
-    transform: interactive ? `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${zoom/14})` : `scale(${zoom/14})`,
+    transform: interactive 
+      ? `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${zoom/14}) ${is3DMode ? 'rotateX(45deg)' : ''}`
+      : `scale(${zoom/14}) ${is3DMode ? 'rotateX(45deg)' : ''}`,
     cursor: isDragging ? 'grabbing' : (interactive ? 'grab' : 'default'),
-    transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+    transition: isDragging ? 'none' : 'transform 0.3s ease-out',
+    perspective: is3DMode ? '1000px' : 'none',
+    transformStyle: is3DMode ? 'preserve-3d' : 'flat'
+  };
+  
+  // Determine what POIs to show
+  const getPointsOfInterest = () => {
+    let pois = [];
+    
+    if (showNearbyFuelStations) {
+      pois = [...pois, ...gasStations];
+    }
+    
+    if (showRestaurants) {
+      pois = [...pois, ...restaurants];
+    }
+    
+    if (showATMs) {
+      pois = [...pois, ...atms];
+    }
+    
+    return pois;
+  };
+  
+  const getPOIIcon = (poiType) => {
+    switch(poiType) {
+      case 'gas':
+        return <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M19 7h-1c-1 0-2-1-2-2V4c0-1 1-2 2-2h1v5zM4 22V5c0-1.66 1.34-3 3-3h7c1.66 0 3 1.34 3 3v17H4zm3-10h7M4 5h13" />
+        </svg>;
+      case 'restaurant':
+        return <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M3 19h18m-9-13v13M6 6l.001 5c0 1 1 2 2 2h1M12 7c0-1 .6-2 2-2h.6c.96 0 1.4 0 1.4 3 0 .667 0 2-1 2h-3" />
+        </svg>;
+      case 'atm':
+        return <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z" />
+          <path d="M12 14c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
+          <path d="M17 3v4M7 3v4M17 17v4M7 17v4" />
+        </svg>;
+      default:
+        return <MapPin className="h-4 w-4 text-white" />;
+    }
+  };
+  
+  const getPOIColor = (poiType) => {
+    switch(poiType) {
+      case 'gas':
+        return "bg-red-500";
+      case 'restaurant':
+        return "bg-blue-500";
+      case 'atm':
+        return "bg-yellow-500";
+      default:
+        return "bg-gray-500";
+    }
   };
   
   return (
@@ -324,8 +451,8 @@ const Map: React.FC<MapProps> = ({
             onTouchMove={handleTouchMove}
           >
             <img 
-              src="/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png" 
-              alt="Memphis Map" 
+              src={getMapImage()}
+              alt="Map View" 
               className="w-full h-full object-cover"
               draggable="false"
             />
@@ -344,12 +471,13 @@ const Map: React.FC<MapProps> = ({
                 className="absolute z-30 transition-all duration-700"
                 style={{
                   top: `${50 - (currentDriverLocation.lat - userLocation.lat) * 5000}%`,
-                  left: `${50 + (currentDriverLocation.lng - userLocation.lng) * 5000}%`
+                  left: `${50 + (currentDriverLocation.lng - userLocation.lng) * 5000}%`,
+                  transform: is3DMode ? 'translateZ(20px)' : 'none'
                 }}
               >
                 <div className="relative">
-                  <div className="h-8 w-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-pulse-slow">
-                    <User className="h-5 w-5 text-black" />
+                  <div className="h-12 w-12 bg-green-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-pulse-slow">
+                    <Car className="h-6 w-6 text-black" />
                   </div>
                   <div className="absolute top-full left-1/2 transform -translate-x-1/2 whitespace-nowrap mt-1 bg-black/70 text-xs py-1 px-2 rounded">
                     {driverName}
@@ -358,11 +486,11 @@ const Map: React.FC<MapProps> = ({
               </div>
             )}
             
-            {/* Gas station markers */}
-            {gasStations.map((station) => {
-              // Calculate position on the map (this is simplified)
-              const latDiff = station.position.lat - userLocation.lat;
-              const lngDiff = station.position.lng - userLocation.lng;
+            {/* Points of Interest markers */}
+            {getPointsOfInterest().map((poi) => {
+              // Calculate position on the map
+              const latDiff = poi.position.lat - userLocation.lat;
+              const lngDiff = poi.position.lng - userLocation.lng;
               const scale = 50; // Adjust based on zoom level for a real implementation
               
               const top = `${50 - latDiff * scale}%`;
@@ -370,27 +498,27 @@ const Map: React.FC<MapProps> = ({
               
               return (
                 <div
-                  key={station.id}
+                  key={poi.id}
                   className="absolute z-20 hover:scale-110 transition-transform duration-300"
-                  style={{ top, left }}
+                  style={{ top, left, transform: is3DMode ? 'translateZ(10px)' : 'none' }}
                 >
                   <div className="relative">
                     <div className="h-10 w-10 flex items-center justify-center">
                       <div className="bg-white rounded-full p-1 shadow-lg">
-                        <Link to={`/station/${station.id}`}>
-                          <div className="bg-red-500 h-6 w-6 rounded-full flex items-center justify-center">
-                            <MapPin className="h-4 w-4 text-white" />
+                        <Link to={`/station/${poi.id}`}>
+                          <div className={`${getPOIColor(poi.type)} h-7 w-7 rounded-full flex items-center justify-center ${is3DMode ? 'shadow-xl' : ''}`}>
+                            {getPOIIcon(poi.type)}
                           </div>
                         </Link>
                       </div>
                     </div>
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 whitespace-nowrap mt-1 bg-black/70 text-white text-xs py-1 px-2 rounded">
-                      {station.name} - ${station.price}
+                      {poi.name} {poi.price ? `- $${poi.price}` : ''}
                     </div>
                     
                     {interactive && (
                       <button 
-                        onClick={() => handleShowDirections(station.id)}
+                        onClick={() => handleShowDirections(poi.id)}
                         className="absolute -top-1 -right-1 bg-green-500 rounded-full h-5 w-5 flex items-center justify-center shadow-lg"
                       >
                         <Navigation className="h-3 w-3 text-white" />
@@ -517,74 +645,256 @@ const Map: React.FC<MapProps> = ({
                 )}
               </div>
             )}
+            
+            {/* 3D Buildings in 3D mode */}
+            {is3DMode && (
+              <>
+                <div className="absolute" style={{ 
+                  top: '45%', 
+                  left: '48%', 
+                  width: '40px', 
+                  height: '40px', 
+                  backgroundColor: '#444',
+                  transform: 'translateZ(30px)',
+                  boxShadow: '0 0 10px rgba(0,0,0,0.5)'
+                }}></div>
+                <div className="absolute" style={{ 
+                  top: '42%', 
+                  left: '52%', 
+                  width: '30px', 
+                  height: '50px', 
+                  backgroundColor: '#555',
+                  transform: 'translateZ(40px)',
+                  boxShadow: '0 0 10px rgba(0,0,0,0.5)'
+                }}></div>
+                <div className="absolute" style={{ 
+                  top: '48%', 
+                  left: '45%', 
+                  width: '25px', 
+                  height: '25px', 
+                  backgroundColor: '#666',
+                  transform: 'translateZ(20px)',
+                  boxShadow: '0 0 10px rgba(0,0,0,0.5)'
+                }}></div>
+              </>
+            )}
           </div>
           
           {/* Map controls */}
-          <div className="absolute bottom-20 left-4 flex flex-col space-y-2">
-            <button 
-              onClick={handleZoomIn}
-              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
-            <button 
-              onClick={handleZoomOut}
-              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
-            >
-              <Minus className="h-5 w-5" />
-            </button>
-          </div>
-          
-          {/* Navigation and Share buttons */}
-          <div className="absolute bottom-4 right-4 flex space-x-2">
-            {showRoute && (
-              <button 
-                onClick={() => setShowDirections(!showDirections)}
-                className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
-              >
-                <Navigation className="h-5 w-5" />
-              </button>
-            )}
-            <button 
-              onClick={handleShare}
-              className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg relative hover:bg-gray-100 active:scale-95 transition-all"
-            >
-              <Share2 className="h-5 w-5" />
+          {interactive && (
+            <>
+              {/* Zoom Controls */}
+              <div className="absolute bottom-20 left-4 flex flex-col space-y-2">
+                <button 
+                  onClick={handleZoomIn}
+                  className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+                <button 
+                  onClick={handleZoomOut}
+                  className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
+                >
+                  <Minus className="h-5 w-5" />
+                </button>
+              </div>
               
-              {/* Share options popup */}
-              {showShareOptions && (
-                <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-lg p-3 animate-fade-in dark:bg-gray-800">
-                  <div className="flex space-x-3">
-                    <button 
-                      onClick={() => shareToSocial('facebook')}
-                      className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center hover:bg-blue-600 active:scale-95 transition-all"
-                    >
-                      <Facebook className="h-5 w-5" />
-                    </button>
-                    <button 
-                      onClick={() => shareToSocial('twitter')}
-                      className="h-10 w-10 rounded-full bg-blue-400 text-white flex items-center justify-center hover:bg-blue-500 active:scale-95 transition-all"
-                    >
-                      <Twitter className="h-5 w-5" />
-                    </button>
-                    <button 
-                      onClick={() => shareToSocial('instagram')}
-                      className="h-10 w-10 rounded-full bg-pink-500 text-white flex items-center justify-center hover:bg-pink-600 active:scale-95 transition-all"
-                    >
-                      <Instagram className="h-5 w-5" />
-                    </button>
-                    <button 
-                      onClick={() => shareToSocial('email')}
-                      className="h-10 w-10 rounded-full bg-gray-500 text-white flex items-center justify-center hover:bg-gray-600 active:scale-95 transition-all"
-                    >
-                      <Mail className="h-5 w-5" />
-                    </button>
+              {/* Map Layers Button */}
+              <div className="absolute top-16 right-4">
+                <button 
+                  onClick={() => setShowMapLayers(!showMapLayers)}
+                  className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M2 17L12 22L22 17M2 12L12 17L22 12M2 7L12 12L22 7L12 2L2 7Z" />
+                  </svg>
+                </button>
+                
+                {/* Map Layers Dropdown */}
+                {showMapLayers && (
+                  <div className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-lg p-3 animate-fade-in dark:bg-gray-800 z-50">
+                    <div className="text-sm font-semibold mb-2 text-black dark:text-white">Map View</div>
+                    <div className="flex flex-col space-y-2">
+                      <button 
+                        onClick={() => changeViewMode("standard")}
+                        className={`flex items-center px-3 py-2 rounded-md text-sm ${viewMode === "standard" ? "bg-green-500 text-white" : "text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"}`}
+                      >
+                        <svg viewBox="0 0 24 24" className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 7L12 3L21 7V17L12 21L3 17V7Z" />
+                          <path d="M12 3V21" />
+                          <path d="M3 7L21 7" />
+                        </svg>
+                        Standard
+                      </button>
+                      <button 
+                        onClick={() => changeViewMode("satellite")}
+                        className={`flex items-center px-3 py-2 rounded-md text-sm ${viewMode === "satellite" ? "bg-green-500 text-white" : "text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"}`}
+                      >
+                        <svg viewBox="0 0 24 24" className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M12 2V22" />
+                          <path d="M2 12H22" />
+                        </svg>
+                        Satellite
+                      </button>
+                      <button 
+                        onClick={() => changeViewMode("terrain")}
+                        className={`flex items-center px-3 py-2 rounded-md text-sm ${viewMode === "terrain" ? "bg-green-500 text-white" : "text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"}`}
+                      >
+                        <svg viewBox="0 0 24 24" className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+                        </svg>
+                        Terrain
+                      </button>
+                      
+                      <div className="border-t my-2 dark:border-gray-700"></div>
+                      
+                      <div className="text-sm font-semibold mb-1 text-black dark:text-white">Display Options</div>
+                      
+                      {/* 3D Mode Toggle */}
+                      <div className="flex items-center justify-between py-1 text-sm text-black dark:text-white">
+                        <span className="flex items-center">
+                          <svg viewBox="0 0 24 24" className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
+                            <path d="M2 12H22" />
+                            <path d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22C9.49872 19.2616 8.07725 15.708 8 12C8.07725 8.29203 9.49872 4.73835 12 2Z" />
+                          </svg>
+                          3D Buildings
+                        </span>
+                        <button 
+                          onClick={toggle3DMode}
+                          className={`relative inline-flex items-center h-5 rounded-full w-10 ${is3DMode ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                        >
+                          <span className={`inline-block w-4 h-4 transform transition ease-in-out duration-200 rounded-full bg-white ${is3DMode ? 'translate-x-5' : 'translate-x-1'}`} />
+                        </button>
+                      </div>
+                      
+                      {/* Night Mode Toggle */}
+                      <div className="flex items-center justify-between py-1 text-sm text-black dark:text-white">
+                        <span className="flex items-center">
+                          <svg viewBox="0 0 24 24" className="h-4 w-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                          </svg>
+                          Night Mode
+                        </span>
+                        <button 
+                          onClick={toggleNightMode}
+                          className={`relative inline-flex items-center h-5 rounded-full w-10 ${nightMode ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                        >
+                          <span className={`inline-block w-4 h-4 transform transition ease-in-out duration-200 rounded-full bg-white ${nightMode ? 'translate-x-5' : 'translate-x-1'}`} />
+                        </button>
+                      </div>
+                      
+                      <div className="border-t my-2 dark:border-gray-700"></div>
+                      
+                      <div className="text-sm font-semibold mb-1 text-black dark:text-white">Places</div>
+                      
+                      {/* Gas Stations Toggle */}
+                      <div className="flex items-center justify-between py-1 text-sm text-black dark:text-white">
+                        <span className="flex items-center">
+                          <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M19 7h-1c-1 0-2-1-2-2V4c0-1 1-2 2-2h1v5zM4 22V5c0-1.66 1.34-3 3-3h7c1.66 0 3 1.34 3 3v17H4zm3-10h7M4 5h13" />
+                          </svg>
+                          Gas Stations
+                        </span>
+                        <button 
+                          onClick={() => setShowNearbyFuelStations(!showNearbyFuelStations)}
+                          className={`relative inline-flex items-center h-5 rounded-full w-10 ${showNearbyFuelStations ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                        >
+                          <span className={`inline-block w-4 h-4 transform transition ease-in-out duration-200 rounded-full bg-white ${showNearbyFuelStations ? 'translate-x-5' : 'translate-x-1'}`} />
+                        </button>
+                      </div>
+                      
+                      {/* Restaurants Toggle */}
+                      <div className="flex items-center justify-between py-1 text-sm text-black dark:text-white">
+                        <span className="flex items-center">
+                          <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 19h18m-9-13v13M6 6l.001 5c0 1 1 2 2 2h1M12 7c0-1 .6-2 2-2h.6c.96 0 1.4 0 1.4 3 0 .667 0 2-1 2h-3" />
+                          </svg>
+                          Restaurants
+                        </span>
+                        <button 
+                          onClick={() => setShowRestaurants(!showRestaurants)}
+                          className={`relative inline-flex items-center h-5 rounded-full w-10 ${showRestaurants ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                        >
+                          <span className={`inline-block w-4 h-4 transform transition ease-in-out duration-200 rounded-full bg-white ${showRestaurants ? 'translate-x-5' : 'translate-x-1'}`} />
+                        </button>
+                      </div>
+                      
+                      {/* ATMs Toggle */}
+                      <div className="flex items-center justify-between py-1 text-sm text-black dark:text-white">
+                        <span className="flex items-center">
+                          <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z" />
+                            <path d="M12 14c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
+                            <path d="M17 3v4M7 3v4M17 17v4M7 17v4" />
+                          </svg>
+                          ATMs
+                        </span>
+                        <button 
+                          onClick={() => setShowATMs(!showATMs)}
+                          className={`relative inline-flex items-center h-5 rounded-full w-10 ${showATMs ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                        >
+                          <span className={`inline-block w-4 h-4 transform transition ease-in-out duration-200 rounded-full bg-white ${showATMs ? 'translate-x-5' : 'translate-x-1'}`} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-2 h-2 bg-white absolute bottom-0 right-4 transform translate-y-1 rotate-45 dark:bg-gray-800"></div>
-                </div>
-              )}
-            </button>
-          </div>
+                )}
+              </div>
+              
+              {/* Navigation and Share buttons */}
+              <div className="absolute bottom-4 right-4 flex space-x-2">
+                {showRoute && (
+                  <button 
+                    onClick={() => setShowDirections(!showDirections)}
+                    className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:bg-gray-100 active:scale-95 transition-all"
+                  >
+                    <Navigation className="h-5 w-5" />
+                  </button>
+                )}
+                <button 
+                  onClick={handleShare}
+                  className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg relative hover:bg-gray-100 active:scale-95 transition-all"
+                >
+                  <Share2 className="h-5 w-5" />
+                  
+                  {/* Share options popup */}
+                  {showShareOptions && (
+                    <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-lg p-3 animate-fade-in dark:bg-gray-800">
+                      <div className="flex space-x-3">
+                        <button 
+                          onClick={() => shareToSocial('facebook')}
+                          className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center hover:bg-blue-600 active:scale-95 transition-all"
+                        >
+                          <Facebook className="h-5 w-5" />
+                        </button>
+                        <button 
+                          onClick={() => shareToSocial('twitter')}
+                          className="h-10 w-10 rounded-full bg-blue-400 text-white flex items-center justify-center hover:bg-blue-500 active:scale-95 transition-all"
+                        >
+                          <Twitter className="h-5 w-5" />
+                        </button>
+                        <button 
+                          onClick={() => shareToSocial('instagram')}
+                          className="h-10 w-10 rounded-full bg-pink-500 text-white flex items-center justify-center hover:bg-pink-600 active:scale-95 transition-all"
+                        >
+                          <Instagram className="h-5 w-5" />
+                        </button>
+                        <button 
+                          onClick={() => shareToSocial('email')}
+                          className="h-10 w-10 rounded-full bg-gray-500 text-white flex items-center justify-center hover:bg-gray-600 active:scale-95 transition-all"
+                        >
+                          <Mail className="h-5 w-5" />
+                        </button>
+                      </div>
+                      <div className="w-2 h-2 bg-white absolute bottom-0 right-4 transform translate-y-1 rotate-45 dark:bg-gray-800"></div>
+                    </div>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
           
           {/* Back button - only show on non-home pages */}
           {showBackButton && !isHomePage && (
@@ -607,7 +917,7 @@ const Map: React.FC<MapProps> = ({
           
           {/* Traffic incident indicator */}
           {trafficIntensity === "heavy" && (
-            <div className="absolute top-16 right-4 bg-red-500 text-white text-xs p-2 rounded-lg animate-pulse shadow-lg flex items-center">
+            <div className="absolute top-16 left-4 bg-red-500 text-white text-xs p-2 rounded-lg animate-pulse shadow-lg flex items-center">
               <span className="mr-1">⚠️</span> Heavy traffic on I-240
             </div>
           )}
@@ -617,7 +927,7 @@ const Map: React.FC<MapProps> = ({
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-background/90 backdrop-blur-sm rounded-t-xl">
               <div className="flex items-center mb-2">
                 <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center border-2 border-green-500 mr-3 text-black">
-                  <User className="h-8 w-8" />
+                  <Car className="h-8 w-8" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">{driverName}</h3>
@@ -651,9 +961,7 @@ const Map: React.FC<MapProps> = ({
                 <div className="flex-1 mx-2 h-0.5 border-t-2 border-dashed border-green-500"></div>
                 <div className="flex items-center">
                   <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center">
-                    <svg className="h-3 w-3 text-black" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5m1.5-9H17V12h4.46L19.5 9.5M6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3M3 6v9h.76c.55-.61 1.35-1 2.24-1 .89 0 1.69.39 2.24 1H15V6H3z"/>
-                    </svg>
+                    <Car className="h-3 w-3 text-black" />
                   </div>
                 </div>
                 <div className="flex-1 mx-2 h-0.5 border-t-2 border-dashed border-green-500"></div>
