@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
@@ -197,6 +198,7 @@ const TrackOrder: React.FC = () => {
       
       let currentDriverIndex = -1;
       
+      // Fix: Use a safe default when order is undefined
       const currentOrder = order || {...defaultOrder};
       
       if (currentOrder?.driver?.name) {
@@ -213,6 +215,7 @@ const TrackOrder: React.FC = () => {
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
       
       setOrder(prevOrder => {
+        // Fix: Use a safe default when prevOrder is undefined
         const safeOrder = prevOrder || {...defaultOrder};
         return {
           ...safeOrder,
@@ -234,6 +237,7 @@ const TrackOrder: React.FC = () => {
     const messageTimer = setInterval(() => {
       if (!orderComplete) {
         const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
+        // Fix: Use a safe default when order is undefined
         const currentOrder = order || {...defaultOrder};
         const driverName = currentOrder?.driver?.name || 'Driver';
         
@@ -262,6 +266,7 @@ const TrackOrder: React.FC = () => {
       setDriverLocation(newDriverLocation);
       
       setOrder(prev => {
+        // Fix: Use a safe default when prev is undefined
         const safeOrder = prev || {...defaultOrder};
         return {
           ...safeOrder,
@@ -324,6 +329,7 @@ const TrackOrder: React.FC = () => {
     }
   };
 
+  // Safely extract values from order with fallbacks
   const status = order?.status || 'processing';
   const progress = order?.progress || 0;
   const statusDetails = order?.statusDetails || 'Processing your order';
