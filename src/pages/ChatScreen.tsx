@@ -3,32 +3,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Phone, Send, Mic, Paperclip, User } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const ChatScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [customerName, setCustomerName] = useState('Customer');
+  const [driverName, setDriverName] = useState('Driver');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hey, I'll be there in 10 minutes with your fuel delivery", sender: 'customer', time: '10:30 AM' },
+    { id: 1, text: "Hey, I'll be there in 10 minutes with your fuel delivery", sender: 'driver', time: '10:30 AM' },
     { id: 2, text: "Great! I'm waiting at the location. Can you confirm the total amount again?", sender: 'user', time: '10:32 AM' },
-    { id: 3, text: "Sure, it's $45.75 for 10 gallons of premium fuel. You can pay through the app when I arrive.", sender: 'customer', time: '10:33 AM' },
+    { id: 3, text: "Sure, it's $45.75 for 10 gallons of premium fuel. You can pay through the app when I arrive.", sender: 'driver', time: '10:33 AM' },
   ]);
   const [isTyping, setIsTyping] = useState(false);
 
-  // Get customer name from URL parameters
+  // Get driver name from URL parameters
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const name = params.get('customerName');
-    const id = params.get('customerId');
-    
+    const name = params.get('driverName');
     if (name) {
-      setCustomerName(name);
-    } else if (id) {
-      // If we only have an ID but no name, we can set a default or fetch the name based on ID
-      setCustomerName('John Doe'); // This could be replaced with actual fetching logic
+      setDriverName(name);
     }
   }, [location]);
 
@@ -42,7 +36,7 @@ const ChatScreen = () => {
   };
 
   const handleCall = () => {
-    navigate(`/call?customerName=${encodeURIComponent(customerName)}`);
+    navigate(`/call?driverName=${encodeURIComponent(driverName)}`);
   };
 
   const handleSendMessage = () => {
@@ -59,16 +53,16 @@ const ChatScreen = () => {
       // Show typing indicator
       setIsTyping(true);
       
-      // Simulate a reply from the customer
+      // Simulate a reply from the driver
       setTimeout(() => {
         setIsTyping(false);
-        const customerReply = {
+        const driverReply = {
           id: messages.length + 2,
           text: "Got it! I'll be there soon. Just finalizing another delivery.",
-          sender: 'customer',
+          sender: 'driver',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
-        setMessages(prevMessages => [...prevMessages, customerReply]);
+        setMessages(prevMessages => [...prevMessages, driverReply]);
       }, 2000);
     }
   };
@@ -82,14 +76,12 @@ const ChatScreen = () => {
             <ArrowLeft className="h-6 w-6" />
           </button>
           <div className="flex items-center">
-            <Avatar className="h-10 w-10 mr-3">
-              <AvatarFallback className="bg-green-500 text-black">
-                <User className="h-6 w-6" />
-              </AvatarFallback>
-            </Avatar>
+            <div className="h-10 w-10 rounded-full overflow-hidden mr-3 bg-green-500 flex items-center justify-center">
+              <User className="h-6 w-6 text-black" />
+            </div>
             <div>
-              <h2 className="font-semibold">{customerName}</h2>
-              <p className="text-xs text-gray-400">Customer • Online</p>
+              <h2 className="font-semibold">{driverName}</h2>
+              <p className="text-xs text-gray-400">Driver • Online</p>
             </div>
           </div>
         </div>
@@ -111,12 +103,10 @@ const ChatScreen = () => {
             transition={{ duration: 0.3 }}
             className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            {msg.sender === 'customer' && (
-              <Avatar className="h-8 w-8 mr-2 self-end mb-1">
-                <AvatarFallback className="bg-green-500 flex items-center justify-center text-black">
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
+            {msg.sender === 'driver' && (
+              <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center mr-2 flex-shrink-0 self-end mb-1">
+                <User className="h-4 w-4 text-black" />
+              </div>
             )}
             <div 
               className={`max-w-[75%] rounded-2xl px-4 py-2 ${
@@ -140,11 +130,9 @@ const ChatScreen = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex justify-start"
           >
-            <Avatar className="h-8 w-8 mr-2 self-end mb-1">
-              <AvatarFallback className="bg-green-500 flex items-center justify-center text-black">
-                <User className="h-4 w-4" />
-              </AvatarFallback>
-            </Avatar>
+            <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center mr-2 flex-shrink-0 self-end mb-1">
+              <User className="h-4 w-4 text-black" />
+            </div>
             <div className="bg-gray-800 rounded-2xl px-4 py-3 rounded-bl-none">
               <div className="flex space-x-1">
                 <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
