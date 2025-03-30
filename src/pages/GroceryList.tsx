@@ -1,11 +1,12 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { 
   Search, Plus, Minus, ShoppingBag, Coffee, CupSoda, 
   Droplets, Zap, Circle, Square, CircleOff, CircleDot, 
-  CircleSlash, Layers, Flower, Cloud, Cookie, Cake, Candy
+  CircleSlash, Layers, Flower, Cloud, Cookie, Cake, Candy, 
+  Apple, Banana, Beef as BeefIcon, Cherry, Grape, Pizza, 
+  Sandwich, IceCream, Milk
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -43,7 +44,7 @@ const allGroceryItems = [
     id: 'juice',
     name: 'Fresh Juice',
     price: 3.29,
-    icon: <Fruit className="h-5 w-5 text-orange-400" />,
+    icon: <Apple className="h-5 w-5 text-orange-400" />,
     category: 'drinks'
   },
   {
@@ -57,7 +58,7 @@ const allGroceryItems = [
     id: 'popcorn',
     name: 'Popcorn',
     price: 2.29,
-    icon: <Sparkles className="h-5 w-5 text-yellow-200" />,
+    icon: <Circle className="h-5 w-5 text-yellow-200" />,
     category: 'snacks'
   },
   {
@@ -71,7 +72,7 @@ const allGroceryItems = [
     id: 'jerky',
     name: 'Beef Jerky',
     price: 5.99,
-    icon: <Beef className="h-5 w-5 text-red-600" />,
+    icon: <BeefIcon className="h-5 w-5 text-red-600" />,
     category: 'snacks'
   },
   {
@@ -99,21 +100,21 @@ const allGroceryItems = [
     id: 'sandwich',
     name: 'Fresh Sandwich',
     price: 4.99,
-    icon: <Layers className="h-5 w-5 text-yellow-600" />,
+    icon: <Sandwich className="h-5 w-5 text-yellow-600" />,
     category: 'food'
   },
   {
     id: 'hotdog',
     name: 'Hot Dog',
     price: 3.49,
-    icon: <LineHorizontal className="h-5 w-5 text-red-300" />,
+    icon: <Sandwich className="h-5 w-5 text-red-300" />,
     category: 'food'
   },
   {
     id: 'burrito',
     name: 'Breakfast Burrito',
     price: 4.49,
-    icon: <Wrap className="h-5 w-5 text-yellow-500" />,
+    icon: <Sandwich className="h-5 w-5 text-yellow-500" />,
     category: 'food'
   },
   {
@@ -127,7 +128,7 @@ const allGroceryItems = [
     id: 'icecream',
     name: 'Ice Cream',
     price: 3.79,
-    icon: <Cloud className="h-5 w-5 text-blue-200" />,
+    icon: <IceCream className="h-5 w-5 text-blue-200" />,
     category: 'desserts'
   },
   {
