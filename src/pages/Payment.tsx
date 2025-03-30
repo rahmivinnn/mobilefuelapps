@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
-import { Check, ChevronLeft, CreditCard, CheckCircle, Copy } from 'lucide-react';
+import { Check, ChevronLeft, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
+import CreditCardForm from '@/components/ui/CreditCardForm';
 import PaymentMethod from '@/components/ui/PaymentMethod';
 
 const Payment: React.FC = () => {
@@ -18,33 +18,6 @@ const Payment: React.FC = () => {
   };
   
   const [selectedPayment, setSelectedPayment] = useState('credit-card');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardName, setCardName] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [saveCard, setSaveCard] = useState(true);
-  
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
-    const parts = [];
-
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-
-    if (parts.length) {
-      return parts.join(' ');
-    } else {
-      return value;
-    }
-  };
-  
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = formatCardNumber(e.target.value);
-    setCardNumber(value);
-  };
   
   const handlePayNow = () => {
     // In a real app, we would process the payment here
@@ -157,108 +130,23 @@ const Payment: React.FC = () => {
         />
       </div>
       
-      {/* Credit card */}
+      {/* Card Form Component */}
       <div className="px-4 mb-6">
-        <div className="bg-gray-800 rounded-xl p-4 mb-6 relative overflow-hidden">
-          <div className="absolute top-4 right-4">
-            <img src="/lovable-uploads/f12de587-6760-49e5-aa30-4d1aea99f177.png" alt="Mastercard" className="h-8" />
-          </div>
-          <div className="mb-6">
-            <p className="text-gray-400 mb-1 uppercase text-sm">BANK NAME</p>
-          </div>
-          <div className="mb-6">
-            <p className="text-gray-400 mb-1">Card Number</p>
-            <p className="text-xl">{cardNumber || '1844 444 7860'}</p>
-          </div>
-          <div className="flex justify-between items-end">
-            <div>
-              <p className="text-gray-400 mb-1">Holder Name</p>
-              <p>{cardName || 'Loreum Ipsum'}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-gray-400 mb-1">Exp. Date</p>
-              <p>{expiryDate || '10/28'}</p>
-            </div>
-          </div>
-          <div className="absolute bottom-4 right-4">
-            <img src="/lovable-uploads/bd7d3e2c-d8cc-4ae3-b3f6-e23f3527fa24.png" alt="Chip" className="h-10" />
-          </div>
-        </div>
-        
-        {/* Card form */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm mb-2">Card holder name</label>
-            <input
-              type="text"
-              value={cardName}
-              onChange={(e) => setCardName(e.target.value)}
-              placeholder="Loreum ipsum"
-              className="w-full px-4 py-3 bg-transparent border border-gray-700 rounded-full text-white focus:outline-none focus:border-green-500"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm mb-2">Card Number</label>
-            <input
-              type="text"
-              value={cardNumber}
-              onChange={handleCardNumberChange}
-              placeholder="**** **** **** ****"
-              maxLength={19}
-              className="w-full px-4 py-3 bg-transparent border border-gray-700 rounded-full text-white focus:outline-none focus:border-green-500"
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm mb-2">Expiry Date</label>
-              <input
-                type="text"
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
-                placeholder="oct 2025"
-                className="w-full px-4 py-3 bg-transparent border border-gray-700 rounded-full text-white focus:outline-none focus:border-green-500"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm mb-2">CVV Code</label>
-              <input
-                type="password"
-                value={cvv}
-                onChange={(e) => setCvv(e.target.value)}
-                placeholder="CVV code"
-                maxLength={4}
-                className="w-full px-4 py-3 bg-transparent border border-gray-700 rounded-full text-white focus:outline-none focus:border-green-500"
-              />
-            </div>
-          </div>
-          
-          <div className="flex items-center">
-            <button
-              className="w-6 h-6 rounded flex items-center justify-center mr-2 border border-gray-700"
-              onClick={() => setSaveCard(!saveCard)}
-            >
-              {saveCard && (
-                <div className="w-4 h-4 bg-green-500 rounded-sm flex items-center justify-center">
-                  <Check className="w-3 h-3 text-black" />
-                </div>
-              )}
-            </button>
-            <span>Save card Information</span>
-          </div>
-        </div>
+        {selectedPayment === 'credit-card' && (
+          <CreditCardForm onSubmit={handlePayNow} />
+        )}
       </div>
       
-      <div className="px-4 fixed bottom-8 left-0 right-0">
-        <Button 
-          className="w-full py-6 bg-green-500 hover:bg-green-600 text-black rounded-full text-lg font-medium"
-          onClick={handlePayNow}
-        >
-          Pay Now
-        </Button>
-      </div>
+      {selectedPayment !== 'credit-card' && (
+        <div className="px-4 fixed bottom-8 left-0 right-0">
+          <Button 
+            className="w-full py-6 bg-green-500 hover:bg-green-600 text-black rounded-full text-lg font-medium"
+            onClick={handlePayNow}
+          >
+            Pay Now
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
