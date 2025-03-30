@@ -167,7 +167,6 @@ const GroceryList: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get existing cart from location state or initialize empty
   const initialCart = location.state?.groceryCart || [];
   const fuelType = location.state?.fuelType || {};
   const fuelQuantity = location.state?.fuelQuantity || 0;
@@ -176,7 +175,6 @@ const GroceryList: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [groceryCart, setGroceryCart] = useState<{id: string, quantity: number}[]>(initialCart);
   
-  // Filter items based on search and category
   const filteredItems = allGroceryItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
@@ -218,7 +216,6 @@ const GroceryList: React.FC = () => {
     });
   };
   
-  // Calculate totals
   const itemCount = groceryCart.reduce((sum, item) => sum + item.quantity, 0);
   const totalCost = groceryCart.reduce((total, item) => {
     const groceryItem = allGroceryItems.find(g => g.id === item.id);
@@ -240,7 +237,6 @@ const GroceryList: React.FC = () => {
       <Header showBack title="Grocery Items" />
       
       <main className="page-container pb-20">
-        {/* Search bar */}
         <div className="relative mb-4">
           <input
             type="text"
@@ -252,7 +248,6 @@ const GroceryList: React.FC = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
         </div>
         
-        {/* Category tabs */}
         <div className="flex space-x-2 overflow-x-auto py-2 mb-4 scrollbar-hide">
           {categories.map(category => (
             <button
@@ -269,7 +264,6 @@ const GroceryList: React.FC = () => {
           ))}
         </div>
         
-        {/* Item grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           {filteredItems.map((item) => {
             const quantity = getItemQuantity(item.id);
@@ -316,7 +310,6 @@ const GroceryList: React.FC = () => {
         </div>
       </main>
       
-      {/* Fixed bottom cart summary and checkout button */}
       <div className="fixed bottom-0 left-0 right-0 bg-black p-4 border-t border-gray-800">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
