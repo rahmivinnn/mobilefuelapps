@@ -26,9 +26,11 @@ import OrderHistory from "./pages/OrderHistory";
 import CallScreen from "./pages/CallScreen";
 import ChatScreen from "./pages/ChatScreen";
 
+// Create the query client outside of the component
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
+  // Move these hooks inside the component function
   const [splashVisible, setSplashVisible] = React.useState(true);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   
