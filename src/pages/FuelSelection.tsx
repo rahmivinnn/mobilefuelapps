@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -32,7 +31,7 @@ const fuelTypes = [
   }
 ];
 
-// Grocery items available at the station
+// Updated grocery items available at the station preview
 const groceryItems = [
   {
     id: 'water',
@@ -53,10 +52,10 @@ const groceryItems = [
     image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png'
   },
   {
-    id: 'energy',
-    name: 'Energy Drink',
-    price: 3.49,
-    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png'
+    id: 'sandwich',
+    name: 'Fresh Sandwich',
+    price: 4.99,
+    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png'
   }
 ];
 

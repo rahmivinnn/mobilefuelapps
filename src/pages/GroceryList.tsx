@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Search, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// Comprehensive grocery items list
+// Comprehensive grocery items list with more food icons
 const allGroceryItems = [
   {
     id: 'water',
@@ -15,9 +14,58 @@ const allGroceryItems = [
     category: 'drinks'
   },
   {
+    id: 'soda',
+    name: 'Soda',
+    price: 1.89,
+    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
+    category: 'drinks'
+  },
+  {
+    id: 'energy',
+    name: 'Energy Drink',
+    price: 3.49,
+    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
+    category: 'drinks'
+  },
+  {
+    id: 'coffee',
+    name: 'Coffee',
+    price: 2.99,
+    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
+    category: 'drinks'
+  },
+  {
+    id: 'juice',
+    name: 'Fresh Juice',
+    price: 3.29,
+    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
+    category: 'drinks'
+  },
+  {
     id: 'chips',
     name: 'Potato Chips',
     price: 2.49,
+    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    category: 'snacks'
+  },
+  {
+    id: 'popcorn',
+    name: 'Popcorn',
+    price: 2.29,
+    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    category: 'snacks'
+  },
+  {
+    id: 'nuts',
+    name: 'Mixed Nuts',
+    price: 3.49,
+    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    category: 'snacks'
+  },
+  {
+    id: 'jerky',
+    name: 'Beef Jerky',
+    price: 5.99,
     image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
     category: 'snacks'
   },
@@ -29,13 +77,6 @@ const allGroceryItems = [
     category: 'snacks'
   },
   {
-    id: 'energy',
-    name: 'Energy Drink',
-    price: 3.49,
-    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
-    category: 'drinks'
-  },
-  {
     id: 'candy',
     name: 'Candy Pack',
     price: 1.29,
@@ -43,16 +84,37 @@ const allGroceryItems = [
     category: 'snacks'
   },
   {
-    id: 'coffee',
-    name: 'Coffee',
-    price: 2.99,
-    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
-    category: 'drinks'
+    id: 'gum',
+    name: 'Chewing Gum',
+    price: 1.29,
+    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    category: 'snacks'
   },
   {
     id: 'sandwich',
     name: 'Fresh Sandwich',
     price: 4.99,
+    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    category: 'food'
+  },
+  {
+    id: 'hotdog',
+    name: 'Hot Dog',
+    price: 3.49,
+    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    category: 'food'
+  },
+  {
+    id: 'burrito',
+    name: 'Breakfast Burrito',
+    price: 4.49,
+    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    category: 'food'
+  },
+  {
+    id: 'salad',
+    name: 'Fresh Salad',
+    price: 5.49,
     image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
     category: 'food'
   },
@@ -64,32 +126,25 @@ const allGroceryItems = [
     category: 'desserts'
   },
   {
-    id: 'gum',
-    name: 'Chewing Gum',
-    price: 1.29,
+    id: 'cookies',
+    name: 'Cookies',
+    price: 2.49,
     image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
-    category: 'snacks'
+    category: 'desserts'
   },
   {
-    id: 'jerky',
-    name: 'Beef Jerky',
-    price: 5.99,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
-    category: 'snacks'
+    id: 'donuts',
+    name: 'Donuts',
+    price: 1.99,
+    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    category: 'desserts'
   },
   {
-    id: 'soda',
-    name: 'Soda',
-    price: 1.89,
-    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
-    category: 'drinks'
-  },
-  {
-    id: 'nuts',
-    name: 'Mixed Nuts',
-    price: 3.49,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
-    category: 'snacks'
+    id: 'muffin',
+    name: 'Blueberry Muffin',
+    price: 2.29,
+    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    category: 'desserts'
   }
 ];
 
