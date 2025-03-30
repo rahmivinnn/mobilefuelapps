@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
@@ -9,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { orderHistory } from '@/data/dummyData';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-// Memphis-specific data
 const memphisLicensePlates = [
   "TN-56A782", "TN-23B471", "TN-78C912", "TN-34D654", "TN-91E349"
 ];
@@ -21,7 +19,6 @@ const deliveryPeople = [
   { name: "Emily Wilson", location: "Memphis, TN", image: "/lovable-uploads/1bc06a60-0463-4f47-abde-502bc408852e.png", rating: 4.6, phone: "+1 (901) 555-7653" }
 ];
 
-// Generate driver avatars using the User icon
 const driverAvatars = [
   <div className="h-14 w-14 rounded-full bg-green-500 flex items-center justify-center border-2 border-white text-black">
     <User className="h-8 w-8" />
@@ -41,7 +38,6 @@ const deliveryTimes = [
   "7:15 - 7:45 PM", "8:30 - 9:15 PM", "6:45 - 7:30 PM", "9:00 - 9:45 PM", "7:30 - 8:15 PM"
 ];
 
-// Default order data
 const defaultOrder = {
   id: 'ORD-1234',
   status: 'processing',
@@ -59,7 +55,6 @@ const defaultOrder = {
   driverLocation: { lat: 35.149, lng: -90.048 }
 };
 
-// Sample driver messages
 const driverMessages = [
   "I'm on my way to your location!",
   "I'll be there in about 5 minutes.",
@@ -75,39 +70,27 @@ const TrackOrder: React.FC = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
-  // Initialize with defaultOrder to prevent undefined errors
   const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
   const [orderComplete, setOrderComplete] = useState(false);
   const [driverLocation, setDriverLocation] = useState({ lat: 35.149, lng: -90.048 });
   const [showDirections, setShowDirections] = useState(true);
-  const [routeColor, setRouteColor] = useState('#4ade80'); // Green route color
+  const [routeColor, setRouteColor] = useState('#4ade80');
   const [mapImage] = useState('/lovable-uploads/f7931378-76e5-4e0a-bc3c-1d7b4fff6f0d.png');
 
-  // Status progression logic
   useEffect(() => {
-    // Get orderId from URL query params
     const params = new URLSearchParams(location.search);
     const orderId = params.get('orderId');
     
     if (orderId) {
       try {
-        // Find the order in orderHistory
         const foundOrder = orderHistory.find(o => o.id === orderId);
         
         if (foundOrder) {
-          // Choose random Memphis license plate
           const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
-          
-          // Choose random delivery person
           const randomDeliveryPerson = deliveryPeople[Math.floor(Math.random() * deliveryPeople.length)];
-          
-          // Choose random delivery time
           const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
-          
-          // Random avatar index
           const randomAvatarIndex = Math.floor(Math.random() * driverAvatars.length);
           
-          // Random initial driver location (near Memphis)
           const initialDriverLocation = {
             lat: 35.149 + (Math.random() - 0.5) * 0.01,
             lng: -90.048 + (Math.random() - 0.5) * 0.01
@@ -115,9 +98,8 @@ const TrackOrder: React.FC = () => {
           
           setDriverLocation(initialDriverLocation);
           
-          // Safely update the order with found data and ensure all properties exist
           setOrder({
-            ...defaultOrder, // Always include default values as fallback
+            ...defaultOrder,
             id: foundOrder.id || defaultOrder.id,
             status: foundOrder.status || defaultOrder.status,
             estimatedDelivery: randomDeliveryTime,
@@ -131,7 +113,6 @@ const TrackOrder: React.FC = () => {
             statusDetails: defaultOrder.statusDetails
           });
         } else {
-          // If order not found, explicitly use default order
           console.log(`Order ${orderId} not found, using default`);
           setOrder({...defaultOrder});
         }
@@ -139,9 +120,7 @@ const TrackOrder: React.FC = () => {
         console.log(`Fetching order details for ${orderId}`, foundOrder);
       } catch (error) {
         console.error("Error processing order data:", error);
-        // If there's an error, explicitly use default order
         setOrder({...defaultOrder});
-        // Toast to inform user
         toast({
           title: "Error",
           description: "Could not load order details",
@@ -150,12 +129,9 @@ const TrackOrder: React.FC = () => {
         });
       }
     } else {
-      // No orderId in URL, explicitly use default order
       setOrder({...defaultOrder});
     }
     
-    // Status update every 5 seconds for demonstration purposes
-    // In reality, this would be connected to a backend with real updates
     const statuses = [
       { status: 'processing', progress: 0, statusDetails: 'Order received' },
       { status: 'processing', progress: 20, statusDetails: 'Processing your order' },
@@ -167,13 +143,10 @@ const TrackOrder: React.FC = () => {
     
     let currentStep = 0;
     
-    // Update status every 5 seconds
     const statusTimer = setInterval(() => {
       if (currentStep < statuses.length) {
         setOrder(prevOrder => {
-          // Make sure prevOrder exists with a fallback
           const safeOrder = prevOrder || {...defaultOrder};
-          
           return {
             ...safeOrder,
             status: statuses[currentStep].status,
@@ -182,27 +155,23 @@ const TrackOrder: React.FC = () => {
           };
         });
         
-        // Update route color based on status
         if (statuses[currentStep].status === 'processing') {
-          setRouteColor('#facc15'); // Yellow
+          setRouteColor('#facc15');
         } else if (statuses[currentStep].status === 'in-transit') {
-          setRouteColor('#4ade80'); // Green
+          setRouteColor('#4ade80');
         } else if (statuses[currentStep].status === 'delivered') {
-          setRouteColor('#3b82f6'); // Blue
+          setRouteColor('#3b82f6');
         }
         
-        // Show toast notification for status changes
         toast({
           title: "Order Update",
           description: statuses[currentStep].statusDetails,
           duration: 3000
         });
         
-        // Check if this is the final step (delivery complete)
         if (currentStep === statuses.length - 1) {
           setOrderComplete(true);
           
-          // Show smaller delivery completion toast when delivered
           setTimeout(() => {
             toast({
               title: "Delivery Complete!",
@@ -211,7 +180,6 @@ const TrackOrder: React.FC = () => {
               className: "bg-green-500 border-green-600 text-white"
             });
             
-            // Navigate back to home after a delay
             setTimeout(() => {
               navigate('/');
             }, 3000);
@@ -224,18 +192,13 @@ const TrackOrder: React.FC = () => {
       }
     }, 5000);
 
-    // Update driver much more frequently (every 5-10 seconds)
     const driverUpdateTimer = setInterval(() => {
-      // Choose random Memphis license plate
       const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
       
-      // Choose random delivery person (different from current)
       let currentDriverIndex = -1;
       
-      // Get current order safely
       const currentOrder = order || {...defaultOrder};
       
-      // Safely get current driver index with proper null check
       if (currentOrder?.driver?.name) {
         currentDriverIndex = deliveryPeople.findIndex(driver => driver.name === currentOrder.driver.name);
       }
@@ -247,13 +210,10 @@ const TrackOrder: React.FC = () => {
       
       const randomDeliveryPerson = deliveryPeople[newDriverIndex];
       
-      // Choose random delivery time
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
       
       setOrder(prevOrder => {
-        // Ensure prevOrder exists with a fallback
         const safeOrder = prevOrder || {...defaultOrder};
-        
         return {
           ...safeOrder,
           estimatedDelivery: randomDeliveryTime,
@@ -262,7 +222,6 @@ const TrackOrder: React.FC = () => {
         };
       });
       
-      // Only show driver update notification if the order is not complete
       if (!orderComplete) {
         toast({
           title: "Driver Update",
@@ -270,14 +229,11 @@ const TrackOrder: React.FC = () => {
           duration: 3000
         });
       }
-    }, Math.floor(Math.random() * 5000) + 5000); // Random time between 5-10 seconds
-    
-    // Show random driver messages every 15-30 seconds
+    }, Math.floor(Math.random() * 5000) + 5000);
+
     const messageTimer = setInterval(() => {
-      // Only show messages if the order is in progress
       if (!orderComplete) {
         const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
-        // Get current order safely
         const currentOrder = order || {...defaultOrder};
         const driverName = currentOrder?.driver?.name || 'Driver';
         
@@ -288,8 +244,8 @@ const TrackOrder: React.FC = () => {
           className: "bg-blue-500 border-blue-600 text-white"
         });
       }
-    }, Math.floor(Math.random() * 15000) + 15000); // Random time between 15-30 seconds
-    
+    }, Math.floor(Math.random() * 15000) + 15000);
+
     return () => {
       clearInterval(statusTimer);
       clearInterval(driverUpdateTimer);
@@ -297,19 +253,15 @@ const TrackOrder: React.FC = () => {
     };
   }, [location.search, toast, navigate, orderComplete]);
 
-  // Simulate driver movement
   useEffect(() => {
     const movementInterval = setInterval(() => {
-      // Update driver location with small random changes to simulate movement
       const newDriverLocation = {
         lat: driverLocation.lat + (Math.random() - 0.5) * 0.002,
         lng: driverLocation.lng + (Math.random() - 0.5) * 0.002
       };
       setDriverLocation(newDriverLocation);
       
-      // Also update the order object with the new location - ensure order exists
       setOrder(prev => {
-        // Ensure prev is not undefined
         const safeOrder = prev || {...defaultOrder};
         return {
           ...safeOrder,
@@ -321,14 +273,12 @@ const TrackOrder: React.FC = () => {
     return () => clearInterval(movementInterval);
   }, [driverLocation]);
 
-  // Effect to watch for order completion and show additional notifications
   useEffect(() => {
     if (orderComplete) {
-      // Show arrival notification after the order is complete
       const arrivalTimer = setTimeout(() => {
         toast({
-          title: "Arrived at Destination",
-          description: "Your fuel has been delivered. Enjoy!",
+          title: "Service Complete",
+          description: "Your Fuel Friend has finished pumping gas and delivered your groceries!",
           duration: 2000,
           className: "bg-green-500 border-green-600 text-white"
         });
@@ -339,24 +289,21 @@ const TrackOrder: React.FC = () => {
   }, [orderComplete, toast]);
 
   const handleCall = () => {
-    // Make sure to safely access driver name with fallback
-    const driverName = order?.driver?.name || 'Driver';
-    navigate(`/call?driverName=${encodeURIComponent(driverName)}`);
+    const fuelFriendName = order?.driver?.name || 'Fuel Friend';
+    navigate(`/call?fuelFriendName=${encodeURIComponent(fuelFriendName)}`);
   };
 
   const handleMessage = () => {
-    // Make sure to safely access driver name with fallback 
-    const driverName = order?.driver?.name || 'Driver';
-    navigate(`/chat?driverName=${encodeURIComponent(driverName)}`);
+    const fuelFriendName = order?.driver?.name || 'Fuel Friend';
+    navigate(`/chat?fuelFriendName=${encodeURIComponent(fuelFriendName)}`);
   };
 
   const toggleDirections = () => {
     setShowDirections(!showDirections);
   };
 
-  // Helper function to determine status color with default value for safety
   const getStatusColor = (status: string | undefined) => {
-    if (!status) return 'bg-gray-500'; // Default fallback
+    if (!status) return 'bg-gray-500';
     
     switch(status) {
       case 'processing': return 'bg-yellow-500';
@@ -366,9 +313,8 @@ const TrackOrder: React.FC = () => {
     }
   };
 
-  // Helper function to get status name with default value for safety
   const getStatusName = (status: string | undefined) => {
-    if (!status) return 'Unknown'; // Default fallback
+    if (!status) return 'Unknown';
     
     switch(status) {
       case 'processing': return 'Processing';
@@ -378,7 +324,6 @@ const TrackOrder: React.FC = () => {
     }
   };
 
-  // Safely access properties with fallbacks to avoid undefined errors
   const status = order?.status || 'processing';
   const progress = order?.progress || 0;
   const statusDetails = order?.statusDetails || 'Processing your order';
@@ -392,24 +337,19 @@ const TrackOrder: React.FC = () => {
   const orderId = order?.id || 'ORD-XXXX';
   const avatarIndex = order?.avatarIndex || 0;
 
-  // Get the driver avatar based on the current index
   const driverAvatar = driverAvatars[avatarIndex] || driverAvatars[0];
 
-  // Custom Map component to match the provided reference image
   const GoogleStyleMap = () => {
     return (
       <div className="relative w-full h-full overflow-hidden rounded-lg">
-        {/* Base map image */}
         <img 
           src={mapImage}
           alt="Memphis Map" 
           className="w-full h-full object-cover"
         />
         
-        {/* Route path - enhanced visibility for mobile */}
         <div className="absolute inset-0 pointer-events-none">
           <svg width="100%" height="100%" className="absolute">
-            {/* Animated route path - increased stroke width for mobile */}
             <path
               d="M300,900 C350,750 400,650 450,500 C500,300 550,200 650,180"
               stroke={routeColor}
@@ -420,13 +360,12 @@ const TrackOrder: React.FC = () => {
               className="animate-dash"
               style={{
                 opacity: showDirections ? 1 : 0.5,
-                display: 'block', // Force display on all devices
+                display: 'block',
               }}
             />
           </svg>
         </div>
         
-        {/* User location (destination) */}
         <div className="absolute bottom-1/4 right-1/4 z-20">
           <div className="relative">
             <div className={`h-${isMobile ? '8' : '6'} w-${isMobile ? '8' : '6'} bg-green-500 rounded-full border-2 border-white`}></div>
@@ -434,7 +373,6 @@ const TrackOrder: React.FC = () => {
           </div>
         </div>
         
-        {/* Driver location */}
         <div 
           className="absolute z-30 transition-all duration-700"
           style={{
@@ -449,7 +387,6 @@ const TrackOrder: React.FC = () => {
           </div>
         </div>
         
-        {/* Zoom controls */}
         <div className="absolute bottom-4 right-4 flex flex-col space-y-2">
           <button className="h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md">
             <div className="h-5 w-5 flex items-center justify-center text-xl font-bold text-gray-700">+</div>
@@ -459,7 +396,6 @@ const TrackOrder: React.FC = () => {
           </button>
         </div>
         
-        {/* Location pin */}
         <button className="absolute bottom-4 right-20 h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md">
           <div className="h-6 w-6 flex items-center justify-center">
             <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-700">
@@ -468,7 +404,6 @@ const TrackOrder: React.FC = () => {
           </div>
         </button>
         
-        {/* Map attribution */}
         <div className="absolute bottom-1 left-1 text-xs text-gray-500 bg-white/70 px-1 rounded">
           Map data ©2023
         </div>
@@ -477,18 +412,16 @@ const TrackOrder: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
+    <div className="fixed inset-0 flex flex-col bg-black text-white">
       <div className="relative px-4 py-3 flex items-center justify-center">
         <Link to="/orders" className="absolute left-4">
           <div className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-800">
             <ChevronLeft className="h-6 w-6" />
           </div>
         </Link>
-        <h1 className="text-xl font-semibold">Track Your Order</h1>
+        <h1 className="text-xl font-semibold">Track Fuel Friend</h1>
       </div>
       
-      {/* Status indicator */}
       <div className="px-4 py-2">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
@@ -498,7 +431,6 @@ const TrackOrder: React.FC = () => {
           <span className="text-sm text-gray-400">{orderId}</span>
         </div>
         
-        {/* Progress bar */}
         <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
           <motion.div 
             className={`h-2 rounded-full ${getStatusColor(status)}`}
@@ -510,14 +442,11 @@ const TrackOrder: React.FC = () => {
         <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
-      {/* Map section - Fixed height issue for mobile and desktop */}
       <div className={`${isMobile ? 'h-[350px]' : 'h-[300px]'} mb-4 mt-2 relative`}>
         <GoogleStyleMap />
       </div>
       
-      {/* Driver info and order details */}
       <div className="px-4 py-2 bg-black relative">
-        {/* Driver info */}
         <div className="flex items-center mb-6">
           <div className="mr-3">
             {driverAvatar}
@@ -543,20 +472,18 @@ const TrackOrder: React.FC = () => {
           </div>
         </div>
         
-        {/* Delivery time */}
         <div className="mb-6">
-          <h4 className="text-gray-400 mb-1">Your Delivery Time</h4>
+          <h4 className="text-gray-400 mb-1">Your Fuel Friend Will Arrive</h4>
           <p className="font-semibold text-white text-lg">Estimated {estimatedDelivery}</p>
         </div>
         
-        {/* Delivery status */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-center">
               <div className={`w-8 h-8 ${progress >= 20 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
                 <MapPin className={`h-4 w-4 ${progress >= 20 ? 'text-black' : 'text-gray-400'}`} />
               </div>
-              <p className="text-xs text-gray-400 mt-1">Pickup</p>
+              <p className="text-xs text-gray-400 mt-1">Assigned</p>
             </div>
             <div className="flex-1 mx-1 h-0.5">
               <div className={`h-0.5 w-full border-t-2 border-dashed ${progress >= 40 ? 'border-green-500' : 'border-gray-700'}`}></div>
@@ -567,7 +494,7 @@ const TrackOrder: React.FC = () => {
                   <path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5m1.5-9H17V12h4.46L19.5 9.5M6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3M3 6v9h.76c.55-.61 1.35-1 2.24-1 .89 0 1.69.39 2.24 1H15V6H3z"/>
                 </svg>
               </div>
-              <p className="text-xs text-gray-400 mt-1">Transit</p>
+              <p className="text-xs text-gray-400 mt-1">At Station</p>
             </div>
             <div className="flex-1 mx-1 h-0.5">
               <div className={`h-0.5 w-full border-t-2 border-dashed ${progress >= 80 ? 'border-green-500' : 'border-gray-700'}`}></div>
@@ -578,7 +505,7 @@ const TrackOrder: React.FC = () => {
                   <path fill="currentColor" d="M18 10a1 1 0 0 1-1-1 1 1 0 0 1 1-1 1 1 0 0 1 1 1 1 1 0 0 1-1 1m-6 0H6V5h6m7.77 2.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11C16.17 7 15.5 7.93 15.5 9a2.5 2.5 0 0 0 2.5 2.5c.36 0 .69-.08 1-.21v7.21a1 1 0 0 1-1 1 1 1 0 0 1-1-1V14a2 2 0 0 0-2-2h-1V5a2 2 0 0 0-2-2H6c-1.11 0-2 .89-2 2v16h10v-7.5h1.5v5a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5V9c0-.69-.28-1.32-.73-1.77M12 10H6V9h6m0-2H6V7h6M6 19v-3h5v3H6m0-4.5V19h-1v-4.5"/>
                 </svg>
               </div>
-              <p className="text-xs text-gray-400 mt-1">Arriving</p>
+              <p className="text-xs text-gray-400 mt-1">Pumping</p>
             </div>
             <div className="flex-1 mx-1 h-0.5">
               <div className={`h-0.5 w-full border-t-2 border-dashed ${progress >= 100 ? 'border-green-500' : 'border-gray-700'}`}></div>
@@ -589,14 +516,13 @@ const TrackOrder: React.FC = () => {
                   <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                 </svg>
               </div>
-              <p className="text-xs text-gray-400 mt-1">Delivered</p>
+              <p className="text-xs text-gray-400 mt-1">Complete</p>
             </div>
           </div>
         </div>
         
-        {/* Order items */}
         <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-3">Order</h3>
+          <h3 className="text-lg font-semibold mb-3">Your Order</h3>
           {orderItems.map((item, i) => (
             <div key={i} className="flex justify-between mb-2">
               <p className="text-gray-300">{item.name}</p>
@@ -612,7 +538,6 @@ const TrackOrder: React.FC = () => {
         </div>
       </div>
       
-      {/* Bottom navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-black pt-2 pb-8 border-t border-gray-800">
         <div className="grid grid-cols-4 gap-2 px-4">
           <Link to="/" className="flex flex-col items-center">

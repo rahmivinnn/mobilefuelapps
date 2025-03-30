@@ -4,6 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import FuelSelector from '@/components/ui/FuelSelector';
 import QuantityCounter from '@/components/ui/QuantityCounter';
+import { ShoppingBag, Plus, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // Updated mock data for US fuel types
 const fuelTypes = [
@@ -30,21 +32,84 @@ const fuelTypes = [
   }
 ];
 
+// Grocery items available at the station
+const groceryItems = [
+  {
+    id: 'water',
+    name: 'Bottled Water',
+    price: 1.99,
+    image: '/lovable-uploads/8baf7fa9-2b5c-4335-b69b-eefef9610e3a.png'
+  },
+  {
+    id: 'chips',
+    name: 'Potato Chips',
+    price: 2.49,
+    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png'
+  },
+  {
+    id: 'chocolate',
+    name: 'Chocolate Bar',
+    price: 1.79,
+    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png'
+  },
+  {
+    id: 'energy',
+    name: 'Energy Drink',
+    price: 3.49,
+    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png'
+  }
+];
+
 const FuelSelection: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
   const [selectedFuel, setSelectedFuel] = useState(fuelTypes[0].id);
   const [quantity, setQuantity] = useState(5); // Default to 5 gallons
+  const [groceryCart, setGroceryCart] = useState<{id: string, quantity: number}[]>([]);
   
   const selectedFuelType = fuelTypes.find(fuel => fuel.id === selectedFuel);
-  const totalPrice = selectedFuelType ? selectedFuelType.price * quantity : 0;
+  const fuelCost = selectedFuelType ? selectedFuelType.price * quantity : 0;
+  
+  // Calculate total cost including groceries
+  const groceryCost = groceryCart.reduce((total, item) => {
+    const groceryItem = groceryItems.find(g => g.id === item.id);
+    return total + (groceryItem ? groceryItem.price * item.quantity : 0);
+  }, 0);
+  
+  const totalPrice = fuelCost + groceryCost;
+  
+  const addToCart = (itemId: string) => {
+    setGroceryCart(prev => {
+      const existingItem = prev.find(item => item.id === itemId);
+      if (existingItem) {
+        return prev.map(item => 
+          item.id === itemId 
+            ? { ...item, quantity: item.quantity + 1 } 
+            : item
+        );
+      } else {
+        return [...prev, { id: itemId, quantity: 1 }];
+      }
+    });
+  };
+  
+  const viewGroceryDetails = () => {
+    navigate(`/station/${id}/groceries`, { 
+      state: { 
+        fuelType: selectedFuelType,
+        fuelQuantity: quantity,
+        groceryCart
+      } 
+    });
+  };
   
   const handleContinue = () => {
     navigate(`/station/${id}/payment`, { 
       state: { 
         fuelType: selectedFuelType,
         quantity,
+        groceryCart,
         totalPrice
       } 
     });
@@ -52,9 +117,9 @@ const FuelSelection: React.FC = () => {
   
   return (
     <>
-      <Header showBack title="Select Fuel" />
+      <Header showBack title="Select Fuel & Groceries" />
       
-      <main className="page-container">
+      <main className="page-container pb-20">
         <div className="mb-6 animate-fade-in">
           <div className="mb-1 text-sm text-muted-foreground">Step 1 of 3</div>
           <h2 className="text-2xl font-bold">Choose Fuel Type</h2>
@@ -82,7 +147,81 @@ const FuelSelection: React.FC = () => {
           />
         </div>
         
-        <div className="mt-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+        <div className="my-6 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+          <div className="mb-1 text-sm text-muted-foreground">Step 3 of 3</div>
+          <h2 className="text-2xl font-bold mb-4">Add Groceries</h2>
+          
+          <div className="grid grid-cols-2 gap-3">
+            {groceryItems.slice(0, 4).map((item) => {
+              const cartItem = groceryCart.find(ci => ci.id === item.id);
+              return (
+                <motion.div 
+                  key={item.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="glass relative rounded-xl p-3 flex flex-col"
+                >
+                  <div className="h-24 w-full mb-2 rounded-lg overflow-hidden bg-gray-800">
+                    <img 
+                      src={item.image} 
+                      alt={item.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="font-medium">{item.name}</h3>
+                  <p className="text-lg font-bold mt-1">${item.price.toFixed(2)}</p>
+                  
+                  <button
+                    onClick={() => addToCart(item.id)}
+                    className="absolute bottom-3 right-3 h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-black"
+                  >
+                    <Plus className="h-5 w-5" />
+                  </button>
+                  
+                  {cartItem && (
+                    <div className="absolute top-2 right-2 h-6 w-6 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-black">
+                      {cartItem.quantity}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+          
+          <button
+            onClick={viewGroceryDetails}
+            className="w-full mt-4 py-3 rounded-xl glass flex items-center justify-between px-4"
+          >
+            <div className="flex items-center">
+              <ShoppingBag className="h-5 w-5 text-green-500 mr-2" />
+              <span>View all grocery items</span>
+            </div>
+            <ChevronRight className="h-5 w-5 text-green-500" />
+          </button>
+        </div>
+        
+        {/* Order Summary */}
+        <div className="glass rounded-xl p-4 mb-4">
+          <h3 className="text-lg font-medium mb-2">Order Summary</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span>Fuel ({quantity} gallons)</span>
+              <span>${fuelCost.toFixed(2)}</span>
+            </div>
+            {groceryCart.length > 0 && (
+              <div className="flex justify-between">
+                <span>Groceries ({groceryCart.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
+                <span>${groceryCost.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="border-t border-gray-700 pt-2 mt-2 flex justify-between font-bold">
+              <span>Total</span>
+              <span>${totalPrice.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-8 animate-fade-in" style={{ animationDelay: "0.4s" }}>
           <button 
             onClick={handleContinue}
             className="w-full py-4 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.98] transition-all duration-200"

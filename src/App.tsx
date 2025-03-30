@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -8,6 +9,7 @@ import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import StationDetails from "./pages/StationDetails";
 import FuelSelection from "./pages/FuelSelection";
+import GroceryList from "./pages/GroceryList";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
 import TrackOrder from "./pages/TrackOrder";
@@ -102,6 +104,10 @@ const App: React.FC = () => {
                 <Route 
                   path="/station/:id/fuel" 
                   element={isAuthenticated ? <FuelSelection /> : <Navigate to="/" />} 
+                />
+                <Route 
+                  path="/station/:id/groceries" 
+                  element={isAuthenticated ? <GroceryList /> : <Navigate to="/" />} 
                 />
                 <Route 
                   path="/station/:id/payment" 

@@ -8,21 +8,21 @@ const ChatScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [driverName, setDriverName] = useState('Driver');
+  const [fuelFriendName, setFuelFriendName] = useState('Fuel Friend');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hey, I'll be there in 10 minutes with your fuel delivery", sender: 'driver', time: '10:30 AM' },
-    { id: 2, text: "Great! I'm waiting at the location. Can you confirm the total amount again?", sender: 'user', time: '10:32 AM' },
-    { id: 3, text: "Sure, it's $45.75 for 10 gallons of premium fuel. You can pay through the app when I arrive.", sender: 'driver', time: '10:33 AM' },
+    { id: 1, text: "Hey there! I'm your Fuel Friend today. I'll be helping you pump your gas and deliver your groceries to your vehicle.", sender: 'fuelFriend', time: '10:30 AM' },
+    { id: 2, text: "Great! I'm at pump #5. When will you arrive?", sender: 'user', time: '10:32 AM' },
+    { id: 3, text: "I'm actually already at the station. I'll be at pump #5 in just a minute! Please wait in your vehicle.", sender: 'fuelFriend', time: '10:33 AM' },
   ]);
   const [isTyping, setIsTyping] = useState(false);
 
-  // Get driver name from URL parameters
+  // Get Fuel Friend name from URL parameters
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const name = params.get('driverName');
+    const name = params.get('fuelFriendName');
     if (name) {
-      setDriverName(name);
+      setFuelFriendName(name);
     }
   }, [location]);
 
@@ -36,7 +36,7 @@ const ChatScreen = () => {
   };
 
   const handleCall = () => {
-    navigate(`/call?driverName=${encodeURIComponent(driverName)}`);
+    navigate(`/call?fuelFriendName=${encodeURIComponent(fuelFriendName)}`);
   };
 
   const handleSendMessage = () => {
@@ -53,16 +53,16 @@ const ChatScreen = () => {
       // Show typing indicator
       setIsTyping(true);
       
-      // Simulate a reply from the driver
+      // Simulate a reply from the Fuel Friend
       setTimeout(() => {
         setIsTyping(false);
-        const driverReply = {
+        const fuelFriendReply = {
           id: messages.length + 2,
-          text: "Got it! I'll be there soon. Just finalizing another delivery.",
-          sender: 'driver',
+          text: "I see you now! I'll start pumping your gas right away and bring your groceries to your vehicle when finished.",
+          sender: 'fuelFriend',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
-        setMessages(prevMessages => [...prevMessages, driverReply]);
+        setMessages(prevMessages => [...prevMessages, fuelFriendReply]);
       }, 2000);
     }
   };
@@ -80,8 +80,8 @@ const ChatScreen = () => {
               <User className="h-6 w-6 text-black" />
             </div>
             <div>
-              <h2 className="font-semibold">{driverName}</h2>
-              <p className="text-xs text-gray-400">Driver • Online</p>
+              <h2 className="font-semibold">{fuelFriendName}</h2>
+              <p className="text-xs text-gray-400">Fuel Friend • Online</p>
             </div>
           </div>
         </div>
@@ -103,7 +103,7 @@ const ChatScreen = () => {
             transition={{ duration: 0.3 }}
             className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            {msg.sender === 'driver' && (
+            {msg.sender === 'fuelFriend' && (
               <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center mr-2 flex-shrink-0 self-end mb-1">
                 <User className="h-4 w-4 text-black" />
               </div>

@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Star, MapPin, Clock, Navigation, Share2, Facebook, Twitter, Instagram, Mail } from 'lucide-react';
+import { Star, MapPin, Clock, Navigation, Share2, Facebook, Twitter, Instagram, Mail, Fuel, ShoppingBag } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import Map from '@/components/ui/Map';
@@ -17,10 +18,18 @@ const stationData = {
   isOpen: true,
   hours: '24 Hours',
   imageUrl: '/lovable-uploads/8ed0bc34-d448-42c8-804a-8dda4e3e6840.png',
-  description: 'One of the premier Shell gas stations in Memphis, offering a wide variety of fuel types and additional services including a convenience store and ATM.',
+  description: 'One of the premier Shell gas stations in Memphis, offering a wide variety of fuel types and additional services including a convenience store with fresh groceries and snacks.',
   latitude: 35.1477,
   longitude: -90.0518
 };
+
+// Services offered at the station
+const stationServices = [
+  { id: 'fuel', name: 'Fuel Services', description: 'Choose from various fuel types with available Fuel Friends to pump for you' },
+  { id: 'store', name: 'Convenience Store', description: 'Shop from a variety of snacks, drinks, and essential grocery items' },
+  { id: 'car-wash', name: 'Car Wash', description: 'Professional car washing services available' },
+  { id: 'atm', name: 'ATM', description: '24/7 access to cash withdrawal' }
+];
 
 // Station images for different locations - all using the Shell image
 const stationImages = {
@@ -37,6 +46,10 @@ const StationDetails: React.FC = () => {
   
   const handleBuyFuel = () => {
     navigate(`/station/${id}/fuel`);
+  };
+  
+  const handleShopGroceries = () => {
+    navigate(`/station/${id}/groceries`);
   };
   
   const handleShare = () => {
@@ -118,11 +131,34 @@ const StationDetails: React.FC = () => {
           </div>
         </div>
         
+        {/* Station description */}
         <div className="glass card-shadow rounded-xl p-4 mb-5">
           <h2 className="text-lg font-medium mb-2">About</h2>
           <p className="text-sm text-muted-foreground">{stationData.description}</p>
         </div>
         
+        {/* Station services */}
+        <div className="glass card-shadow rounded-xl p-4 mb-5">
+          <h2 className="text-lg font-medium mb-3">Available Services</h2>
+          <div className="space-y-3">
+            {stationServices.map(service => (
+              <div key={service.id} className="flex items-start">
+                <div className={`h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center mr-3 mt-0.5 ${service.id === 'fuel' || service.id === 'store' ? 'bg-green-500/20' : ''}`}>
+                  {service.id === 'fuel' && <Fuel className="h-4 w-4 text-green-500" />}
+                  {service.id === 'store' && <ShoppingBag className="h-4 w-4 text-green-500" />}
+                  {service.id === 'car-wash' && <div className="h-4 w-4 text-blue-400">🚿</div>}
+                  {service.id === 'atm' && <div className="h-4 w-4 text-yellow-400">💳</div>}
+                </div>
+                <div>
+                  <h3 className="font-medium">{service.name}</h3>
+                  <p className="text-sm text-muted-foreground">{service.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Actions */}
         <div className="grid grid-cols-2 gap-3 mb-5">
           <button 
             onClick={getDirections}
@@ -188,12 +224,24 @@ const StationDetails: React.FC = () => {
         
         <Map className="h-48 mb-5" showRoute={true} />
         
-        <button 
-          onClick={handleBuyFuel}
-          className="w-full py-4 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.99] transition-all duration-200"
-        >
-          Buy Fuel Now
-        </button>
+        {/* Main action buttons */}
+        <div className="grid grid-cols-1 gap-3 mb-6">
+          <button 
+            onClick={handleBuyFuel}
+            className="w-full py-4 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.99] transition-all duration-200 flex items-center justify-center"
+          >
+            <Fuel className="h-5 w-5 mr-2" />
+            Get Fuel with Fuel Friend
+          </button>
+          
+          <button 
+            onClick={handleShopGroceries}
+            className="w-full py-4 rounded-xl glass border border-green-500/30 text-white font-semibold hover:bg-green-500/10 active:scale-[0.99] transition-all duration-200 flex items-center justify-center"
+          >
+            <ShoppingBag className="h-5 w-5 mr-2 text-green-500" />
+            Shop Groceries
+          </button>
+        </div>
       </main>
       
       <BottomNav />
