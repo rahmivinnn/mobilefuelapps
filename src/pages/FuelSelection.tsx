@@ -3,7 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import FuelSelector from '@/components/ui/FuelSelector';
 import QuantityCounter from '@/components/ui/QuantityCounter';
-import { ShoppingBag, Plus, ChevronRight } from 'lucide-react';
+import { 
+  ShoppingBag, Plus, ChevronRight, 
+  Droplets, Cookie, CupSoda, CircleOff
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // Updated mock data for US fuel types
@@ -37,25 +40,25 @@ const groceryItems = [
     id: 'water',
     name: 'Bottled Water',
     price: 1.99,
-    image: '/lovable-uploads/8baf7fa9-2b5c-4335-b69b-eefef9610e3a.png'
+    icon: <Droplets className="h-10 w-10 text-blue-400" />
   },
   {
     id: 'chips',
     name: 'Potato Chips',
     price: 2.49,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png'
+    icon: <CircleOff className="h-10 w-10 text-yellow-300" />
   },
   {
     id: 'chocolate',
     name: 'Chocolate Bar',
     price: 1.79,
-    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png'
+    icon: <Cookie className="h-10 w-10 text-amber-500" />
   },
   {
-    id: 'sandwich',
-    name: 'Fresh Sandwich',
-    price: 4.99,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png'
+    id: 'soda',
+    name: 'Soda',
+    price: 1.89,
+    icon: <CupSoda className="h-10 w-10 text-red-400" />
   }
 ];
 
@@ -160,12 +163,8 @@ const FuelSelection: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="glass relative rounded-xl p-3 flex flex-col"
                 >
-                  <div className="h-24 w-full mb-2 rounded-lg overflow-hidden bg-gray-800">
-                    <img 
-                      src={item.image} 
-                      alt={item.name} 
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="h-24 w-full mb-2 rounded-lg overflow-hidden bg-gray-800 flex items-center justify-center">
+                    {item.icon}
                   </div>
                   <h3 className="font-medium">{item.name}</h3>
                   <p className="text-lg font-bold mt-1">${item.price.toFixed(2)}</p>

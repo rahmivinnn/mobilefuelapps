@@ -1,149 +1,154 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
-import { Search, Plus, Minus, ShoppingBag } from 'lucide-react';
+import { 
+  Search, Plus, Minus, ShoppingBag, Coffee, CupSoda, 
+  Droplets, Zap, Circle, Square, CircleOff, CircleDot, 
+  CircleSlash, Layers, Flower, Cloud, Cookie, Cake, Candy
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// Comprehensive grocery items list with more food icons
+// Comprehensive grocery items list with specific food icons
 const allGroceryItems = [
   {
     id: 'water',
     name: 'Bottled Water',
     price: 1.99,
-    image: '/lovable-uploads/8baf7fa9-2b5c-4335-b69b-eefef9610e3a.png',
+    icon: <Droplets className="h-5 w-5 text-blue-400" />,
     category: 'drinks'
   },
   {
     id: 'soda',
     name: 'Soda',
     price: 1.89,
-    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
+    icon: <CupSoda className="h-5 w-5 text-red-400" />,
     category: 'drinks'
   },
   {
     id: 'energy',
     name: 'Energy Drink',
     price: 3.49,
-    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
+    icon: <Zap className="h-5 w-5 text-yellow-400" />,
     category: 'drinks'
   },
   {
     id: 'coffee',
     name: 'Coffee',
     price: 2.99,
-    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
+    icon: <Coffee className="h-5 w-5 text-brown-400" />,
     category: 'drinks'
   },
   {
     id: 'juice',
     name: 'Fresh Juice',
     price: 3.29,
-    image: '/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png',
+    icon: <Fruit className="h-5 w-5 text-orange-400" />,
     category: 'drinks'
   },
   {
     id: 'chips',
     name: 'Potato Chips',
     price: 2.49,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    icon: <CircleOff className="h-5 w-5 text-yellow-300" />,
     category: 'snacks'
   },
   {
     id: 'popcorn',
     name: 'Popcorn',
     price: 2.29,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    icon: <Sparkles className="h-5 w-5 text-yellow-200" />,
     category: 'snacks'
   },
   {
     id: 'nuts',
     name: 'Mixed Nuts',
     price: 3.49,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    icon: <CircleDot className="h-5 w-5 text-brown-300" />,
     category: 'snacks'
   },
   {
     id: 'jerky',
     name: 'Beef Jerky',
     price: 5.99,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    icon: <Beef className="h-5 w-5 text-red-600" />,
     category: 'snacks'
   },
   {
     id: 'chocolate',
     name: 'Chocolate Bar',
     price: 1.79,
-    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    icon: <Square className="h-5 w-5 text-brown-500" />,
     category: 'snacks'
   },
   {
     id: 'candy',
     name: 'Candy Pack',
     price: 1.29,
-    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    icon: <Candy className="h-5 w-5 text-pink-400" />,
     category: 'snacks'
   },
   {
     id: 'gum',
     name: 'Chewing Gum',
     price: 1.29,
-    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    icon: <CircleSlash className="h-5 w-5 text-blue-300" />,
     category: 'snacks'
   },
   {
     id: 'sandwich',
     name: 'Fresh Sandwich',
     price: 4.99,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    icon: <Layers className="h-5 w-5 text-yellow-600" />,
     category: 'food'
   },
   {
     id: 'hotdog',
     name: 'Hot Dog',
     price: 3.49,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    icon: <LineHorizontal className="h-5 w-5 text-red-300" />,
     category: 'food'
   },
   {
     id: 'burrito',
     name: 'Breakfast Burrito',
     price: 4.49,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    icon: <Wrap className="h-5 w-5 text-yellow-500" />,
     category: 'food'
   },
   {
     id: 'salad',
     name: 'Fresh Salad',
     price: 5.49,
-    image: '/lovable-uploads/891b4ea8-4791-4eaa-b7b8-39f843bc1b68.png',
+    icon: <Flower className="h-5 w-5 text-green-400" />,
     category: 'food'
   },
   {
     id: 'icecream',
     name: 'Ice Cream',
     price: 3.79,
-    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    icon: <Cloud className="h-5 w-5 text-blue-200" />,
     category: 'desserts'
   },
   {
     id: 'cookies',
     name: 'Cookies',
     price: 2.49,
-    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    icon: <Cookie className="h-5 w-5 text-amber-500" />,
     category: 'desserts'
   },
   {
     id: 'donuts',
     name: 'Donuts',
     price: 1.99,
-    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    icon: <Circle className="h-5 w-5 text-pink-300" />,
     category: 'desserts'
   },
   {
     id: 'muffin',
     name: 'Blueberry Muffin',
     price: 2.29,
-    image: '/lovable-uploads/ba008608-8960-40b9-8a96-e5b173a48e08.png',
+    icon: <Cake className="h-5 w-5 text-purple-400" />,
     category: 'desserts'
   }
 ];
@@ -274,12 +279,8 @@ const GroceryList: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="glass relative rounded-xl p-3 flex flex-col"
               >
-                <div className="h-24 w-full mb-2 rounded-lg overflow-hidden bg-gray-800">
-                  <img 
-                    src={item.image} 
-                    alt={item.name} 
-                    className="w-full h-full object-cover"
-                  />
+                <div className="h-24 w-full mb-2 rounded-lg overflow-hidden bg-gray-800 flex items-center justify-center">
+                  {item.icon}
                 </div>
                 <h3 className="font-medium">{item.name}</h3>
                 <p className="text-lg font-bold mt-1">${item.price.toFixed(2)}</p>

@@ -1,13 +1,22 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Check, ChevronLeft, CreditCard } from 'lucide-react';
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
+import { Check, ChevronLeft, CreditCard, CheckCircle, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import PaymentMethod from '@/components/ui/PaymentMethod';
 
 const Payment: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
+  const { fuelType, quantity, groceryCart, totalPrice } = location.state || {
+    fuelType: { id: 'regular', name: 'Regular Unleaded', price: 3.29 },
+    quantity: 2,
+    groceryCart: [],
+    totalPrice: 6.58
+  };
+  
   const [selectedPayment, setSelectedPayment] = useState('credit-card');
   const [cardNumber, setCardNumber] = useState('');
   const [cardName, setCardName] = useState('');
@@ -39,13 +48,44 @@ const Payment: React.FC = () => {
   
   const handlePayNow = () => {
     // In a real app, we would process the payment here
-    navigate('/confirmation');
+    navigate('/confirmation', { 
+      state: { 
+        fuelType, 
+        quantity, 
+        totalPrice, 
+        paymentMethod: paymentMethods.find(m => m.id === selectedPayment) 
+      }
+    });
   };
   
   const paymentMethods = [
-    { id: 'credit-card', name: 'Credit card', icon: '/lovable-uploads/f01d03f8-3174-4828-bdcd-196b636f0b6f.png' },
-    { id: 'paypal', name: 'Paypal', icon: '/lovable-uploads/c6f7b2ed-2b72-441e-9423-5772c33b1029.png' },
-    { id: 'apple-pay', name: 'Apple Pay', icon: '/lovable-uploads/f01d03f8-3174-4828-bdcd-196b636f0b6f.png' },
+    { 
+      id: 'credit-card', 
+      name: 'Credit card', 
+      icon: <CreditCard className="h-5 w-5" /> 
+    },
+    { 
+      id: 'paypal', 
+      name: 'PayPal', 
+      icon: <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor">
+              <path d="M19.5 8.5h-2a2 2 0 0 0-2 2v.5h-2a2 2 0 0 0-2 2v.5h-2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Z" />
+              <path d="M3 11v3a4 4 0 0 0 4 4h1" />
+              <path d="M7 5.5v3" />
+              <path d="M18 5.5v3" />
+              <path d="M13.5 17h1" />
+            </svg>
+    },
+    { 
+      id: 'apple-pay', 
+      name: 'Apple Pay', 
+      icon: <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor">
+              <path d="M12 17.5c-2.5 0-2.5-5-5-5" />
+              <path d="M8 22c3.5 0 3.5-10 7-10" />
+              <path d="M11 14.5c1.5 0 3-6.5 3-6.5" />
+              <path d="M9 2h6" />
+              <path d="M12 2v7" />
+            </svg>
+    },
   ];
   
   return (
@@ -109,19 +149,12 @@ const Payment: React.FC = () => {
       </div>
       
       {/* Payment methods */}
-      <div className="px-4 pb-6 grid grid-cols-3 gap-3">
-        {paymentMethods.map((method) => (
-          <div
-            key={method.id}
-            className={`border-2 p-4 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all ${
-              selectedPayment === method.id ? 'border-green-500' : 'border-gray-800'
-            }`}
-            onClick={() => setSelectedPayment(method.id)}
-          >
-            <img src={method.icon} alt={method.name} className="h-6 mb-2" />
-            <span className="text-sm">{method.name}</span>
-          </div>
-        ))}
+      <div className="px-4 mb-6">
+        <PaymentMethod 
+          methods={paymentMethods}
+          selectedMethod={selectedPayment}
+          onSelectMethod={setSelectedPayment}
+        />
       </div>
       
       {/* Credit card */}
