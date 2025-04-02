@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -32,7 +32,6 @@ interface CreditCardFormProps {
 const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
   const [flipped, setFlipped] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formComplete, setFormComplete] = useState(false);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -70,13 +69,11 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatCardNumber(e.target.value);
     form.setValue('cardNumber', formatted);
-    checkFormCompletion();
   };
   
   const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatExpiryDate(e.target.value);
     form.setValue('expiryDate', formatted);
-    checkFormCompletion();
   };
   
   const handleCvvFocus = () => {
@@ -85,36 +82,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
   
   const handleCvvBlur = () => {
     setFlipped(false);
-    checkFormCompletion();
   };
-
-  const handleCardHolderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    form.setValue('cardHolder', e.target.value);
-    checkFormCompletion();
-  };
-
-  const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    form.setValue('cvv', e.target.value);
-    checkFormCompletion();
-  };
-
-  const checkFormCompletion = () => {
-    const values = form.getValues();
-    const isComplete = 
-      values.cardNumber.replace(/\s/g, '').length >= 16 && 
-      values.cardHolder.length >= 2 && 
-      /^(0[1-9]|1[0-2])\/\d{2}$/.test(values.expiryDate) && 
-      values.cvv.length >= 3;
-    
-    setFormComplete(isComplete);
-  };
-
-  // Auto-submit when form is complete
-  useEffect(() => {
-    if (formComplete && !isSubmitting) {
-      handleFormSubmit(form.getValues());
-    }
-  }, [formComplete]);
 
   const handleFormSubmit = (values: FormValues) => {
     setIsSubmitting(true);
@@ -219,7 +187,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
                   <Input 
                     placeholder="John Doe" 
                     {...field} 
-                    onChange={handleCardHolderChange}
                     className="glass border-white/10 focus-visible:ring-green-500/40"
                   />
                 </FormControl>
@@ -266,7 +233,6 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
                       maxLength={4}
                       onFocus={handleCvvFocus}
                       onBlur={handleCvvBlur}
-                      onChange={handleCvvChange}
                       className="glass border-white/10 focus-visible:ring-green-500/40"
                     />
                   </FormControl>

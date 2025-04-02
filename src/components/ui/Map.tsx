@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Plus, Minus, Navigation, Locate, Share2, Facebook, Twitter, Instagram, Mail, MessageCircle, Phone, ArrowUpRight, ArrowDownRight, ArrowUpLeft, ArrowDownLeft, ArrowLeft, User, Car, Truck } from 'lucide-react';
@@ -369,15 +370,13 @@ const Map: React.FC<MapProps> = ({
     }
   };
   
-  // FIX: Use proper CSSProperties type for transformStyle
-  const mapStyles: React.CSSProperties = {
+  const mapStyles = {
     transform: interactive 
       ? `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${zoom/14}) ${is3DMode ? 'rotateX(45deg)' : ''}`
       : `scale(${zoom/14}) ${is3DMode ? 'rotateX(45deg)' : ''}`,
     cursor: isDragging ? 'grabbing' : (interactive ? 'grab' : 'default'),
     transition: isDragging ? 'none' : 'transform 0.3s ease-out',
     perspective: is3DMode ? '1000px' : 'none',
-    // Fix: Use the correct enum value for transformStyle
     transformStyle: is3DMode ? 'preserve-3d' : 'flat'
   };
   

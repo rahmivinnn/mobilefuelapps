@@ -1,14 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User, Star } from 'lucide-react';
+import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
 import { orderHistory } from '@/data/dummyData';
 import { useIsMobile } from '@/hooks/use-mobile';
-import RatingModal from '@/components/ui/RatingModal';
 
 const memphisLicensePlates = [
   "TN-56A782", "TN-23B471", "TN-78C912", "TN-34D654", "TN-91E349"
@@ -66,13 +65,6 @@ const driverMessages = [
   "Thank you for using our service!"
 ];
 
-const gasStations = [
-  { id: '1', name: 'Shell', location: 'Memphis, TN' },
-  { id: '2', name: 'ExxonMobil', location: 'Memphis, TN' },
-  { id: '3', name: 'Chevron', location: 'Memphis, TN' },
-  { id: '4', name: 'BP', location: 'Memphis, TN' }
-];
-
 const TrackOrder: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -85,10 +77,6 @@ const TrackOrder: React.FC = () => {
   const [showDirections, setShowDirections] = useState(true);
   const [routeColor, setRouteColor] = useState('#4ade80');
   const [mapImage] = useState('/lovable-uploads/f7931378-76e5-4e0a-bc3c-1d7b4fff6f0d.png');
-  const [showRatingModal, setShowRatingModal] = useState(false);
-  const [ratingServiceType, setRatingServiceType] = useState<'fuelFriend' | 'gasStation'>('fuelFriend');
-  const [currentGasStation, setCurrentGasStation] = useState(gasStations[0]);
-  const [showCompletionNotification, setShowCompletionNotification] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -184,7 +172,6 @@ const TrackOrder: React.FC = () => {
         
         if (currentStep === statuses.length - 1) {
           setOrderComplete(true);
-          setShowCompletionNotification(true);
           
           setTimeout(() => {
             toast({
@@ -194,11 +181,9 @@ const TrackOrder: React.FC = () => {
               className: "bg-green-500 border-green-600 text-white"
             });
             
-            // Show rating modal for Fuel Friend after a delay
             setTimeout(() => {
-              setRatingServiceType('fuelFriend');
-              setShowRatingModal(true);
-            }, 1000);
+              navigate('/');
+            }, 3000);
           }, 1000);
         }
         
@@ -344,23 +329,6 @@ const TrackOrder: React.FC = () => {
     }
   };
 
-  const handleSubmitRating = (rating: number, comment: string) => {
-    console.log(`Rating submitted for ${ratingServiceType}:`, { rating, comment });
-    
-    // If user just rated a fuel friend, now ask them to rate the gas station
-    if (ratingServiceType === 'fuelFriend') {
-      setTimeout(() => {
-        setRatingServiceType('gasStation');
-        setShowRatingModal(true);
-      }, 500);
-    } else {
-      // Both ratings are complete, navigate to home or another page
-      setTimeout(() => {
-        navigate('/');
-      }, 1500);
-    }
-  };
-
   // Safely extract values from order with fallbacks
   const status = order?.status || 'processing';
   const progress = order?.progress || 0;
@@ -481,13 +449,7 @@ const TrackOrder: React.FC = () => {
       </div>
       
       <div className={`${isMobile ? 'h-[350px]' : 'h-[300px]'} mb-4 mt-2 relative`}>
-        <Map 
-          interactive={true}
-          showRoute={true}
-          animate={true}
-          driverName={driverName}
-          driverLocation={driverLocation}
-        />
+        <GoogleStyleMap />
       </div>
       
       <div className="px-4 py-2 bg-black relative">
@@ -610,60 +572,6 @@ const TrackOrder: React.FC = () => {
           </Link>
         </div>
       </div>
-
-      {/* Order Completion Popup Notification */}
-      <AnimatePresence>
-        {showCompletionNotification && (
-          <motion.div 
-            className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 rounded-xl p-4 shadow-lg z-50 w-11/12 max-w-sm"
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -100, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          >
-            <div className="flex items-start">
-              <div className="bg-white rounded-full p-2 mr-3">
-                <svg className="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-black font-bold text-lg">Order Complete!</h3>
-                <p className="text-black/80 text-sm">Your fuel has been delivered. Please rate your experience.</p>
-              </div>
-              <button 
-                onClick={() => setShowCompletionNotification(false)}
-                className="text-black/60 hover:text-black"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="mt-3 flex justify-end">
-              <button 
-                onClick={() => {
-                  setShowCompletionNotification(false);
-                  setRatingServiceType('fuelFriend');
-                  setShowRatingModal(true);
-                }}
-                className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium"
-              >
-                Rate Now
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Rating Modal */}
-      <RatingModal 
-        isOpen={showRatingModal}
-        onClose={() => setShowRatingModal(false)}
-        serviceName={ratingServiceType === 'fuelFriend' ? order?.driver?.name || 'Your Fuel Friend' : 'Gas Station'}
-        serviceImage={ratingServiceType === 'fuelFriend' ? order?.driver?.image : undefined}
-        serviceType={ratingServiceType}
-        onSubmitRating={handleSubmitRating}
-      />
     </div>
   );
 };
