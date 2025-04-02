@@ -4,13 +4,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User, Star } from 'lucide-react';
 import Map from '@/components/ui/Map';
 import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
 import { orderHistory } from '@/data/dummyData';
 import { useIsMobile } from '@/hooks/use-mobile';
 import RatingModal from '@/components/ui/RatingModal';
-import NotificationPopup from '@/components/ui/NotificationPopup';
-import OrderProcessNotification from '@/components/ui/OrderProcessNotification';
 
 const memphisLicensePlates = [
   "TN-56A782", "TN-23B471", "TN-78C912", "TN-34D654", "TN-91E349"
@@ -91,44 +89,6 @@ const TrackOrder: React.FC = () => {
   const [ratingServiceType, setRatingServiceType] = useState<'fuelFriend' | 'gasStation'>('fuelFriend');
   const [currentGasStation, setCurrentGasStation] = useState(gasStations[0]);
   const [showCompletionNotification, setShowCompletionNotification] = useState(false);
-  const [showProcessSteps, setShowProcessSteps] = useState(false);
-  const [showArrivalNotification, setShowArrivalNotification] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-
-  const orderSteps = [
-    {
-      id: 'step1',
-      title: 'Order Received',
-      description: 'Your order has been received and is being processed',
-      icon: <MapPin className="h-5 w-5 text-white" />,
-      completed: order.progress >= 20,
-      current: order.progress < 20
-    },
-    {
-      id: 'step2',
-      title: 'Fuel Friend Assigned',
-      description: `${order?.driver?.name || 'Your Fuel Friend'} is on the way`,
-      icon: <User className="h-5 w-5 text-white" />,
-      completed: order.progress >= 40,
-      current: order.progress >= 20 && order.progress < 40
-    },
-    {
-      id: 'step3',
-      title: 'At Gas Station',
-      description: 'Fuel Friend is picking up your order',
-      icon: <MapPin className="h-5 w-5 text-white" />,
-      completed: order.progress >= 80,
-      current: order.progress >= 40 && order.progress < 80
-    },
-    {
-      id: 'step4',
-      title: 'Delivery',
-      description: 'Order is being delivered to your location',
-      icon: <ShoppingBag className="h-5 w-5 text-white" />,
-      completed: order.progress >= 100,
-      current: order.progress >= 80 && order.progress < 100
-    }
-  ];
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -216,18 +176,11 @@ const TrackOrder: React.FC = () => {
           setRouteColor('#3b82f6');
         }
         
-        // Show notification for each step
         toast({
           title: "Order Update",
           description: statuses[currentStep].statusDetails,
           duration: 3000
         });
-        
-        // Show arrival notification when the driver is about to arrive
-        if (currentStep === 4) {
-          setShowArrivalNotification(true);
-          setTimeout(() => setShowArrivalNotification(false), 5000);
-        }
         
         if (currentStep === statuses.length - 1) {
           setOrderComplete(true);
@@ -241,10 +194,11 @@ const TrackOrder: React.FC = () => {
               className: "bg-green-500 border-green-600 text-white"
             });
             
-            // Show confirmation dialog after delivery
+            // Show rating modal for Fuel Friend after a delay
             setTimeout(() => {
-              setShowConfirmation(true);
-            }, 2000);
+              setRatingServiceType('fuelFriend');
+              setShowRatingModal(true);
+            }, 1000);
           }, 1000);
         }
         
@@ -395,48 +349,16 @@ const TrackOrder: React.FC = () => {
     
     // If user just rated a fuel friend, now ask them to rate the gas station
     if (ratingServiceType === 'fuelFriend') {
-      toast({
-        title: "Rating Submitted",
-        description: "Thank you for rating your Fuel Friend!",
-        className: "bg-green-500 border-green-600 text-white"
-      });
-      
       setTimeout(() => {
         setRatingServiceType('gasStation');
         setShowRatingModal(true);
       }, 500);
     } else {
       // Both ratings are complete, navigate to home or another page
-      toast({
-        title: "Rating Submitted",
-        description: "Thank you for rating the gas station!",
-        className: "bg-green-500 border-green-600 text-white"
-      });
-      
       setTimeout(() => {
         navigate('/');
       }, 1500);
     }
-  };
-
-  const handleConfirmOrder = () => {
-    setShowConfirmation(false);
-    
-    toast({
-      title: "Order Confirmed",
-      description: "Payment has been processed successfully",
-      className: "bg-green-500 border-green-600 text-white"
-    });
-    
-    // Show rating modal after confirmation
-    setTimeout(() => {
-      setRatingServiceType('fuelFriend');
-      setShowRatingModal(true);
-    }, 1000);
-  };
-
-  const handleViewOrderDetails = () => {
-    setShowProcessSteps(true);
   };
 
   // Safely extract values from order with fallbacks
@@ -452,9 +374,80 @@ const TrackOrder: React.FC = () => {
   const orderTotal = order?.total || 0;
   const orderId = order?.id || 'ORD-XXXX';
   const avatarIndex = order?.avatarIndex || 0;
-  const driverImage = order?.driver?.image;
 
   const driverAvatar = driverAvatars[avatarIndex] || driverAvatars[0];
+
+  const GoogleStyleMap = () => {
+    return (
+      <div className="relative w-full h-full overflow-hidden rounded-lg">
+        <img 
+          src={mapImage}
+          alt="Memphis Map" 
+          className="w-full h-full object-cover"
+        />
+        
+        <div className="absolute inset-0 pointer-events-none">
+          <svg width="100%" height="100%" className="absolute">
+            <path
+              d="M300,900 C350,750 400,650 450,500 C500,300 550,200 650,180"
+              stroke={routeColor}
+              strokeWidth={isMobile ? "8" : "6"}
+              fill="none"
+              strokeLinecap="round"
+              strokeDasharray={isMobile ? "12,12" : "10,10"}
+              className="animate-dash"
+              style={{
+                opacity: showDirections ? 1 : 0.5,
+                display: 'block',
+              }}
+            />
+          </svg>
+        </div>
+        
+        <div className="absolute bottom-1/4 right-1/4 z-20">
+          <div className="relative">
+            <div className={`h-${isMobile ? '8' : '6'} w-${isMobile ? '8' : '6'} bg-green-500 rounded-full border-2 border-white`}></div>
+            <div className={`absolute inset-0 h-${isMobile ? '8' : '6'} w-${isMobile ? '8' : '6'} bg-green-500/50 rounded-full animate-ping opacity-75`}></div>
+          </div>
+        </div>
+        
+        <div 
+          className="absolute z-30 transition-all duration-700"
+          style={{
+            top: `${40 + (Math.random() * 5)}%`,
+            left: `${45 + (Math.random() * 5)}%`,
+          }}
+        >
+          <div className="relative">
+            <div className={`h-${isMobile ? '10' : '8'} w-${isMobile ? '10' : '8'} bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg animate-pulse`}>
+              <MapPin className={`h-${isMobile ? '6' : '5'} w-${isMobile ? '6' : '5'} text-white`} />
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-4 right-4 flex flex-col space-y-2">
+          <button className="h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md">
+            <div className="h-5 w-5 flex items-center justify-center text-xl font-bold text-gray-700">+</div>
+          </button>
+          <button className="h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md">
+            <div className="h-5 w-5 flex items-center justify-center text-2xl font-bold text-gray-700">−</div>
+          </button>
+        </div>
+        
+        <button className="absolute bottom-4 right-20 h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-md">
+          <div className="h-6 w-6 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" className="h-5 w-5 text-gray-700">
+              <path fill="currentColor" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+            </svg>
+          </div>
+        </button>
+        
+        <div className="absolute bottom-1 left-1 text-xs text-gray-500 bg-white/70 px-1 rounded">
+          Map data ©2023
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="fixed inset-0 flex flex-col bg-black text-white">
@@ -484,16 +477,7 @@ const TrackOrder: React.FC = () => {
             transition={{ duration: 0.5 }}
           />
         </div>
-        <div className="flex justify-between items-center">
-          <p className="text-gray-400 text-sm">{statusDetails}</p>
-          <Button 
-            variant="link" 
-            className="text-green-500 p-0 h-auto text-sm"
-            onClick={handleViewOrderDetails}
-          >
-            View Details
-          </Button>
-        </div>
+        <p className="text-gray-400 text-sm">{statusDetails}</p>
       </div>
       
       <div className={`${isMobile ? 'h-[350px]' : 'h-[300px]'} mb-4 mt-2 relative`}>
@@ -509,13 +493,7 @@ const TrackOrder: React.FC = () => {
       <div className="px-4 py-2 bg-black relative">
         <div className="flex items-center mb-6">
           <div className="mr-3">
-            {driverImage ? (
-              <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-white">
-                <img src={driverImage} alt={driverName} className="w-full h-full object-cover" />
-              </div>
-            ) : (
-              driverAvatar
-            )}
+            {driverAvatar}
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{driverName}</h3>
@@ -676,97 +654,6 @@ const TrackOrder: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Driver Arrival Notification */}
-      <NotificationPopup
-        type="info"
-        title="Driver Arrival"
-        message={`${driverName} is arriving at your location! Please be ready to confirm arrival.`}
-        isOpen={showArrivalNotification}
-        onClose={() => setShowArrivalNotification(false)}
-        actionText="View Details"
-        onAction={() => {
-          setShowArrivalNotification(false);
-          setShowProcessSteps(true);
-        }}
-        image={driverImage}
-      />
-
-      {/* Order Confirmation Dialog */}
-      <AnimatePresence>
-        {showConfirmation && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div 
-              className="w-[90%] max-w-md p-6 bg-black border border-gray-800 rounded-xl"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-            >
-              <div className="flex flex-col items-center mb-6">
-                <div className="h-20 w-20 rounded-full bg-green-500 flex items-center justify-center mb-4">
-                  <svg className="h-10 w-10 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                  </svg>
-                </div>
-                <h2 className="text-xl font-bold text-white mb-2">Confirm Delivery</h2>
-                <p className="text-gray-400 text-center">
-                  Your Fuel Friend has marked this order as complete. Please confirm that you have received your order.
-                </p>
-              </div>
-              
-              <div className="mb-4 bg-gray-800 rounded-lg p-4">
-                <h3 className="font-medium mb-2">Order Summary</h3>
-                {orderItems.map((item, i) => (
-                  <div key={i} className="flex justify-between mb-2 text-sm">
-                    <p className="text-gray-300">{item.name}</p>
-                    <p className="font-medium">${item.price.toFixed(2)}</p>
-                  </div>
-                ))}
-                <div className="border-t border-gray-700 mt-3 pt-3">
-                  <div className="flex justify-between">
-                    <p className="font-medium">Total</p>
-                    <p className="font-bold">${orderTotal.toFixed(2)}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <p className="text-sm text-gray-400 mb-4">
-                By confirming, you agree that you have received the order as described above. 
-                Your payment will be processed and released to the Fuel Friend after admin verification.
-              </p>
-              
-              <div className="flex space-x-3">
-                <Button 
-                  onClick={() => setShowConfirmation(false)}
-                  className="flex-1 bg-gray-800 hover:bg-gray-700 text-white"
-                  variant="outline"
-                >
-                  Report Issue
-                </Button>
-                <Button 
-                  onClick={handleConfirmOrder}
-                  className="flex-1 bg-green-500 hover:bg-green-600 text-black"
-                >
-                  Confirm Receipt
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Order Process Steps Dialog */}
-      <OrderProcessNotification
-        isOpen={showProcessSteps}
-        steps={orderSteps}
-        onClose={() => setShowProcessSteps(false)}
-      />
 
       {/* Rating Modal */}
       <RatingModal 

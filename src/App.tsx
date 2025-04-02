@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -24,11 +25,12 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import OrderHistory from "./pages/OrderHistory";
 import CallScreen from "./pages/CallScreen";
 import ChatScreen from "./pages/ChatScreen";
-import FuelFriendSelection from "./pages/FuelFriendSelection";
 
+// Create the query client outside of the component
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
+  // Move these hooks inside the component function
   const [splashVisible, setSplashVisible] = React.useState(true);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   
@@ -37,10 +39,12 @@ const App: React.FC = () => {
   };
   
   const handleLogin = (token: string) => {
+    // Save the token to localStorage for persistence
     localStorage.setItem('auth-token', token);
     setIsAuthenticated(true);
   };
   
+  // Check for existing token on app load
   React.useEffect(() => {
     const token = localStorage.getItem('auth-token');
     if (token) {
@@ -64,6 +68,7 @@ const App: React.FC = () => {
           ) : (
             <BrowserRouter>
               <Routes>
+                {/* Auth routes */}
                 <Route 
                   path="/" 
                   element={isAuthenticated ? <Navigate to="/home" /> : <Welcome />} 
@@ -89,6 +94,7 @@ const App: React.FC = () => {
                   element={isAuthenticated ? <Navigate to="/home" /> : <ResetPassword />} 
                 />
                 
+                {/* Protected routes */}
                 <Route 
                   path="/home" 
                   element={isAuthenticated ? <Index /> : <Navigate to="/" />} 
@@ -112,10 +118,6 @@ const App: React.FC = () => {
                 <Route 
                   path="/confirmation" 
                   element={isAuthenticated ? <Confirmation /> : <Navigate to="/" />} 
-                />
-                <Route 
-                  path="/fuel-friends" 
-                  element={isAuthenticated ? <FuelFriendSelection /> : <Navigate to="/" />} 
                 />
                 <Route 
                   path="/track" 
@@ -156,6 +158,7 @@ const App: React.FC = () => {
                   element={isAuthenticated ? <ChatScreen /> : <Navigate to="/" />} 
                 />
                 
+                {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
