@@ -1,9 +1,6 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
-import Map from '@/components/ui/Map';
-import { Button } from '@/components/ui/button';
+import { MapPin, Phone, MessageSquare, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
 import { orderHistory } from '@/data/dummyData';
@@ -81,6 +78,9 @@ const TrackOrder: React.FC = () => {
   const [mapImage] = useState('/lovable-uploads/f7931378-76e5-4e0a-bc3c-1d7b4fff6f0d.png');
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showFinishScreen, setShowFinishScreen] = useState(false);
+  
+  const [driverArrived, setDriverArrived] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -174,6 +174,8 @@ const TrackOrder: React.FC = () => {
         
         if (currentStep === statuses.length - 1) {
           setOrderComplete(true);
+          setDriverArrived(true);
+          
           setTimeout(() => {
             toast({
               title: "Delivery Complete!",
@@ -199,7 +201,6 @@ const TrackOrder: React.FC = () => {
       
       let currentDriverIndex = -1;
       
-      // Fix: Use a safe default when order is undefined
       const currentOrder = order || {...defaultOrder};
       
       if (currentOrder?.driver?.name) {
@@ -216,7 +217,6 @@ const TrackOrder: React.FC = () => {
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
       
       setOrder(prevOrder => {
-        // Fix: Use a safe default when prevOrder is undefined
         const safeOrder = prevOrder || {...defaultOrder};
         return {
           ...safeOrder,
@@ -238,7 +238,6 @@ const TrackOrder: React.FC = () => {
     const messageTimer = setInterval(() => {
       if (!orderComplete) {
         const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
-        // Fix: Use a safe default when order is undefined
         const currentOrder = order || {...defaultOrder};
         const driverName = currentOrder?.driver?.name || 'Driver';
         
@@ -267,7 +266,6 @@ const TrackOrder: React.FC = () => {
       setDriverLocation(newDriverLocation);
       
       setOrder(prev => {
-        // Fix: Use a safe default when prev is undefined
         const safeOrder = prev || {...defaultOrder};
         return {
           ...safeOrder,
@@ -324,6 +322,7 @@ const TrackOrder: React.FC = () => {
 
   const handleRatingSubmit = (driverRating: number, stationRating: number, feedback: string) => {
     setShowRatingModal(false);
+    setShowFinishScreen(true);
     
     toast({
       title: "Thank You for Your Feedback",
@@ -333,7 +332,7 @@ const TrackOrder: React.FC = () => {
     
     setTimeout(() => {
       navigate('/');
-    }, 2000);
+    }, 5000);
   };
 
   const getStatusColor = (status: string | undefined) => {
@@ -358,7 +357,6 @@ const TrackOrder: React.FC = () => {
     }
   };
 
-  // Safely extract values from order with fallbacks
   const status = order?.status || 'processing';
   const progress = order?.progress || 0;
   const statusDetails = order?.statusDetails || 'Processing your order';
@@ -446,6 +444,63 @@ const TrackOrder: React.FC = () => {
     );
   };
 
+  if (showFinishScreen) {
+    return (
+      <motion.div 
+        className="fixed inset-0 bg-black text-white flex flex-col items-center justify-center p-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <motion.div 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 100, damping: 15 }}
+          className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mb-6"
+        >
+          <svg className="h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </motion.div>
+        
+        <motion.h1 
+          className="text-2xl font-bold mb-2 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          Order Complete
+        </motion.h1>
+        
+        <motion.p 
+          className="text-gray-400 text-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          Thank you for using our service. Your payment has been processed successfully.
+        </motion.p>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="text-center w-full"
+        >
+          <p className="text-gray-400 mb-1">Order ID: {orderId}</p>
+          <p className="text-gray-400 mb-4">Amount: ${(orderTotal + 3.99).toFixed(2)}</p>
+          
+          <div className="flex justify-center mt-4">
+            <Link to="/" className="inline-block">
+              <button className="px-6 py-3 bg-green-500 text-black rounded-xl font-medium">
+                Return to Home
+              </button>
+            </Link>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 flex flex-col bg-black text-white">
       <div className="relative px-4 py-3 flex items-center justify-center">
@@ -492,18 +547,18 @@ const TrackOrder: React.FC = () => {
             <p className="text-gray-400 text-xs mt-1">Vehicle License: {licensePlate}</p>
           </div>
           <div className="flex space-x-2">
-            <Button 
+            <button 
               onClick={handleMessage}
               className="h-12 w-12 p-0 rounded-full bg-green-500 hover:bg-green-600"
             >
-              <MessageSquare className="h-6 w-6 text-black" />
-            </Button>
-            <Button 
+              <MessageSquare className="h-6 w-6 mx-auto text-black" />
+            </button>
+            <button 
               onClick={handleCall}
               className="h-12 w-12 p-0 rounded-full bg-green-500 hover:bg-green-600"
             >
-              <Phone className="h-6 w-6 text-black" />
-            </Button>
+              <Phone className="h-6 w-6 mx-auto text-black" />
+            </button>
           </div>
         </div>
         
@@ -617,6 +672,8 @@ const TrackOrder: React.FC = () => {
           orderTotal={orderTotal}
           serviceFee={3.99}
           driverName={driverName}
+          licensePlate={licensePlate}
+          items={orderItems}
         />
       )}
     </div>
