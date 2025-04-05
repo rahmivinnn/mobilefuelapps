@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -8,6 +9,10 @@ import {
   Droplets, Cookie, CupSoda, CircleOff
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useToast } from "@/hooks/use-toast";
+import FuelFriendSelector from '@/components/ui/FuelFriendSelector';
+import CreditCardForm from '@/components/ui/CreditCardForm';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 // Updated mock data for US fuel types
 const fuelTypes = [
@@ -65,10 +70,13 @@ const groceryItems = [
 const FuelSelection: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const [selectedFuel, setSelectedFuel] = useState(fuelTypes[0].id);
   const [quantity, setQuantity] = useState(5); // Default to 5 gallons
   const [groceryCart, setGroceryCart] = useState<{id: string, quantity: number}[]>([]);
+  const [showPaymentSheet, setShowPaymentSheet] = useState(false);
+  const [showFuelFriendSelector, setShowFuelFriendSelector] = useState(false);
   
   const selectedFuelType = fuelTypes.find(fuel => fuel.id === selectedFuel);
   const fuelCost = selectedFuelType ? selectedFuelType.price * quantity : 0;
@@ -79,7 +87,8 @@ const FuelSelection: React.FC = () => {
     return total + (groceryItem ? groceryItem.price * item.quantity : 0);
   }, 0);
   
-  const totalPrice = fuelCost + groceryCost;
+  const serviceFee = 3.99;
+  const totalPrice = fuelCost + groceryCost + serviceFee;
   
   const addToCart = (itemId: string) => {
     setGroceryCart(prev => {
@@ -107,16 +116,46 @@ const FuelSelection: React.FC = () => {
   };
   
   const handleContinue = () => {
-    navigate(`/station/${id}/payment`, { 
-      state: { 
-        fuelType: selectedFuelType,
-        quantity,
-        groceryCart,
-        totalPrice
-      } 
-    });
+    setShowPaymentSheet(true);
   };
   
+  const handlePaymentSubmit = (values: any) => {
+    // Close payment sheet
+    setShowPaymentSheet(false);
+    
+    toast({
+      title: "Payment Successful",
+      description: "Please select a Fuel Friend to fulfill your order.",
+      duration: 3000,
+    });
+    
+    // Show the Fuel Friend selector after payment
+    setTimeout(() => {
+      setShowFuelFriendSelector(true);
+    }, 500);
+  };
+  
+  const handleSelectFuelFriend = (fuelFriend: any) => {
+    setShowFuelFriendSelector(false);
+  };
+  
+  // Create order items for the order summary
+  const orderItems = [
+    { 
+      name: `${quantity} Gallons ${selectedFuelType?.name || 'Fuel'}`, 
+      quantity: `${quantity}x`, 
+      price: fuelCost
+    },
+    ...groceryCart.map(item => {
+      const groceryItem = groceryItems.find(g => g.id === item.id);
+      return {
+        name: groceryItem?.name || '',
+        quantity: `${item.quantity}x`,
+        price: (groceryItem?.price || 0) * item.quantity
+      };
+    })
+  ];
+
   return (
     <>
       <Header showBack title="Select Fuel & Groceries" />
@@ -212,6 +251,10 @@ const FuelSelection: React.FC = () => {
                 <span>${groceryCost.toFixed(2)}</span>
               </div>
             )}
+            <div className="flex justify-between">
+              <span>Service Fee</span>
+              <span>${serviceFee.toFixed(2)}</span>
+            </div>
             <div className="border-t border-gray-700 pt-2 mt-2 flex justify-between font-bold">
               <span>Total</span>
               <span>${totalPrice.toFixed(2)}</span>
@@ -228,6 +271,29 @@ const FuelSelection: React.FC = () => {
           </button>
         </div>
       </main>
+      
+      {/* Payment Sheet */}
+      <Sheet open={showPaymentSheet} onOpenChange={setShowPaymentSheet}>
+        <SheetContent className="bg-gray-900 border-gray-800 text-white w-full md:max-w-md">
+          <h2 className="text-xl font-bold mb-6 mt-4">Payment Details</h2>
+          
+          <CreditCardForm onSubmit={handlePaymentSubmit} />
+        </SheetContent>
+      </Sheet>
+      
+      {/* Fuel Friend Selector Modal */}
+      {showFuelFriendSelector && (
+        <FuelFriendSelector 
+          onSelect={handleSelectFuelFriend} 
+          onClose={() => setShowFuelFriendSelector(false)} 
+          orderDetails={{
+            stationId: id || '',
+            stationName: "Shell Gas Station",
+            items: orderItems,
+            total: totalPrice
+          }}
+        />
+      )}
     </>
   );
 };

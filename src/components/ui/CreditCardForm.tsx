@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CreditCard, Calendar, User } from 'lucide-react';
+import { CreditCard, Calendar, User, Check } from 'lucide-react';
 
 import {
   Form,
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from '@/hooks/use-toast';
+import { Switch } from '@/components/ui/switch';
 
 const formSchema = z.object({
   cardNumber: z.string().min(16, "Card number must be 16 digits").max(19, "Card number is too long"),
@@ -32,6 +33,7 @@ interface CreditCardFormProps {
 const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
   const [flipped, setFlipped] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveCard, setSaveCard] = useState(true);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -86,6 +88,22 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
 
   const handleFormSubmit = (values: FormValues) => {
     setIsSubmitting(true);
+    
+    // Save card data if enabled
+    if (saveCard) {
+      // Simulate saving the card securely
+      const maskedCardNumber = values.cardNumber.slice(-4).padStart(values.cardNumber.length, '•');
+      localStorage.setItem('savedCardType', 'Visa'); // Example card type
+      localStorage.setItem('savedCardLast4', values.cardNumber.slice(-4));
+      localStorage.setItem('savedCardHolder', values.cardHolder);
+      localStorage.setItem('savedCardExpiry', values.expiryDate);
+      
+      toast({
+        title: "Card Saved",
+        description: "Your card has been saved for future payments.",
+        duration: 3000,
+      });
+    }
     
     // Simulate processing payment
     setTimeout(() => {
@@ -242,6 +260,21 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
             />
           </div>
           
+          <div className="flex items-center space-x-2">
+            <Switch 
+              id="save-card" 
+              checked={saveCard} 
+              onCheckedChange={setSaveCard}
+              className="data-[state=checked]:bg-green-500"
+            />
+            <label 
+              htmlFor="save-card" 
+              className="text-sm font-medium leading-none cursor-pointer"
+            >
+              Save card for future payments
+            </label>
+          </div>
+          
           <button 
             type="submit"
             className="w-full py-3 rounded-xl bg-green-500 text-black font-semibold hover:bg-green-600 active:scale-[0.99] transition-all duration-200 flex items-center justify-center"
@@ -253,7 +286,10 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ onSubmit }) => {
                 Processing...
               </>
             ) : (
-              'Pay Now'
+              <>
+                <Check className="mr-2 h-5 w-5" />
+                Pay Now
+              </>
             )}
           </button>
         </form>

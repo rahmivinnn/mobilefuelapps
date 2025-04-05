@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, Share2, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User } from 'lucide-react';
 import Map from '@/components/ui/Map';
@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { useToast } from "@/hooks/use-toast";
 import { orderHistory } from '@/data/dummyData';
 import { useIsMobile } from '@/hooks/use-mobile';
+import RatingModal from '@/components/ui/RatingModal';
+import OrderConfirmModal from '@/components/ui/OrderConfirmModal';
 
 const memphisLicensePlates = [
   "TN-56A782", "TN-23B471", "TN-78C912", "TN-34D654", "TN-91E349"
@@ -77,6 +79,8 @@ const TrackOrder: React.FC = () => {
   const [showDirections, setShowDirections] = useState(true);
   const [routeColor, setRouteColor] = useState('#4ade80');
   const [mapImage] = useState('/lovable-uploads/f7931378-76e5-4e0a-bc3c-1d7b4fff6f0d.png');
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -117,8 +121,6 @@ const TrackOrder: React.FC = () => {
           console.log(`Order ${orderId} not found, using default`);
           setOrder({...defaultOrder});
         }
-        
-        console.log(`Fetching order details for ${orderId}`, foundOrder);
       } catch (error) {
         console.error("Error processing order data:", error);
         setOrder({...defaultOrder});
@@ -172,7 +174,6 @@ const TrackOrder: React.FC = () => {
         
         if (currentStep === statuses.length - 1) {
           setOrderComplete(true);
-          
           setTimeout(() => {
             toast({
               title: "Delivery Complete!",
@@ -182,8 +183,8 @@ const TrackOrder: React.FC = () => {
             });
             
             setTimeout(() => {
-              navigate('/');
-            }, 3000);
+              setShowConfirmModal(true);
+            }, 1500);
           }, 1000);
         }
         
@@ -305,6 +306,34 @@ const TrackOrder: React.FC = () => {
 
   const toggleDirections = () => {
     setShowDirections(!showDirections);
+  };
+
+  const handleOrderConfirm = () => {
+    setShowConfirmModal(false);
+    toast({
+      title: "Order Confirmed",
+      description: "Your payment has been processed successfully.",
+      duration: 3000,
+      className: "bg-green-500 border-green-600 text-white"
+    });
+    
+    setTimeout(() => {
+      setShowRatingModal(true);
+    }, 1000);
+  };
+
+  const handleRatingSubmit = (driverRating: number, stationRating: number, feedback: string) => {
+    setShowRatingModal(false);
+    
+    toast({
+      title: "Thank You for Your Feedback",
+      description: "Your ratings have been submitted.",
+      duration: 3000,
+    });
+    
+    setTimeout(() => {
+      navigate('/');
+    }, 2000);
   };
 
   const getStatusColor = (status: string | undefined) => {
@@ -572,6 +601,24 @@ const TrackOrder: React.FC = () => {
           </Link>
         </div>
       </div>
+      
+      {showRatingModal && (
+        <RatingModal 
+          driverName={driverName} 
+          stationName="Shell Gas Station"
+          onClose={() => setShowRatingModal(false)} 
+          onSubmit={handleRatingSubmit} 
+        />
+      )}
+      
+      {showConfirmModal && (
+        <OrderConfirmModal 
+          onConfirm={handleOrderConfirm}
+          orderTotal={orderTotal}
+          serviceFee={3.99}
+          driverName={driverName}
+        />
+      )}
     </div>
   );
 };
