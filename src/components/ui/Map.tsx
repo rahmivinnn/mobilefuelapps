@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { MergeComponentProps } from '@/lib/utils';
 
 interface MapProps extends React.HTMLAttributes<HTMLDivElement> {
   center?: { lat: number; lng: number };
@@ -11,11 +10,14 @@ interface MapProps extends React.HTMLAttributes<HTMLDivElement> {
     icon?: string;
   }>;
   directions?: boolean;
+  interactive?: boolean;
+  showRoute?: boolean;
+  showBackButton?: boolean;
   onMarkerClick?: (index: number) => void;
 }
 
 const Map = React.forwardRef<HTMLDivElement, MapProps>(
-  ({ className, center, zoom = 15, markers, directions, onMarkerClick, ...props }, ref) => {
+  ({ className, center, zoom = 15, markers, directions, interactive, showRoute, showBackButton, onMarkerClick, ...props }, ref) => {
     // Use state to track if the component has mounted
     const [mounted, setMounted] = useState(false);
     const [selectedMarker, setSelectedMarker] = useState<number | null>(null);

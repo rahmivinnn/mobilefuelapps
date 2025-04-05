@@ -70,6 +70,7 @@ const TrackOrder: React.FC = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
+  // Fix: Initialize with defaultOrder to prevent undefined issues
   const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
   const [orderComplete, setOrderComplete] = useState(false);
   const [driverLocation, setDriverLocation] = useState({ lat: 35.149, lng: -90.048 });
@@ -149,6 +150,7 @@ const TrackOrder: React.FC = () => {
     const statusTimer = setInterval(() => {
       if (currentStep < statuses.length) {
         setOrder(prevOrder => {
+          // Fix: Ensure prevOrder is never undefined
           const safeOrder = prevOrder || {...defaultOrder};
           return {
             ...safeOrder,
@@ -201,6 +203,7 @@ const TrackOrder: React.FC = () => {
       
       let currentDriverIndex = -1;
       
+      // Fix: Ensure order is never undefined
       const currentOrder = order || {...defaultOrder};
       
       if (currentOrder?.driver?.name) {
@@ -217,6 +220,7 @@ const TrackOrder: React.FC = () => {
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
       
       setOrder(prevOrder => {
+        // Fix: Ensure prevOrder is never undefined
         const safeOrder = prevOrder || {...defaultOrder};
         return {
           ...safeOrder,
@@ -238,6 +242,7 @@ const TrackOrder: React.FC = () => {
     const messageTimer = setInterval(() => {
       if (!orderComplete) {
         const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
+        // Fix: Ensure order is never undefined
         const currentOrder = order || {...defaultOrder};
         const driverName = currentOrder?.driver?.name || 'Driver';
         
@@ -266,6 +271,7 @@ const TrackOrder: React.FC = () => {
       setDriverLocation(newDriverLocation);
       
       setOrder(prev => {
+        // Fix: Ensure prev is never undefined
         const safeOrder = prev || {...defaultOrder};
         return {
           ...safeOrder,
@@ -357,18 +363,19 @@ const TrackOrder: React.FC = () => {
     }
   };
 
-  const status = order?.status || 'processing';
-  const progress = order?.progress || 0;
-  const statusDetails = order?.statusDetails || 'Processing your order';
-  const driverName = order?.driver?.name || 'Driver';
-  const driverLocation1 = order?.driver?.location || 'Memphis, TN';
-  const driverPhone = order?.driver?.phone || '+1 (901) 555-1234';
-  const licensePlate = order?.licensePlate || 'TN-XXXXX';
-  const estimatedDelivery = order?.estimatedDelivery || 'Soon';
-  const orderItems = order?.items || [];
-  const orderTotal = order?.total || 0;
-  const orderId = order?.id || 'ORD-XXXX';
-  const avatarIndex = order?.avatarIndex || 0;
+  // Use nullish coalescing to ensure we always have a value
+  const status = order?.status ?? 'processing';
+  const progress = order?.progress ?? 0;
+  const statusDetails = order?.statusDetails ?? 'Processing your order';
+  const driverName = order?.driver?.name ?? 'Driver';
+  const driverLocation1 = order?.driver?.location ?? 'Memphis, TN';
+  const driverPhone = order?.driver?.phone ?? '+1 (901) 555-1234';
+  const licensePlate = order?.licensePlate ?? 'TN-XXXXX';
+  const estimatedDelivery = order?.estimatedDelivery ?? 'Soon';
+  const orderItems = order?.items ?? [];
+  const orderTotal = order?.total ?? 0;
+  const orderId = order?.id ?? 'ORD-XXXX';
+  const avatarIndex = order?.avatarIndex ?? 0;
 
   const driverAvatar = driverAvatars[avatarIndex] || driverAvatars[0];
 
@@ -581,7 +588,7 @@ const TrackOrder: React.FC = () => {
             <div className="flex flex-col items-center">
               <div className={`w-8 h-8 ${progress >= 40 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
                 <svg className={`h-4 w-4 ${progress >= 40 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5m1.5-9H17V12h4.46L19.5 9.5M6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3M3 6v9h.76c.55-.61 1.35-1 2.24-1 .89 0 1.69.39 2.24 1H15V6H3z"/>
+                  <path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3M3 6v9h.76c.55-.61 1.35-1 2.24-1 .89 0 1.69.39 2.24 1H15V6H3z"/>
                 </svg>
               </div>
               <p className="text-xs text-gray-400 mt-1">At Station</p>
@@ -601,83 +608,4 @@ const TrackOrder: React.FC = () => {
               <div className={`h-0.5 w-full border-t-2 border-dashed ${progress >= 100 ? 'border-green-500' : 'border-gray-700'}`}></div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 ${progress >= 100 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
-                <svg className={`h-4 w-4 ${progress >= 100 ? 'text-black' : 'text-gray-400'}`} viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                </svg>
-              </div>
-              <p className="text-xs text-gray-400 mt-1">Complete</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-3">Your Order</h3>
-          {orderItems.map((item, i) => (
-            <div key={i} className="flex justify-between mb-2">
-              <p className="text-gray-300">{item.name}</p>
-              <p className="font-medium">${item.price.toFixed(2)}</p>
-            </div>
-          ))}
-          <div className="border-t border-gray-800 mt-3 pt-3">
-            <div className="flex justify-between">
-              <p className="font-medium">Total</p>
-              <p className="font-bold">${orderTotal.toFixed(2)}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="fixed bottom-0 left-0 right-0 bg-black pt-2 pb-8 border-t border-gray-800">
-        <div className="grid grid-cols-4 gap-2 px-4">
-          <Link to="/" className="flex flex-col items-center">
-            <div className="w-6 h-6">
-              <Home className="w-6 h-6 text-gray-400" />
-            </div>
-            <span className="text-xs mt-1 text-gray-400">Home</span>
-          </Link>
-          <Link to="/orders" className="flex flex-col items-center">
-            <div className="w-6 h-6">
-              <ShoppingBag className="w-6 h-6 text-gray-400" />
-            </div>
-            <span className="text-xs mt-1 text-gray-400">My Orders</span>
-          </Link>
-          <Link to="/track" className="flex flex-col items-center">
-            <div className="w-6 h-6">
-              <MapIcon className="w-6 h-6 text-green-500" />
-            </div>
-            <span className="text-xs mt-1 text-green-500">Track Order</span>
-          </Link>
-          <Link to="/settings" className="flex flex-col items-center">
-            <div className="w-6 h-6">
-              <Settings className="w-6 h-6 text-gray-400" />
-            </div>
-            <span className="text-xs mt-1 text-gray-400">Settings</span>
-          </Link>
-        </div>
-      </div>
-      
-      {showRatingModal && (
-        <RatingModal 
-          driverName={driverName} 
-          stationName="Shell Gas Station"
-          onClose={() => setShowRatingModal(false)} 
-          onSubmit={handleRatingSubmit} 
-        />
-      )}
-      
-      {showConfirmModal && (
-        <OrderConfirmModal 
-          onConfirm={handleOrderConfirm}
-          orderTotal={orderTotal}
-          serviceFee={3.99}
-          driverName={driverName}
-          licensePlate={licensePlate}
-          items={orderItems}
-        />
-      )}
-    </div>
-  );
-};
-
-export default TrackOrder;
+              <div className={`w-8 h-8 ${progress >=
