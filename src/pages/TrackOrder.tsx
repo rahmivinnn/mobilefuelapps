@@ -70,7 +70,6 @@ const TrackOrder: React.FC = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
-  // Fix: Initialize with defaultOrder to prevent undefined issues
   const [order, setOrder] = useState<typeof defaultOrder>(defaultOrder);
   const [orderComplete, setOrderComplete] = useState(false);
   const [driverLocation, setDriverLocation] = useState({ lat: 35.149, lng: -90.048 });
@@ -150,7 +149,6 @@ const TrackOrder: React.FC = () => {
     const statusTimer = setInterval(() => {
       if (currentStep < statuses.length) {
         setOrder(prevOrder => {
-          // Fix: Ensure prevOrder is never undefined
           const safeOrder = prevOrder || {...defaultOrder};
           return {
             ...safeOrder,
@@ -203,7 +201,6 @@ const TrackOrder: React.FC = () => {
       
       let currentDriverIndex = -1;
       
-      // Fix: Ensure order is never undefined
       const currentOrder = order || {...defaultOrder};
       
       if (currentOrder?.driver?.name) {
@@ -220,7 +217,6 @@ const TrackOrder: React.FC = () => {
       const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
       
       setOrder(prevOrder => {
-        // Fix: Ensure prevOrder is never undefined
         const safeOrder = prevOrder || {...defaultOrder};
         return {
           ...safeOrder,
@@ -242,7 +238,6 @@ const TrackOrder: React.FC = () => {
     const messageTimer = setInterval(() => {
       if (!orderComplete) {
         const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
-        // Fix: Ensure order is never undefined
         const currentOrder = order || {...defaultOrder};
         const driverName = currentOrder?.driver?.name || 'Driver';
         
@@ -271,7 +266,6 @@ const TrackOrder: React.FC = () => {
       setDriverLocation(newDriverLocation);
       
       setOrder(prev => {
-        // Fix: Ensure prev is never undefined
         const safeOrder = prev || {...defaultOrder};
         return {
           ...safeOrder,
@@ -363,7 +357,6 @@ const TrackOrder: React.FC = () => {
     }
   };
 
-  // Use nullish coalescing to ensure we always have a value
   const status = order?.status ?? 'processing';
   const progress = order?.progress ?? 0;
   const statusDetails = order?.statusDetails ?? 'Processing your order';
@@ -608,4 +601,36 @@ const TrackOrder: React.FC = () => {
               <div className={`h-0.5 w-full border-t-2 border-dashed ${progress >= 100 ? 'border-green-500' : 'border-gray-700'}`}></div>
             </div>
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 ${progress >=
+              <div className={`w-8 h-8 ${progress >= 100 ? 'bg-green-500' : 'bg-gray-700'} rounded-full flex items-center justify-center`}>
+                <Check className={`h-4 w-4 ${progress >= 100 ? 'text-black' : 'text-gray-400'}`} />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Complete</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {showConfirmModal && (
+        <OrderConfirmModal 
+          onConfirm={handleOrderConfirm}
+          orderTotal={orderTotal}
+          serviceFee={3.99}
+          driverName={driverName}
+          licensePlate={licensePlate}
+          items={orderItems}
+        />
+      )}
+      
+      {showRatingModal && (
+        <RatingModal 
+          driverName={driverName}
+          stationName="Memphis Fuel Station"
+          onClose={() => setShowRatingModal(false)}
+          onSubmit={handleRatingSubmit}
+        />
+      )}
+    </div>
+  );
+};
+
+export default TrackOrder;
