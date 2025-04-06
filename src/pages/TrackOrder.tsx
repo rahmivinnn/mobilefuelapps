@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Phone, MessageSquare, ChevronLeft, Home, ShoppingBag, Map as MapIcon, Settings, User, Check } from 'lucide-react';
@@ -82,6 +81,14 @@ const TrackOrder: React.FC = () => {
   const [showFinishScreen, setShowFinishScreen] = useState(false);
   
   const [driverArrived, setDriverArrived] = useState(false);
+  const isMounted = React.useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -104,36 +111,44 @@ const TrackOrder: React.FC = () => {
           
           setDriverLocation(initialDriverLocation);
           
-          setOrder({
-            ...defaultOrder,
-            id: foundOrder.id || defaultOrder.id,
-            status: foundOrder.status || defaultOrder.status,
-            estimatedDelivery: randomDeliveryTime,
-            items: foundOrder.items || defaultOrder.items,
-            total: parseFloat(foundOrder.totalPrice) || defaultOrder.total,
-            licensePlate: randomLicensePlate,
-            driver: randomDeliveryPerson,
-            avatarIndex: randomAvatarIndex,
-            driverLocation: initialDriverLocation,
-            progress: defaultOrder.progress,
-            statusDetails: defaultOrder.statusDetails
-          });
+          if (isMounted.current) {
+            setOrder({
+              ...defaultOrder,
+              id: foundOrder.id || defaultOrder.id,
+              status: foundOrder.status || defaultOrder.status,
+              estimatedDelivery: randomDeliveryTime,
+              items: foundOrder.items || defaultOrder.items,
+              total: parseFloat(foundOrder.totalPrice) || defaultOrder.total,
+              licensePlate: randomLicensePlate,
+              driver: randomDeliveryPerson,
+              avatarIndex: randomAvatarIndex,
+              driverLocation: initialDriverLocation,
+              progress: defaultOrder.progress,
+              statusDetails: defaultOrder.statusDetails
+            });
+          }
         } else {
           console.log(`Order ${orderId} not found, using default`);
-          setOrder({...defaultOrder});
+          if (isMounted.current) {
+            setOrder({...defaultOrder});
+          }
         }
       } catch (error) {
         console.error("Error processing order data:", error);
-        setOrder({...defaultOrder});
-        toast({
-          title: "Error",
-          description: "Could not load order details",
-          duration: 3000,
-          variant: "destructive"
-        });
+        if (isMounted.current) {
+          setOrder({...defaultOrder});
+          toast({
+            title: "Error",
+            description: "Could not load order details",
+            duration: 3000,
+            variant: "destructive"
+          });
+        }
       }
     } else {
-      setOrder({...defaultOrder});
+      if (isMounted.current) {
+        setOrder({...defaultOrder});
+      }
     }
     
     const statuses = [
@@ -148,6 +163,11 @@ const TrackOrder: React.FC = () => {
     let currentStep = 0;
     
     const statusTimer = setInterval(() => {
+      if (!isMounted.current) {
+        clearInterval(statusTimer);
+        return;
+      }
+      
       if (currentStep < statuses.length) {
         setOrder(prevOrder => {
           const safeOrder = prevOrder || {...defaultOrder};
@@ -167,27 +187,35 @@ const TrackOrder: React.FC = () => {
           setRouteColor('#3b82f6');
         }
         
-        toast({
-          title: "Order Update",
-          description: statuses[currentStep].statusDetails,
-          duration: 3000
-        });
+        if (isMounted.current) {
+          toast({
+            title: "Order Update",
+            description: statuses[currentStep].statusDetails,
+            duration: 3000
+          });
+        }
         
         if (currentStep === statuses.length - 1) {
-          setOrderComplete(true);
-          setDriverArrived(true);
+          if (isMounted.current) {
+            setOrderComplete(true);
+            setDriverArrived(true);
+          }
           
           setTimeout(() => {
-            toast({
-              title: "Delivery Complete!",
-              description: "Your order has been successfully delivered.",
-              duration: 2000,
-              className: "bg-green-500 border-green-600 text-white"
-            });
+            if (isMounted.current) {
+              toast({
+                title: "Delivery Complete!",
+                description: "Your order has been successfully delivered.",
+                duration: 2000,
+                className: "bg-green-500 border-green-600 text-white"
+              });
             
-            setTimeout(() => {
-              setShowConfirmModal(true);
-            }, 1500);
+              setTimeout(() => {
+                if (isMounted.current) {
+                  setShowConfirmModal(true);
+                }
+              }, 1500);
+            }
           }, 1000);
         }
         
@@ -198,55 +226,72 @@ const TrackOrder: React.FC = () => {
     }, 5000);
 
     const driverUpdateTimer = setInterval(() => {
+      if (!isMounted.current) {
+        clearInterval(driverUpdateTimer);
+        return;
+      }
+      
       const randomLicensePlate = memphisLicensePlates[Math.floor(Math.random() * memphisLicensePlates.length)];
       
       let currentDriverIndex = -1;
       
-      const currentOrder = order || {...defaultOrder};
-      
-      if (currentOrder?.driver?.name) {
-        currentDriverIndex = deliveryPeople.findIndex(driver => driver.name === currentOrder.driver.name);
-      }
-      
-      let newDriverIndex;
-      do {
-        newDriverIndex = Math.floor(Math.random() * deliveryPeople.length);
-      } while (newDriverIndex === currentDriverIndex && deliveryPeople.length > 1);
-      
-      const randomDeliveryPerson = deliveryPeople[newDriverIndex];
-      
-      const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
-      
       setOrder(prevOrder => {
         const safeOrder = prevOrder || {...defaultOrder};
-        return {
+        
+        if (safeOrder?.driver?.name) {
+          currentDriverIndex = deliveryPeople.findIndex(driver => driver.name === safeOrder.driver.name);
+        }
+        
+        let newDriverIndex;
+        do {
+          newDriverIndex = Math.floor(Math.random() * deliveryPeople.length);
+        } while (newDriverIndex === currentDriverIndex && deliveryPeople.length > 1);
+        
+        const randomDeliveryPerson = deliveryPeople[newDriverIndex];
+        const randomDeliveryTime = deliveryTimes[Math.floor(Math.random() * deliveryTimes.length)];
+        
+        const updatedOrder = {
           ...safeOrder,
           estimatedDelivery: randomDeliveryTime,
           licensePlate: randomLicensePlate,
           driver: randomDeliveryPerson
         };
+        
+        if (!orderComplete && isMounted.current) {
+          toast({
+            title: "Driver Update",
+            description: `Your order is now being delivered by ${randomDeliveryPerson.name}`,
+            duration: 3000
+          });
+        }
+        
+        return updatedOrder;
       });
-      
-      if (!orderComplete) {
-        toast({
-          title: "Driver Update",
-          description: `Your order is now being delivered by ${randomDeliveryPerson.name}`,
-          duration: 3000
-        });
-      }
     }, Math.floor(Math.random() * 5000) + 5000);
 
     const messageTimer = setInterval(() => {
+      if (!isMounted.current) {
+        clearInterval(messageTimer);
+        return;
+      }
+      
       if (!orderComplete) {
         const randomMessage = driverMessages[Math.floor(Math.random() * driverMessages.length)];
-        const currentOrder = order || {...defaultOrder};
-        const driverName = currentOrder?.driver?.name || 'Driver';
         
-        toast({
-          title: `Message from ${driverName}`,
-          description: randomMessage,
-          duration: 3000,
-          className: "bg-blue-500 border-blue-600 text-white"
+        setOrder(prevOrder => {
+          const safeOrder = prevOrder || {...defaultOrder};
+          const driverName = safeOrder?.driver?.name || 'Driver';
+          
+          if (isMounted.current) {
+            toast({
+              title: `Message from ${driverName}`,
+              description: randomMessage,
+              duration: 3000,
+              className: "bg-blue-500 border-blue-600 text-white"
+            });
+          }
+          
+          return safeOrder;
         });
       }
     }, Math.floor(Math.random() * 15000) + 15000);
@@ -260,10 +305,16 @@ const TrackOrder: React.FC = () => {
 
   useEffect(() => {
     const movementInterval = setInterval(() => {
+      if (!isMounted.current) {
+        clearInterval(movementInterval);
+        return;
+      }
+      
       const newDriverLocation = {
         lat: driverLocation.lat + (Math.random() - 0.5) * 0.002,
         lng: driverLocation.lng + (Math.random() - 0.5) * 0.002
       };
+      
       setDriverLocation(newDriverLocation);
       
       setOrder(prev => {
@@ -279,14 +330,16 @@ const TrackOrder: React.FC = () => {
   }, [driverLocation]);
 
   useEffect(() => {
-    if (orderComplete) {
+    if (orderComplete && isMounted.current) {
       const arrivalTimer = setTimeout(() => {
-        toast({
-          title: "Service Complete",
-          description: "Your Fuel Friend has finished pumping gas and delivered your groceries!",
-          duration: 2000,
-          className: "bg-green-500 border-green-600 text-white"
-        });
+        if (isMounted.current) {
+          toast({
+            title: "Service Complete",
+            description: "Your Fuel Friend has finished pumping gas and delivered your groceries!",
+            duration: 2000,
+            className: "bg-green-500 border-green-600 text-white"
+          });
+        }
       }, 2000);
       
       return () => clearTimeout(arrivalTimer);
@@ -317,13 +370,17 @@ const TrackOrder: React.FC = () => {
     });
     
     setTimeout(() => {
-      setShowRatingModal(true);
+      if (isMounted.current) {
+        setShowRatingModal(true);
+      }
     }, 1000);
   };
 
   const handleRatingSubmit = (driverRating: number, stationRating: number, feedback: string) => {
     setShowRatingModal(false);
-    setShowFinishScreen(true);
+    if (isMounted.current) {
+      setShowFinishScreen(true);
+    }
     
     toast({
       title: "Thank You for Your Feedback",
@@ -332,7 +389,9 @@ const TrackOrder: React.FC = () => {
     });
     
     setTimeout(() => {
-      navigate('/');
+      if (isMounted.current) {
+        navigate('/');
+      }
     }, 5000);
   };
 
