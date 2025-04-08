@@ -20,17 +20,40 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-green-500 overflow-hidden">
-      {/* Hexagonal pattern background */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 right-0 bottom-0 flex flex-wrap -rotate-12 scale-110">
-          {Array.from({ length: 100 }).map((_, i) => (
+      {/* Top hexagonal ornament */}
+      <div className="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2">
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 0.15, y: 0 }}
+          transition={{ duration: 1 }}
+          className="flex flex-wrap justify-center w-72 h-72"
+        >
+          {Array.from({ length: 12 }).map((_, i) => (
             <Hexagon 
-              key={i}
+              key={`top-${i}`}
               size={48} 
               className="text-white m-1"
             />
           ))}
-        </div>
+        </motion.div>
+      </div>
+
+      {/* Bottom hexagonal ornament */}
+      <div className="absolute bottom-0 left-0 transform translate-y-1/2 -translate-x-1/2">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 0.15, y: 0 }}
+          transition={{ duration: 1 }}
+          className="flex flex-wrap justify-center w-72 h-72"
+        >
+          {Array.from({ length: 12 }).map((_, i) => (
+            <Hexagon 
+              key={`bottom-${i}`}
+              size={48} 
+              className="text-white m-1"
+            />
+          ))}
+        </motion.div>
       </div>
 
       {/* Animated gradient overlay */}
