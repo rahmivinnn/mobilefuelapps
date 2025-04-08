@@ -1,6 +1,7 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
+import { Flame } from 'lucide-react';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -52,19 +53,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         </motion.div>
       </div>
       
-      {/* Centered logo with animation */}
-      <motion.div 
-        className="z-10 flex flex-col items-center justify-center"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        {/* Circle with logo */}
+      {/* Centered animations with elements moving from top and bottom */}
+      <div className="z-10 flex flex-col items-center justify-center">
+        {/* Circle coming from the top */}
         <motion.div 
-          className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center mb-6"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.5, type: "spring" }}
+          className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center mb-6 relative"
+          initial={{ y: -300, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
         >
           <img 
             src="/lovable-uploads/44c35d38-14ee-46b9-8302-0944a264f34e.png" 
@@ -73,11 +69,23 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           />
         </motion.div>
         
-        {/* FUELFRIENDLY text */}
+        {/* Flame coming from the bottom */}
+        <motion.div
+          className="absolute"
+          initial={{ y: 300, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
+        >
+          <div className="flex items-center justify-center">
+            <Flame className="h-16 w-16 text-white" />
+          </div>
+        </motion.div>
+        
+        {/* FUELFRIENDLY text that appears after animation */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.2, duration: 0.5 }}
         >
           <img 
             src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
@@ -85,7 +93,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
             className="h-6"
           />
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 };

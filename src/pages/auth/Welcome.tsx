@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Flame } from 'lucide-react';
 
 const Welcome: React.FC = () => {
   const isMobile = useIsMobile();
@@ -23,7 +24,7 @@ const Welcome: React.FC = () => {
         >
           {/* Logo circle */}
           <motion.div 
-            className="w-24 h-24 rounded-full flex items-center justify-center mb-4"
+            className="w-24 h-24 rounded-full flex items-center justify-center mb-4 relative"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5, type: "spring" }}
@@ -33,6 +34,14 @@ const Welcome: React.FC = () => {
               alt="FuelFriendly Logo" 
               className="w-20 h-20"
             />
+            <motion.div
+              className="absolute"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.5, type: "spring" }}
+            >
+              <Flame className="h-12 w-12 text-white" />
+            </motion.div>
           </motion.div>
           
           {/* Brand name */}
