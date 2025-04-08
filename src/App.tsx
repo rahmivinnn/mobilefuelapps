@@ -82,10 +82,10 @@ const App: React.FC = () => {
             <BrowserRouter>
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
-                  {/* Auth routes - Updated to go directly to sign-up */}
+                  {/* Auth routes */}
                   <Route 
                     path="/" 
-                    element={isAuthenticated ? <Navigate to="/home" /> : <SignUp onLogin={handleLogin} />} 
+                    element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/sign-up" />} 
                   />
                   <Route 
                     path="/welcome" 
@@ -105,7 +105,7 @@ const App: React.FC = () => {
                   />
                   <Route 
                     path="/verify-otp" 
-                    element={isAuthenticated ? <Navigate to="/home" /> : <VerifyOtp />} 
+                    element={isAuthenticated ? <Navigate to="/home" /> : <VerifyOtp onLogin={handleLogin} />} 
                   />
                   <Route 
                     path="/reset-password" 
@@ -115,7 +115,7 @@ const App: React.FC = () => {
                   {/* Protected routes */}
                   <Route 
                     path="/home" 
-                    element={isAuthenticated ? <Index /> : <Navigate to="/" />} 
+                    element={isAuthenticated ? <Index /> : <Navigate to="/sign-in" />} 
                   />
                   <Route 
                     path="/station/:id" 

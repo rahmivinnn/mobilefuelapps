@@ -28,17 +28,46 @@ const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
       return;
     }
     
-    // Mock successful authentication
-    const token = "mock-auth-token-" + Math.random();
-    onLogin(token);
-    navigate('/home');
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Mock successful authentication
+      const token = "mock-auth-token-" + Math.random();
+      onLogin(token);
+      navigate('/home');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign in. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  const handleGoogleLogin = () => {
-    // Mock successful Google authentication
-    const token = "google-auth-token-" + Math.random();
-    onLogin(token);
-    navigate('/home');
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    
+    try {
+      // Simulate Google API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const token = "google-auth-token-" + Math.random();
+      onLogin(token);
+      navigate('/home');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign in with Google. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

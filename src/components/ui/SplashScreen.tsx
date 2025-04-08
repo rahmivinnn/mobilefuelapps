@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { Flame } from 'lucide-react';
+import { Hexagon, Flame } from 'lucide-react';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -19,35 +19,68 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   }, [onFinish]);
   
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-green-500">
-      {/* Simplified animations and removed heavy patterns */}
+    <div className="fixed inset-0 flex items-center justify-center bg-green-500 overflow-hidden">
+      {/* Hexagonal pattern background */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-0 right-0 bottom-0 flex flex-wrap -rotate-12 scale-110">
+          {Array.from({ length: 100 }).map((_, i) => (
+            <Hexagon 
+              key={i}
+              size={48} 
+              className="text-white m-1"
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Animated gradient overlay */}
+      <div 
+        className="absolute inset-0 bg-gradient-to-br from-green-400/50 to-green-600/50"
+        style={{
+          maskImage: 'radial-gradient(circle at center, transparent 0%, black 100%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, transparent 0%, black 100%)',
+        }}
+      />
+
+      {/* Content */}
       <div className="z-10 flex flex-col items-center justify-center">
-        {/* Container for both circle and flame with optimized animations */}
+        {/* Container for both circle and flame */}
         <div className="relative mb-6">
-          {/* Circle with simplified animation */}
+          {/* Animated circle */}
           <motion.div 
             className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center relative"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ 
+              duration: 0.8,
+              type: "spring",
+              stiffness: 200,
+              damping: 20
+            }}
           />
           
-          {/* Flame with simplified animation */}
+          {/* Animated flame */}
           <motion.div
             className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+            transition={{ 
+              duration: 0.5,
+              delay: 0.3,
+              type: "spring",
+              stiffness: 200,
+              damping: 20
+            }}
           >
             <Flame className="h-12 w-12 text-white" />
           </motion.div>
         </div>
         
-        {/* FUELFRIENDLY text with simplified animation */}
+        {/* FUELFRIENDLY text */}
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.5 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
         >
           <img 
             src="/lovable-uploads/2b80eff8-6efd-4f15-9213-ed9fe4e0cba9.png" 
