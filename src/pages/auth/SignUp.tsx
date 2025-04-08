@@ -331,7 +331,7 @@ const SignUp: React.FC<SignUpProps> = ({ onLogin }) => {
               transition={{ delay: 0.7 }}
             >
               Already have an account?{" "}
-              <Link to="/login" className="text-green-400 hover:text-green-300 transition-colors duration-200">
+              <Link to="/sign-in" className="text-green-400 hover:text-green-300 transition-colors duration-200">
                 Log in
               </Link>
             </motion.p>
