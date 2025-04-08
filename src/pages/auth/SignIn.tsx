@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -29,28 +28,17 @@ const SignIn: React.FC<SignInProps> = ({ onLogin }) => {
       return;
     }
     
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      // Mock successful authentication
-      const token = "mock-auth-token-" + Math.random();
-      onLogin(token);
-      setIsLoading(false);
-      navigate('/home');
-    }, 1500);
+    // Mock successful authentication
+    const token = "mock-auth-token-" + Math.random();
+    onLogin(token);
+    navigate('/home');
   };
   
   const handleGoogleLogin = () => {
-    setIsLoading(true);
-    
-    // Simulate Google API call
-    setTimeout(() => {
-      const token = "google-auth-token-" + Math.random();
-      onLogin(token);
-      setIsLoading(false);
-      navigate('/home');
-    }, 1500);
+    // Mock successful Google authentication
+    const token = "google-auth-token-" + Math.random();
+    onLogin(token);
+    navigate('/home');
   };
 
   return (

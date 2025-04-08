@@ -22,7 +22,7 @@ const Index = () => {
   const isMobile = useIsMobile();
   const [showTraffic, setShowTraffic] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
-  const [mapVisible, setMapVisible] = useState(false);
+  const [mapVisible, setMapVisible] = useState(true);
   const [scrollPosition, setScrollPosition] = useState(0);
   const stationListRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -56,14 +56,6 @@ const Index = () => {
     return () => clearInterval(timer);
   }, [toast]);
   
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMapVisible(true);
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
   useEffect(() => {
     toast({
       title: "Traffic Update",
