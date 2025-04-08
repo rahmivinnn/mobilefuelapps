@@ -9,10 +9,10 @@ interface SplashScreenProps {
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   React.useEffect(() => {
-    // Handle splash screen timing - 3 seconds
+    // Handle splash screen timing - 5 seconds (increased from 3)
     const timer = setTimeout(() => {
       onFinish();
-    }, 3000);
+    }, 5000);
     
     return () => {
       clearTimeout(timer);
@@ -55,31 +55,32 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
       
       {/* Centered animations with elements moving from top and bottom */}
       <div className="z-10 flex flex-col items-center justify-center">
-        {/* Circle coming from the top */}
-        <motion.div 
-          className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center mb-6 relative"
-          initial={{ y: -300, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
-        >
-          <img 
-            src="/lovable-uploads/44c35d38-14ee-46b9-8302-0944a264f34e.png" 
-            alt="FuelFriendly Logo" 
-            className="w-16 h-16"
-          />
-        </motion.div>
-        
-        {/* Flame coming from the bottom */}
-        <motion.div
-          className="absolute"
-          initial={{ y: 300, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
-        >
-          <div className="flex items-center justify-center">
-            <Flame className="h-16 w-16 text-white" />
-          </div>
-        </motion.div>
+        {/* Container for both circle and flame to coordinate animations */}
+        <div className="relative mb-6">
+          {/* Circle coming from the top */}
+          <motion.div 
+            className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center"
+            initial={{ y: -300, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
+          >
+            <img 
+              src="/lovable-uploads/44c35d38-14ee-46b9-8302-0944a264f34e.png" 
+              alt="FuelFriendly Logo" 
+              className="w-16 h-16"
+            />
+            
+            {/* Flame placed inside the circle */}
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              initial={{ y: 300, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
+            >
+              <Flame className="h-12 w-12 text-white" />
+            </motion.div>
+          </motion.div>
+        </div>
         
         {/* FUELFRIENDLY text that appears after animation */}
         <motion.div 

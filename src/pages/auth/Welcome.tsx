@@ -34,8 +34,9 @@ const Welcome: React.FC = () => {
               alt="FuelFriendly Logo" 
               className="w-20 h-20"
             />
+            {/* Flame positioned inside the circle */}
             <motion.div
-              className="absolute"
+              className="absolute inset-0 flex items-center justify-center"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.4, duration: 0.5, type: "spring" }}
