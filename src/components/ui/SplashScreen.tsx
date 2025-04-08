@@ -57,18 +57,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
       <div className="z-10 flex flex-col items-center justify-center">
         {/* Container for both circle and flame to coordinate animations */}
         <div className="relative mb-6">
-          {/* Circle coming from the top */}
+          {/* Circle coming from the top - removed the image inside */}
           <motion.div 
             className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center relative"
             initial={{ y: -300, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
           >
-            <img 
-              src="/lovable-uploads/44c35d38-14ee-46b9-8302-0944a264f34e.png" 
-              alt="FuelFriendly Logo" 
-              className="w-16 h-16"
-            />
+            {/* No image here anymore */}
           </motion.div>
           
           {/* Flame coming from the bottom */}

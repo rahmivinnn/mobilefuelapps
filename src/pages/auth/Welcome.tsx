@@ -22,18 +22,13 @@ const Welcome: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          {/* Logo circle */}
+          {/* Logo circle - removed inner image */}
           <motion.div 
-            className="w-24 h-24 rounded-full flex items-center justify-center mb-4 relative"
+            className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center mb-4 relative"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5, type: "spring" }}
           >
-            <img 
-              src="/lovable-uploads/9a88ef60-f4d0-4cc6-9714-c32a44453aea.png" 
-              alt="FuelFriendly Logo" 
-              className="w-20 h-20"
-            />
             {/* Flame positioned inside the circle */}
             <motion.div
               className="absolute inset-0 flex items-center justify-center"
