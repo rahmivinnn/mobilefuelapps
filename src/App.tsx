@@ -53,7 +53,7 @@ const App: React.FC = () => {
   const [splashVisible, setSplashVisible] = React.useState(true);
   const [isAuthenticated, setIsAuthenticated] = React.useState(() => {
     // Initialize auth state from localStorage
-    return !!localStorage.getItem('auth-token');
+    return false; // Always start as not authenticated
   });
   
   const handleSplashFinish = () => {
@@ -85,7 +85,7 @@ const App: React.FC = () => {
                   {/* Auth routes */}
                   <Route 
                     path="/" 
-                    element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/sign-up" />} 
+                    element={<Navigate to="/sign-up" />} 
                   />
                   <Route 
                     path="/welcome" 
