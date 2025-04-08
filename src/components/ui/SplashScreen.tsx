@@ -59,7 +59,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         <div className="relative mb-6">
           {/* Circle coming from the top */}
           <motion.div 
-            className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center"
+            className="w-24 h-24 rounded-full border-2 border-white flex items-center justify-center relative"
             initial={{ y: -300, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
@@ -69,16 +69,16 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
               alt="FuelFriendly Logo" 
               className="w-16 h-16"
             />
-            
-            {/* Flame placed inside the circle */}
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center"
-              initial={{ y: 300, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
-            >
-              <Flame className="h-12 w-12 text-white" />
-            </motion.div>
+          </motion.div>
+          
+          {/* Flame coming from the bottom */}
+          <motion.div
+            className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+            initial={{ y: 300, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 20 }}
+          >
+            <Flame className="h-12 w-12 text-white" />
           </motion.div>
         </div>
         
