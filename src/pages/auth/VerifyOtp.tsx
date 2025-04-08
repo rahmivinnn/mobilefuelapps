@@ -1,12 +1,12 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Hexagon, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/use-toast';
 
-const VerifyOtp: React.FC = () => {
+const VerifyOtp: React.FC<{ onLogin?: (token: string) => void }> = ({ onLogin }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -19,11 +19,17 @@ const VerifyOtp: React.FC = () => {
   const { email = 'your.email@example.com', isSignUp = true } = location.state || {};
 
   useEffect(() => {
+    // If no email in state, redirect back to sign up
+    if (!location.state?.email) {
+      navigate('/sign-up', { replace: true });
+      return;
+    }
+
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [location.state, navigate]);
 
   useEffect(() => {
     if (timer > 0) {
@@ -36,11 +42,19 @@ const VerifyOtp: React.FC = () => {
 
   const handleResendCode = () => {
     setTimer(60);
-    // Simulate API call to resend code
-    alert('New verification code sent!');
+    toast({
+      title: "Code Resent",
+      description: "A new verification code has been sent to your email",
+      variant: "default"
+    });
   };
 
   const handleChange = (value: string, index: number) => {
+    // Only allow numbers
+    if (!/^\d*$/.test(value)) {
+      return;
+    }
+
     if (value.length > 1) {
       value = value[0];
     }
@@ -54,45 +68,89 @@ const VerifyOtp: React.FC = () => {
     if (value !== '' && index < 5) {
       inputs[index + 1].current?.focus();
     }
+
+    // If all digits are filled, auto-submit
+    if (value !== '' && newOtp.every(digit => digit !== '')) {
+      handleVerify();
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     // If backspace and current field is empty, focus previous field
-    if (e.key === 'Backspace' && otp[index] === '' && index > 0) {
-      inputs[index - 1].current?.focus();
+    if (e.key === 'Backspace') {
+      if (otp[index] === '' && index > 0) {
+        inputs[index - 1].current?.focus();
+      } else {
+        const newOtp = [...otp];
+        newOtp[index] = '';
+        setOtp(newOtp);
+      }
     }
   };
 
-  const handleVerify = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerify = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    
+    const code = otp.join('');
+    if (code.length !== 6) {
+      toast({
+        title: "Invalid Code",
+        description: "Please enter all 6 digits of the verification code",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     
-    // Simulate API verification
-    setTimeout(() => {
-      const code = otp.join('');
+    try {
+      // Simulate API verification
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // For demo purposes, any 6-digit code works
-      if (code.length === 6) {
-        setIsVerified(true);
+      setIsVerified(true);
+      
+      if (isSignUp) {
+        // Get stored signup data
+        const signupData = localStorage.getItem('signup_data');
+        if (!signupData) {
+          throw new Error('Signup data not found');
+        }
+
+        // Generate mock token using signup data
+        const userData = JSON.parse(signupData);
+        const token = btoa(JSON.stringify({
+          id: Math.random().toString(36).substr(2, 9),
+          email: userData.email,
+          name: userData.name,
+          timestamp: new Date().getTime()
+        }));
+
+        // Clear signup data
+        localStorage.removeItem('signup_data');
         
-        // After showing success message, redirect
+        // Login and redirect
+        onLogin?.(token);
         setTimeout(() => {
-          if (isSignUp) {
-            // Redirect to homepage after successful signup verification
-            navigate('/', { replace: true });
-          } else {
-            // Redirect to reset password after verification for password reset flow
-            navigate('/reset-password', { 
-              state: { email },
-              replace: true 
-            });
-          }
+          navigate('/home', { replace: true });
         }, 2000);
       } else {
-        alert('Please enter a valid 6-digit code');
-        setIsLoading(false);
+        // Password reset flow
+        setTimeout(() => {
+          navigate('/reset-password', { 
+            state: { email },
+            replace: true 
+          });
+        }, 2000);
       }
-    }, 1500);
+    } catch (error) {
+      setIsVerified(false);
+      setIsLoading(false);
+      toast({
+        title: "Verification Failed",
+        description: "An error occurred during verification. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

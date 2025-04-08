@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -25,6 +24,7 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import OrderHistory from "./pages/OrderHistory";
 import CallScreen from "./pages/CallScreen";
 import ChatScreen from "./pages/ChatScreen";
+import SignUp from "./pages/auth/SignUp";
 
 // Create the query client outside of the component
 const queryClient = new QueryClient();
@@ -71,6 +71,10 @@ const App: React.FC = () => {
                 {/* Auth routes */}
                 <Route 
                   path="/" 
+                  element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/sign-up" />} 
+                />
+                <Route 
+                  path="/welcome" 
                   element={isAuthenticated ? <Navigate to="/home" /> : <Welcome />} 
                 />
                 <Route 
@@ -79,7 +83,7 @@ const App: React.FC = () => {
                 />
                 <Route 
                   path="/sign-up" 
-                  element={<Navigate to="/sign-in" />} 
+                  element={isAuthenticated ? <Navigate to="/home" /> : <SignUp onLogin={handleLogin} />} 
                 />
                 <Route 
                   path="/forgot-password" 

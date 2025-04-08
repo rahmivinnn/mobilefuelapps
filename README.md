@@ -1,69 +1,82 @@
-# Welcome to your Lovable project
+# FuelFriendly Mobile App
 
-## Project info
+A modern mobile application for finding and ordering fuel from nearby stations.
 
-**URL**: https://lovable.dev/projects/742d84fc-0f66-48a1-adf3-c6fdef7d9e5e
+## Features
 
-## How can I edit this code?
+- User authentication with email verification
+- Modern and responsive UI with animations
+- Dark mode support
+- Real-time order tracking
+- Secure payment processing
+- Station locator with maps integration
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- React + TypeScript
+- Vite
+- TailwindCSS
+- Framer Motion
+- React Router
+- Shadcn UI Components
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/742d84fc-0f66-48a1-adf3-c6fdef7d9e5e) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js 16.x or later
+- npm or yarn
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/mobileappfuel.git
+cd mobileappfuel
 ```
 
-**Edit a file directly in GitHub**
+2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. Start the development server
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-**Use GitHub Codespaces**
+4. Build for production
+```bash
+npm run build
+# or
+yarn build
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Environment Variables
 
-## What technologies are used for this project?
+Create a `.env` file in the root directory with the following variables:
 
-This project is built with .
+```env
+VITE_API_URL=your_api_url
+VITE_MAPS_API_KEY=your_maps_api_key
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deployment
 
-## How can I deploy this project?
+This project is configured for deployment on Vercel. Simply push to the main branch and Vercel will automatically deploy the changes.
 
-Simply open [Lovable](https://lovable.dev/projects/742d84fc-0f66-48a1-adf3-c6fdef7d9e5e) and click on Share -> Publish.
+## Contributing
 
-## I want to use a custom domain - is that possible?
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
